@@ -6,7 +6,7 @@
 package net.rootdev.javardfa;
 
 import com.hp.hpl.jena.graph.Node;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +35,7 @@ public class Parser
     final QName typeof = new QName("typeof"); // CURIE
     final QName rel = new QName("rel"); // Link types and CURIES
     final QName rev = new QName("rev"); // Link type and CURIES
+    final QName content = new QName("content");
 
     // Hack bits
     final QName input = new QName("input");
@@ -69,7 +70,8 @@ public class Parser
         String newSubject = null;
         String currentObject = null;
         Map<String, String> uriMappings = context.uriMappings;
-        List incompleteTriples = null;
+        List<String> forwardProperties = new LinkedList(context.forwardProperties);
+        List<String> backwardProperties = new LinkedList(context.backwardProperties);
         String currentLanguage = context.language;
 
         // TODO element.getNamespace();
@@ -117,85 +119,116 @@ public class Parser
                 emitTriple(currentObject,
                         element.getAttributeByName(rev).getValue(),
                         newSubject);
+        } else {
+            if (element.getAttributeByName(rel) != null)
+                forwardProperties.add(element.getAttributeByName(rel).getValue());
+            if (element.getAttributeByName(rev) != null)
+                backwardProperties.add(element.getAttributeByName(rev).getValue());
+            if (element.getAttributeByName(rel) != null || // if predicate present
+                    element.getAttributeByName(rev) != null)
+                currentObject = "_:bnode"; // TODO generate bnode
         }
 
-        // TODO incomplete triples
+        if (element.getAttributeByName(property) != null) {
+            String prop = element.getAttributeByName(property).getValue();
 
-        // TODO step 9 literals
+            // TODO dataypes and XMLLiterals
+
+            if (element.getAttributeByName(content) != null) {
+                emitTriple(newSubject,
+                        prop,
+                        element.getAttributeByName(content).getValue());
+            } else { // TODO this is wrong
+                StringBuilder value = new StringBuilder();
+                getPlainLiteralValue(value);
+                emitTripleLiteral(newSubject,
+                        prop,
+                        value.toString());
+            }
+        }
 
         if (!skipElement && newSubject != null) {
-            // complete incomplete -- TODO direction
-
-            for (String prop: context.properties) {
+            for (String prop: context.forwardProperties) {
                 emitTriple(context.parentSubject,
                         prop,
                         newSubject);
             }
+
+            for (String prop: context.backwardProperties) {
+                emitTriple(newSubject,
+                        prop,
+                        context.parentSubject);
+            }
         }
 
         if (recurse) {
-            EvalContext ec = context.copy();
-            // TODO stuff
+            EvalContext ec = new EvalContext(context);
+
+            if (skipElement) {
+                //ec.language = language;
+                //copy uri mappings
+                System.err.println("Skip element");
+            } else {
+                if (newSubject != null)
+                    ec.parentSubject = newSubject;
+                else
+                    ec.parentSubject = context.parentSubject;
+
+                if (currentObject != null)
+                    ec.parentObject = currentObject;
+                else if (newSubject != null)
+                    ec.parentObject = newSubject;
+                else
+                    ec.parentObject = context.parentSubject;
+
+                ec.uriMappings = uriMappings;
+                //ec.language = language
+                ec.forwardProperties = forwardProperties;
+                ec.backwardProperties = backwardProperties;
+            }
+
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
+                //System.err.println("Event: " + event);
+                //System.err.println("Context: " + ec);
                 if (event.isStartElement())
-                    parse(ec, (StartElement) event);
+                    parse(ec, event.asStartElement());
                 if (event.isEndDocument() || event.isEndElement())
                     return;
             }
         }
-
-        Iterator attributes = element.getAttributes();
-        while (attributes.hasNext())
-            handleAttribute(context, (Attribute) attributes.next());
-
-        /* Hackity hack! */
-        /* if input hack hack hack */
-        if (element.getName().equals(input)) {
-            Attribute theName = element.getAttributeByName(name);
-            if (theName != null) emitTriplesWithObject(context, theName.getValue());
-        }
-
-        while (reader.hasNext()) {
-            XMLEvent event = reader.nextEvent();
-            if (event.isStartElement())
-                parse(context.copy(), (StartElement) event);
-            if (event.isEndDocument() || event.isEndElement())
-                return;
-        }
-    }
-
-    void handleAttribute(EvalContext context, Attribute attr)
-    {
-        QName attrName = attr.getName();
-        if (attrName.equals(about))
-            context.parentSubject = attr.getValue();
-        if (attrName.equals(property))
-            context.properties.add(attr.getValue());
-        if (attrName.equals(resource))
-            emitTriplesWithObject(context, attr.getValue());
-    }
-
-    void emitTriplesWithObject(EvalContext context, String object)
-    {
-        Node subjectN = Node.createURI(context.parentSubject);
-        Node objectN = Node.createURI(object);
-        for (String prop: context.properties)
-            sink.add(subjectN, Node.createURI(prop), objectN);
     }
 
     private Attribute findAttribute(StartElement element, QName... names)
       {
         for (QName aName: names) {
-            Attribute a = element.getAttributeByName(name);
+            Attribute a = element.getAttributeByName(aName);
             if (a != null) return a;
         }
         return null;
       }
 
-    private void emitTriple(String newSubject, String string, String value)
+    private void emitTriple(String subj, String prop, String obj)
       {
-        throw new UnsupportedOperationException("Not yet implemented");
+        sink.add(Node.createURI(subj), Node.createURI(prop), Node.createURI(obj));
+      }
+
+    private void emitTripleLiteral(String subj, String prop, String obj)
+    {
+        sink.add(Node.createURI(subj), Node.createURI(prop), Node.createLiteral(obj));
+    }
+
+    private void getPlainLiteralValue(StringBuilder value)
+            throws XMLStreamException
+      {
+        XMLEvent event = reader.nextEvent();
+        while (!event.isEndElement()) {
+            if (event.isCharacters()) value.append(event.asCharacters().getData());
+            if (event.isStartElement()) {
+                getPlainLiteralValue(value); // TODO this is wrong!!
+            }
+            event = reader.nextEvent();
+        }
       }
 
     static class EvalContext
@@ -203,25 +236,41 @@ public class Parser
         String base;
         String parentSubject;
         String parentObject;
-        List<String> properties;
         Map<String, String> uriMappings;
         String language;
+        List<String> forwardProperties;
+        List<String> backwardProperties;
 
-        public EvalContext(String base) {
+        private EvalContext(String base) {
             this.base = base;
             this.parentSubject = base;
-            this.properties = new LinkedList<String>();
+            this.forwardProperties = new LinkedList<String>();
+            this.backwardProperties = new LinkedList<String>();
+            this.uriMappings = new HashMap<String, String>();
         }
 
-        private EvalContext(String base, String parentSubject, String parentObject) {
-            this.base = base;
-            this.parentSubject = parentSubject;
-            this.parentObject = parentObject;
-            this.properties = new LinkedList<String>();
+        public EvalContext(EvalContext toCopy) {
+            this.base = toCopy.base;
+            this.parentSubject = toCopy.parentSubject;
+            this.parentObject = toCopy.parentObject;
+            this.uriMappings = new HashMap<String, String>(toCopy.uriMappings);
+            this.language = toCopy.language;
+            this.forwardProperties = new LinkedList<String>(toCopy.forwardProperties);
+            this.backwardProperties = new LinkedList<String>(toCopy.backwardProperties);
         }
 
-        public EvalContext copy() {
-            return new EvalContext(base, parentSubject, parentObject);
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("[\nbase: " + base);
+            sb.append("\nparentSubject: " + parentSubject);
+            sb.append("\nparentObject: " + parentObject);
+            sb.append("\nforward: [");
+            for (String prop: forwardProperties) {
+                sb.append(prop);
+                sb.append(" ");
+            }
+            sb.append("]");
+            return sb.toString();
         }
     }
 }

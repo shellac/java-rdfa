@@ -95,7 +95,7 @@ public class FileBasedTests
             statements.add(
                     new Node[]{s, p, o}
                     );
-            System.err.println("Got: " + s + " " + p + " " + o);
+            System.err.println("Got: -" + s + "- -" + p + "- -" + o + "-");
           }
         
     }
