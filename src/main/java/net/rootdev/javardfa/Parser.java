@@ -6,6 +6,8 @@
 package net.rootdev.javardfa;
 
 import com.hp.hpl.jena.graph.Node;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +28,9 @@ public class Parser
     private final XMLEventReader reader;
     private final StatementSink sink;
 
+    // Suggestion: switch this for object produced by factory that matches QNames
+    // we can then en-slacken if needed by passing in different factory etc
+
     final QName about = new QName("about"); // safe
     final QName resource = new QName("resource"); // safe
     final QName href = new QName("href"); // URI
@@ -41,6 +46,8 @@ public class Parser
     final QName input = new QName("input");
     final QName name = new QName("name");
 
+    final Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+
     public Parser(XMLEventReader reader, StatementSink sink)
     {
         this.reader = reader;
@@ -55,7 +62,7 @@ public class Parser
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
                 if (event.isStartElement())
-                    parse(context, (StartElement) event);
+                    parse(context, event.asStartElement());
             }
         } finally {
             reader.close();
@@ -80,11 +87,11 @@ public class Parser
         if (element.getAttributeByName(rev) == null &&
                 element.getAttributeByName(rel) == null) {
             Attribute nSubj = findAttribute(element, about, src, resource, href);
-            if (nSubj != null) newSubject = nSubj.getValue();
+            if (nSubj != null) newSubject = getURI(element, nSubj);
             else {
                 // TODO if element is head or body assume about=""
                 if (element.getAttributeByName(typeof) != null)
-                    newSubject = "_:bnode"; // TODO unique
+                    newSubject = createBNode();
                 else {
                     if (context.parentObject != null) newSubject = context.parentObject;
                     if (element.getAttributeByName(property) == null) skipElement = true;
@@ -92,73 +99,72 @@ public class Parser
             }
         } else {
             Attribute nSubj = findAttribute(element, about, src);
-            if (nSubj != null) newSubject = nSubj.getValue();
+            if (nSubj != null) newSubject = getURI(element, nSubj);
             else {
                 // TODO if element is head or body assume about=""
                 if (element.getAttributeByName(typeof) != null)
-                    newSubject = "_:bnode"; // TODO unique
+                    newSubject = createBNode();
                 else {
                     if (context.parentObject != null) newSubject = context.parentObject;
                 }
             }
             Attribute cObj = findAttribute(element, resource, href);
-            if (cObj != null) currentObject = cObj.getValue();
+            if (cObj != null) currentObject = getURI(element, cObj);
         }
 
-        if (newSubject != null && element.getAttributeByName(typeof) != null)
-            emitTriple(newSubject,
-                    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                    element.getAttributeByName(typeof).getValue());
+        if (newSubject != null && element.getAttributeByName(typeof) != null) {
+            List<String> types = getURIs(element, element.getAttributeByName(typeof));
+            for (String type: types)
+                emitTriples(newSubject,
+                    rdfType,
+                    type);
+        }
 
         if (currentObject != null) {
             if (element.getAttributeByName(rel) != null)
-                emitTriple(newSubject,
-                        element.getAttributeByName(rel).getValue(),
+                emitTriples(newSubject,
+                        getURIs(element, element.getAttributeByName(rel)),
                         currentObject);
             if (element.getAttributeByName(rev) != null)
-                emitTriple(currentObject,
-                        element.getAttributeByName(rev).getValue(),
+                emitTriples(currentObject,
+                        getURIs(element, element.getAttributeByName(rev)),
                         newSubject);
         } else {
             if (element.getAttributeByName(rel) != null)
-                forwardProperties.add(element.getAttributeByName(rel).getValue());
+                forwardProperties.addAll(getURIs(element, element.getAttributeByName(rel)));
             if (element.getAttributeByName(rev) != null)
-                backwardProperties.add(element.getAttributeByName(rev).getValue());
+                backwardProperties.addAll(getURIs(element, element.getAttributeByName(rev)));
             if (element.getAttributeByName(rel) != null || // if predicate present
                     element.getAttributeByName(rev) != null)
-                currentObject = "_:bnode"; // TODO generate bnode
+                currentObject = createBNode(); // TODO generate bnode
         }
 
         if (element.getAttributeByName(property) != null) {
-            String prop = element.getAttributeByName(property).getValue();
+            List<String> props = getURIs(element, element.getAttributeByName(property));
 
             // TODO dataypes and XMLLiterals
 
             if (element.getAttributeByName(content) != null) {
-                emitTriple(newSubject,
-                        prop,
+                emitTriplesLiteral(newSubject,
+                        props,
                         element.getAttributeByName(content).getValue());
             } else { // TODO this is wrong
                 StringBuilder value = new StringBuilder();
                 getPlainLiteralValue(value);
-                emitTripleLiteral(newSubject,
-                        prop,
+                emitTriplesLiteral(newSubject,
+                        props,
                         value.toString());
             }
         }
 
         if (!skipElement && newSubject != null) {
-            for (String prop: context.forwardProperties) {
-                emitTriple(context.parentSubject,
-                        prop,
+            emitTriples(context.parentSubject,
+                        context.forwardProperties,
                         newSubject);
-            }
 
-            for (String prop: context.backwardProperties) {
-                emitTriple(newSubject,
-                        prop,
+            emitTriples(newSubject,
+                        context.backwardProperties,
                         context.parentSubject);
-            }
         }
 
         if (recurse) {
@@ -208,14 +214,16 @@ public class Parser
         return null;
       }
 
-    private void emitTriple(String subj, String prop, String obj)
+    private void emitTriples(String subj, Collection<String> props, String obj)
       {
-        sink.add(Node.createURI(subj), Node.createURI(prop), Node.createURI(obj));
+        for (String prop: props)
+            sink.add(Node.createURI(subj), Node.createURI(prop), Node.createURI(obj));
       }
 
-    private void emitTripleLiteral(String subj, String prop, String obj)
+    private void emitTriplesLiteral(String subj, Collection<String> props, String obj)
     {
-        sink.add(Node.createURI(subj), Node.createURI(prop), Node.createLiteral(obj));
+        for (String prop: props)
+            sink.add(Node.createURI(subj), Node.createURI(prop), Node.createLiteral(obj));
     }
 
     private void getPlainLiteralValue(StringBuilder value)
@@ -229,6 +237,50 @@ public class Parser
             }
             event = reader.nextEvent();
         }
+      }
+
+    private String getURI(StartElement element, Attribute attr) {
+        QName attrName = attr.getName();
+        if (attrName.equals(href) || attrName.equals(src)) // A URI
+            return attr.getValue();
+        if (attrName.equals(about) || attrName.equals(resource)) // Safe CURIE or URI
+            return expandSafeCURIE(element, attr.getValue());
+        if (attrName.equals(datatype)) // A CURIE
+            return expandCURIE(element, attr.getValue());
+        throw new RuntimeException("Unexpected attribute: " + attr);
+    }
+
+    private List<String> getURIs(StartElement element, Attribute attr) {
+        List<String> uris = new LinkedList<String>();
+        String[] curies = attr.getValue().split("\\s+");
+        for (String curie: curies)
+            uris.add(expandCURIE(element, curie));
+        return uris;
+    }
+
+    int bnodeId = 0;
+
+    private String createBNode() // TODO probably broken? Can you write bnodes in rdfa directly?
+      {
+        return "_:node" + (bnodeId++);
+      }
+
+    private String expandCURIE(StartElement element, String value)
+      {
+        int offset = value.indexOf(":");
+        if (offset < 1) throw new RuntimeException("Is this a curie? \"" + value + "\"");
+        String prefix = value.substring(0, offset);
+        String namespaceURI = element.getNamespaceURI(prefix);
+        if (namespaceURI == null) throw new RuntimeException("Unknown prefix: " + prefix);
+        return namespaceURI + value.substring(offset + 1);
+      }
+
+    private String expandSafeCURIE(StartElement element, String value)
+      {
+        if (value.startsWith("[") && value.endsWith("]"))
+            return expandCURIE(element, value.substring(1, value.length() - 1));
+        else
+            return value;
       }
 
     static class EvalContext

@@ -1,9 +1,10 @@
-<form>
+<form xmlns:foaf="http://xmlns.com/foaf/0.1/">
     <div about="?:subject">
-        <span property="http://xmlns.com/foaf/0.1/name">Damian</span>
-        <input rel="http://example.com/" name="p"/>
-        <span rel="http://f/depiction">
+        <span property="foaf:name">Damian</span>
+        <input rel="foaf:foo" name="p"/>
+        <span rel="foaf:depiction foaf:piccie">
             <img src="http://example.com/1.gif"/>
         </span>
     </div>
+    <p typeof="foaf:Person foaf:Agent"/>
 </form>
