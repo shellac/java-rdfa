@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
@@ -24,6 +25,20 @@ public class Parser
 {
     private final XMLEventReader reader;
     private final StatementSink sink;
+
+    final QName about = new QName("about"); // safe
+    final QName resource = new QName("resource"); // safe
+    final QName href = new QName("href"); // URI
+    final QName src = new QName("src"); // URI
+    final QName property = new QName("property"); // CURIE
+    final QName datatype = new QName("datatype"); // CURIE
+    final QName typeof = new QName("typeof"); // CURIE
+    final QName rel = new QName("rel"); // Link types and CURIES
+    final QName rev = new QName("rev"); // Link type and CURIES
+
+    // Hack bits
+    final QName input = new QName("input");
+    final QName name = new QName("name");
 
     public Parser(XMLEventReader reader, StatementSink sink)
     {
@@ -49,14 +64,96 @@ public class Parser
 
     void parse(EvalContext context, StartElement element) throws XMLStreamException
     {
+        boolean recurse = true;
+        boolean skipElement = false;
+        String newSubject = null;
+        String currentObject = null;
+        Map<String, String> uriMappings = context.uriMappings;
+        List incompleteTriples = null;
+        String currentLanguage = context.language;
+
+        // TODO element.getNamespace();
+        // TODO element.getAttribute (xmlLang)
+
+        if (element.getAttributeByName(rev) == null &&
+                element.getAttributeByName(rel) == null) {
+            Attribute nSubj = findAttribute(element, about, src, resource, href);
+            if (nSubj != null) newSubject = nSubj.getValue();
+            else {
+                // TODO if element is head or body assume about=""
+                if (element.getAttributeByName(typeof) != null)
+                    newSubject = "_:bnode"; // TODO unique
+                else {
+                    if (context.parentObject != null) newSubject = context.parentObject;
+                    if (element.getAttributeByName(property) == null) skipElement = true;
+                }
+            }
+        } else {
+            Attribute nSubj = findAttribute(element, about, src);
+            if (nSubj != null) newSubject = nSubj.getValue();
+            else {
+                // TODO if element is head or body assume about=""
+                if (element.getAttributeByName(typeof) != null)
+                    newSubject = "_:bnode"; // TODO unique
+                else {
+                    if (context.parentObject != null) newSubject = context.parentObject;
+                }
+            }
+            Attribute cObj = findAttribute(element, resource, href);
+            if (cObj != null) currentObject = cObj.getValue();
+        }
+
+        if (newSubject != null && element.getAttributeByName(typeof) != null)
+            emitTriple(newSubject,
+                    "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                    element.getAttributeByName(typeof).getValue());
+
+        if (currentObject != null) {
+            if (element.getAttributeByName(rel) != null)
+                emitTriple(newSubject,
+                        element.getAttributeByName(rel).getValue(),
+                        currentObject);
+            if (element.getAttributeByName(rev) != null)
+                emitTriple(currentObject,
+                        element.getAttributeByName(rev).getValue(),
+                        newSubject);
+        }
+
+        // TODO incomplete triples
+
+        // TODO step 9 literals
+
+        if (!skipElement && newSubject != null) {
+            // complete incomplete -- TODO direction
+
+            for (String prop: context.properties) {
+                emitTriple(context.parentSubject,
+                        prop,
+                        newSubject);
+            }
+        }
+
+        if (recurse) {
+            EvalContext ec = context.copy();
+            // TODO stuff
+            while (reader.hasNext()) {
+                XMLEvent event = reader.nextEvent();
+                if (event.isStartElement())
+                    parse(ec, (StartElement) event);
+                if (event.isEndDocument() || event.isEndElement())
+                    return;
+            }
+        }
+
         Iterator attributes = element.getAttributes();
         while (attributes.hasNext())
             handleAttribute(context, (Attribute) attributes.next());
 
         /* Hackity hack! */
         /* if input hack hack hack */
-        if (element.getName().getLocalPart().equals("input")) {
-            
+        if (element.getName().equals(input)) {
+            Attribute theName = element.getAttributeByName(name);
+            if (theName != null) emitTriplesWithObject(context, theName.getValue());
         }
 
         while (reader.hasNext()) {
@@ -70,11 +167,12 @@ public class Parser
 
     void handleAttribute(EvalContext context, Attribute attr)
     {
-        if (attr.getName().getLocalPart().equals("about"))
+        QName attrName = attr.getName();
+        if (attrName.equals(about))
             context.parentSubject = attr.getValue();
-        if (attr.getName().getLocalPart().equals("property"))
+        if (attrName.equals(property))
             context.properties.add(attr.getValue());
-        if (attr.getName().getLocalPart().equals("resource"))
+        if (attrName.equals(resource))
             emitTriplesWithObject(context, attr.getValue());
     }
 
@@ -86,6 +184,20 @@ public class Parser
             sink.add(subjectN, Node.createURI(prop), objectN);
     }
 
+    private Attribute findAttribute(StartElement element, QName... names)
+      {
+        for (QName aName: names) {
+            Attribute a = element.getAttributeByName(name);
+            if (a != null) return a;
+        }
+        return null;
+      }
+
+    private void emitTriple(String newSubject, String string, String value)
+      {
+        throw new UnsupportedOperationException("Not yet implemented");
+      }
+
     static class EvalContext
     {
         String base;
@@ -93,6 +205,7 @@ public class Parser
         String parentObject;
         List<String> properties;
         Map<String, String> uriMappings;
+        String language;
 
         public EvalContext(String base) {
             this.base = base;
