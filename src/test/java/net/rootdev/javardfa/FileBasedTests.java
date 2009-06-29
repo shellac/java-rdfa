@@ -27,40 +27,36 @@ import org.junit.runners.Parameterized.Parameters;
  * @author pldms
  */
 @RunWith(Parameterized.class)
-public class FileBasedTests
-  {
+public class FileBasedTests {
 
     @Parameters
     public static Collection<String[]> testFiles()
-            throws URISyntaxException, IOException
-      {
-        InputStream stream = FileBasedTests.class.getClassLoader()
-                .getResourceAsStream("test-manifest");
-        if (stream == null) throw new Error("Couldn't find test-manifest");
-        BufferedReader reader = 
+            throws URISyntaxException, IOException {
+        InputStream stream = FileBasedTests.class.getClassLoader().getResourceAsStream("test-manifest");
+        if (stream == null) {
+            throw new Error("Couldn't find test-manifest");
+        }
+        BufferedReader reader =
                 new BufferedReader(new InputStreamReader(stream, "UTF-8"));
         Collection<String[]> filePairs = new ArrayList<String[]>();
         String nextLine;
-        while((nextLine = reader.readLine()) != null) {
+        while ((nextLine = reader.readLine()) != null) {
             filePairs.add(nextLine.split("\\s+"));
         }
         return filePairs;
-      }
-    
+    }
     private final String htmlFile;
     private final String queryFile;
     private final XMLInputFactory xmlFactory;
 
-    public FileBasedTests(String htmlFile, String queryFile)
-      {
+    public FileBasedTests(String htmlFile, String queryFile) {
         this.htmlFile = htmlFile;
         this.queryFile = queryFile;
         xmlFactory = XMLInputFactory.newInstance();
-      }
+    }
 
     @Test
-    public void compare() throws XMLStreamException, IOException
-    {
+    public void compare() throws XMLStreamException, IOException {
         InputStream htmlIn =
                 this.getClass().getClassLoader().getResourceAsStream(htmlFile);
         XMLEventReader reader = xmlFactory.createXMLEventReader(htmlIn);
@@ -71,15 +67,17 @@ public class FileBasedTests
                 htmlFile.equals(queryFile));
     }
 
-    static class StatementCollector implements StatementSink
-    {
+    static class StatementCollector implements StatementSink {
+
         List<Node[]> statements = new ArrayList<Node[]>();
 
         @Override
-        public void start() {}
+        public void start() {
+        }
 
         @Override
-        public void end() {}
+        public void end() {
+        }
 
         @Override
         public void addObject(String subject, String predicate, String object) {
@@ -88,14 +86,13 @@ public class FileBasedTests
 
         @Override
         public void addLiteral(String subject, String predicate, String lex, String lang, String datatype) {
-            if (lang == null && datatype == null)
+            if (lang == null && datatype == null) {
                 System.err.printf("<%s> <%s> \"%s\"\n", subject, predicate, lex);
-            else if (lang != null)
+            } else if (lang != null) {
                 System.err.printf("<%s> <%s> \"%s\"@%s\n", subject, predicate, lex, lang);
-            else
+            } else {
                 System.err.printf("<%s> <%s> \"%s\"^^%s\n", subject, predicate, lex, datatype);
+            }
         }
-
     }
-
-  }
+}

@@ -2,7 +2,6 @@
  * (c) 2009
  * Damian Steer <mailto:pldms@mac.com>
  */
-
 package net.rootdev.javardfa;
 
 import java.io.IOException;
@@ -26,14 +25,12 @@ import javax.xml.stream.events.XMLEvent;
  *
  * @author pldms
  */
-public class Parser
-{
+public class Parser {
+
     private final XMLEventReader reader;
     private final StatementSink sink;
-
     // Suggestion: switch this for object produced by factory that matches QNames
     // we can then en-slacken if needed by passing in different factory etc
-
     final QName about = new QName("about"); // safe
     final QName resource = new QName("resource"); // safe
     final QName href = new QName("href"); // URI
@@ -44,32 +41,28 @@ public class Parser
     final QName rel = new QName("rel"); // Link types and CURIES
     final QName rev = new QName("rev"); // Link type and CURIES
     final QName content = new QName("content");
-    final QName lang = new QName("http://www.w3.org/XML/1998/namespace","lang");
-
+    final QName lang = new QName("http://www.w3.org/XML/1998/namespace", "lang");
     // Hack bits
     final QName input = new QName("input");
     final QName name = new QName("name");
-
     final Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
     final String xmlLiteral = "www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
-    
     final XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
-    public Parser(XMLEventReader reader, StatementSink sink)
-    {
+    public Parser(XMLEventReader reader, StatementSink sink) {
         this.reader = reader;
         this.sink = sink;
     }
 
-    public void parse(String base) throws XMLStreamException, IOException
-    {
+    public void parse(String base) throws XMLStreamException, IOException {
         try {
             sink.start();
             EvalContext context = new EvalContext(base);
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
-                if (event.isStartElement())
+                if (event.isStartElement()) {
                     parse(context, event.asStartElement());
+                }
             }
         } finally {
             reader.close();
@@ -77,8 +70,7 @@ public class Parser
         }
     }
 
-    void parse(EvalContext context, StartElement element) throws XMLStreamException, IOException
-    {
+    void parse(EvalContext context, StartElement element) throws XMLStreamException, IOException {
         boolean recurse = true;
         boolean skipElement = false;
         String newSubject = null;
@@ -97,56 +89,72 @@ public class Parser
         if (element.getAttributeByName(rev) == null &&
                 element.getAttributeByName(rel) == null) {
             Attribute nSubj = findAttribute(element, about, src, resource, href);
-            if (nSubj != null) newSubject = getURI(element, nSubj);
-            else {
+            if (nSubj != null) {
+                newSubject = getURI(element, nSubj);
+            } else {
                 // TODO if element is head or body assume about=""
-                if (element.getAttributeByName(typeof) != null)
+                if (element.getAttributeByName(typeof) != null) {
                     newSubject = createBNode();
-                else {
-                    if (context.parentObject != null) newSubject = context.parentObject;
-                    if (element.getAttributeByName(property) == null) skipElement = true;
+                } else {
+                    if (context.parentObject != null) {
+                        newSubject = context.parentObject;
+                    }
+                    if (element.getAttributeByName(property) == null) {
+                        skipElement = true;
+                    }
                 }
             }
         } else {
             Attribute nSubj = findAttribute(element, about, src);
-            if (nSubj != null) newSubject = getURI(element, nSubj);
-            else {
+            if (nSubj != null) {
+                newSubject = getURI(element, nSubj);
+            } else {
                 // TODO if element is head or body assume about=""
-                if (element.getAttributeByName(typeof) != null)
+                if (element.getAttributeByName(typeof) != null) {
                     newSubject = createBNode();
-                else {
-                    if (context.parentObject != null) newSubject = context.parentObject;
+                } else {
+                    if (context.parentObject != null) {
+                        newSubject = context.parentObject;
+                    }
                 }
             }
             Attribute cObj = findAttribute(element, resource, href);
-            if (cObj != null) currentObject = getURI(element, cObj);
+            if (cObj != null) {
+                currentObject = getURI(element, cObj);
+            }
         }
 
         if (newSubject != null && element.getAttributeByName(typeof) != null) {
             List<String> types = getURIs(element, element.getAttributeByName(typeof));
-            for (String type: types)
+            for (String type : types) {
                 emitTriples(newSubject,
-                    rdfType,
-                    type);
+                        rdfType,
+                        type);
+            }
         }
 
         if (currentObject != null) {
-            if (element.getAttributeByName(rel) != null)
+            if (element.getAttributeByName(rel) != null) {
                 emitTriples(newSubject,
                         getURIs(element, element.getAttributeByName(rel)),
                         currentObject);
-            if (element.getAttributeByName(rev) != null)
+            }
+            if (element.getAttributeByName(rev) != null) {
                 emitTriples(currentObject,
                         getURIs(element, element.getAttributeByName(rev)),
                         newSubject);
+            }
         } else {
-            if (element.getAttributeByName(rel) != null)
+            if (element.getAttributeByName(rel) != null) {
                 forwardProperties.addAll(getURIs(element, element.getAttributeByName(rel)));
-            if (element.getAttributeByName(rev) != null)
+            }
+            if (element.getAttributeByName(rev) != null) {
                 backwardProperties.addAll(getURIs(element, element.getAttributeByName(rev)));
+            }
             if (element.getAttributeByName(rel) != null || // if predicate present
-                    element.getAttributeByName(rev) != null)
+                    element.getAttributeByName(rev) != null) {
                 currentObject = createBNode(); // TODO generate bnode
+            }
         }
 
         // Getting literal values. Complicated!
@@ -157,10 +165,11 @@ public class Parser
             boolean isPlain = false;
             if (theDatatype != null && !theDatatype.isEmpty() && !theDatatype.equals(xmlLiteral)) {
                 // Datatyped literal
-                if (element.getAttributeByName(content) != null)
+                if (element.getAttributeByName(content) != null) {
                     lexVal.append(element.getAttributeByName(content).getValue());
-                else
+                } else {
                     getPlainLiteralValue(lexVal);
+                }
             } else {
                 // Plain or XML
                 if (theDatatype != null && theDatatype.isEmpty()) { // force plain
@@ -168,28 +177,32 @@ public class Parser
                     getPlainLiteralValue(lexVal);
                 } else {
                     isPlain = getLiteralValue(lexVal);
-                    if (!isPlain) theDatatype = xmlLiteral;
+                    if (!isPlain) {
+                        theDatatype = xmlLiteral;
+                    }
                 }
             }
             lexVal.flush();
             String lexical = lexVal.toString();
-            if (isPlain) emitTriplesPlainLiteral(newSubject,
-                    props,
-                    lexical, currentLanguage);
-            else
+            if (isPlain) {
+                emitTriplesPlainLiteral(newSubject,
+                        props,
+                        lexical, currentLanguage);
+            } else {
                 emitTriplesDatatypeLiteral(newSubject,
                         props,
                         lexical, theDatatype);
+            }
         }
 
         if (!skipElement && newSubject != null) {
             emitTriples(context.parentSubject,
-                        context.forwardProperties,
-                        newSubject);
+                    context.forwardProperties,
+                    newSubject);
 
             emitTriples(newSubject,
-                        context.backwardProperties,
-                        context.parentSubject);
+                    context.backwardProperties,
+                    context.parentSubject);
         }
 
         if (recurse) {
@@ -200,17 +213,19 @@ public class Parser
                 //copy uri mappings
                 ec.language = currentLanguage;
             } else {
-                if (newSubject != null)
+                if (newSubject != null) {
                     ec.parentSubject = newSubject;
-                else
+                } else {
                     ec.parentSubject = context.parentSubject;
+                }
 
-                if (currentObject != null)
+                if (currentObject != null) {
                     ec.parentObject = currentObject;
-                else if (newSubject != null)
+                } else if (newSubject != null) {
                     ec.parentObject = newSubject;
-                else
+                } else {
                     ec.parentObject = context.parentSubject;
+                }
 
                 //ec.uriMappings = uriMappings;
                 ec.language = currentLanguage;
@@ -222,39 +237,42 @@ public class Parser
                 XMLEvent event = reader.nextEvent();
                 //System.err.println("Event: " + event);
                 //System.err.println("Context: " + ec);
-                if (event.isStartElement())
+                if (event.isStartElement()) {
                     parse(ec, event.asStartElement());
-                if (event.isEndDocument() || event.isEndElement())
+                }
+                if (event.isEndDocument() || event.isEndElement()) {
                     return;
+                }
             }
         }
     }
 
-    private Attribute findAttribute(StartElement element, QName... names)
-      {
-        for (QName aName: names) {
+    private Attribute findAttribute(StartElement element, QName... names) {
+        for (QName aName : names) {
             Attribute a = element.getAttributeByName(aName);
-            if (a != null) return a;
+            if (a != null) {
+                return a;
+            }
         }
         return null;
-      }
-
-    private void emitTriples(String subj, Collection<String> props, String obj)
-      {
-        for (String prop: props)
-            sink.addObject(subj, prop, obj);
-      }
-
-    private void emitTriplesPlainLiteral(String subj, Collection<String> props, String lex, String language)
-    {
-        for (String prop: props)
-            sink.addLiteral(subj, prop, lex, language, null);
     }
 
-    private void emitTriplesDatatypeLiteral(String subj, Collection<String> props, String lex, String datatype)
-    {
-       for (String prop: props)
+    private void emitTriples(String subj, Collection<String> props, String obj) {
+        for (String prop : props) {
+            sink.addObject(subj, prop, obj);
+        }
+    }
+
+    private void emitTriplesPlainLiteral(String subj, Collection<String> props, String lex, String language) {
+        for (String prop : props) {
+            sink.addLiteral(subj, prop, lex, language, null);
+        }
+    }
+
+    private void emitTriplesDatatypeLiteral(String subj, Collection<String> props, String lex, String datatype) {
+        for (String prop : props) {
             sink.addLiteral(subj, prop, lex, null, datatype);
+        }
     }
 
     private void getPlainLiteralValue(Writer writer)
@@ -262,9 +280,15 @@ public class Parser
         int level = 0; // keep track of when we leave
         XMLEvent event = reader.nextEvent();
         while (!(event.isEndElement() && level == 0)) {
-            if (event.isCharacters()) writer.append(event.asCharacters().getData());
-            if (event.isStartElement()) level++;
-            if (event.isEndElement()) level--;
+            if (event.isCharacters()) {
+                writer.append(event.asCharacters().getData());
+            }
+            if (event.isStartElement()) {
+                level++;
+            }
+            if (event.isEndElement()) {
+                level--;
+            }
             event = reader.nextEvent();
         }
     }
@@ -276,8 +300,7 @@ public class Parser
      * @throws XMLStreamException
      */
     private boolean getLiteralValue(Writer writer)
-            throws XMLStreamException, IOException
-      {
+            throws XMLStreamException, IOException {
         List<Characters> queuedCharacters = new LinkedList<Characters>();
         XMLEvent event = reader.nextEvent();
         while (event.isCharacters()) {
@@ -285,79 +308,100 @@ public class Parser
             event = reader.nextEvent();
         }
         if (event.isEndElement()) { // All characters, plain literal
-            for (Characters chars: queuedCharacters) writer.append(chars.getData());
+            for (Characters chars : queuedCharacters) {
+                writer.append(chars.getData());
+            }
             return true;
         }
         // We are an xml literal! Copy everything
         XMLEventWriter xwriter = outputFactory.createXMLEventWriter(writer);
-        for (Characters chars: queuedCharacters) xwriter.add(chars);
+        for (Characters chars : queuedCharacters) {
+            xwriter.add(chars);
+        }
 
         int level = 0; // keep track of when we leave
         while (!(event.isEndElement() && level == 0)) {
             xwriter.add(event);
-            if (event.isStartElement()) level++;
-            if (event.isEndElement()) level--;
+            if (event.isStartElement()) {
+                level++;
+            }
+            if (event.isEndElement()) {
+                level--;
+            }
             event = reader.nextEvent();
         }
         //xwriter.add(event);
         xwriter.close();
         return false;
-      }
+    }
 
     private String getURI(StartElement element, Attribute attr) {
         QName attrName = attr.getName();
         if (attrName.equals(href) || attrName.equals(src)) // A URI
+        {
             return attr.getValue();
+        }
         if (attrName.equals(about) || attrName.equals(resource)) // Safe CURIE or URI
+        {
             return expandSafeCURIE(element, attr.getValue());
+        }
         if (attrName.equals(datatype)) // A CURIE
+        {
             return expandCURIE(element, attr.getValue());
+        }
         throw new RuntimeException("Unexpected attribute: " + attr);
     }
 
     private List<String> getURIs(StartElement element, Attribute attr) {
         List<String> uris = new LinkedList<String>();
         String[] curies = attr.getValue().split("\\s+");
-        for (String curie: curies)
+        for (String curie : curies) {
             uris.add(expandCURIE(element, curie));
+        }
         return uris;
     }
-
     int bnodeId = 0;
 
     private String createBNode() // TODO probably broken? Can you write bnodes in rdfa directly?
-      {
+    {
         return "_:node" + (bnodeId++);
-      }
+    }
 
-    private String expandCURIE(StartElement element, String value)
-      {
+    private String expandCURIE(StartElement element, String value) {
         int offset = value.indexOf(":");
-        if (offset < 1) throw new RuntimeException("Is this a curie? \"" + value + "\"");
+        if (offset < 1) {
+            throw new RuntimeException("Is this a curie? \"" + value + "\"");
+        }
         String prefix = value.substring(0, offset);
         String namespaceURI = element.getNamespaceURI(prefix);
-        if (namespaceURI == null) throw new RuntimeException("Unknown prefix: " + prefix);
+        if (namespaceURI == null) {
+            throw new RuntimeException("Unknown prefix: " + prefix);
+        }
         return namespaceURI + value.substring(offset + 1);
-      }
+    }
 
-    private String expandSafeCURIE(StartElement element, String value)
-      {
-        if (value.startsWith("[") && value.endsWith("]"))
+    private String expandSafeCURIE(StartElement element, String value) {
+        if (value.startsWith("[") && value.endsWith("]")) {
             return expandCURIE(element, value.substring(1, value.length() - 1));
-        else
+        } else {
             return value;
-      }
+        }
+    }
 
     private String getDatatype(StartElement element) {
         Attribute de = element.getAttributeByName(datatype);
-        if (de == null) return null;
+        if (de == null) {
+            return null;
+        }
         String dt = de.getValue();
-        if (dt.isEmpty()) return dt;
+        if (dt.isEmpty()) {
+            return dt;
+        }
         return expandCURIE(element, dt);
     }
 
-    static class EvalContext
-    {
+    static class EvalContext {
+
         String base;
         String parentSubject;
         String parentObject;
@@ -390,7 +434,7 @@ public class Parser
             sb.append("\nparentSubject: " + parentSubject);
             sb.append("\nparentObject: " + parentObject);
             sb.append("\nforward: [");
-            for (String prop: forwardProperties) {
+            for (String prop : forwardProperties) {
                 sb.append(prop);
                 sb.append(" ");
             }
