@@ -1,10 +1,13 @@
 <form xmlns:foaf="http://xmlns.com/foaf/0.1/">
     <div about="?:subject">
-        <span property="foaf:name">Damian</span>
+        <span property="foaf:name" xml:lang="en">Damian</span>
         <input rel="foaf:foo" name="p"/>
         <span rel="foaf:depiction foaf:piccie">
             <img src="http://example.com/1.gif"/>
         </span>
     </div>
     <p typeof="foaf:Person foaf:Agent"/>
+    <div property="foaf:content">
+        <p>This is <b>my</b> xml <i>literal</i></p>
+    </div>
 </form>

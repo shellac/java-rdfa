@@ -6,6 +6,10 @@
 package net.rootdev.javardfa;
 
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.datatypes.TypeMapper;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,8 +18,11 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
@@ -41,12 +48,16 @@ public class Parser
     final QName rel = new QName("rel"); // Link types and CURIES
     final QName rev = new QName("rev"); // Link type and CURIES
     final QName content = new QName("content");
+    final QName lang = new QName("http://www.w3.org/XML/1998/namespace","lang");
 
     // Hack bits
     final QName input = new QName("input");
     final QName name = new QName("name");
 
     final Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+    final String xmlLiteral = "www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
+    
+    final XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
     public Parser(XMLEventReader reader, StatementSink sink)
     {
@@ -54,7 +65,7 @@ public class Parser
         this.sink = sink;
     }
 
-    public void parse(String base) throws XMLStreamException
+    public void parse(String base) throws XMLStreamException, IOException
     {
         try {
             sink.start();
@@ -70,20 +81,23 @@ public class Parser
         }
     }
 
-    void parse(EvalContext context, StartElement element) throws XMLStreamException
+    void parse(EvalContext context, StartElement element) throws XMLStreamException, IOException
     {
         boolean recurse = true;
         boolean skipElement = false;
         String newSubject = null;
         String currentObject = null;
-        Map<String, String> uriMappings = context.uriMappings;
+        //Map<String, String> uriMappings = context.uriMappings;
         List<String> forwardProperties = new LinkedList(context.forwardProperties);
         List<String> backwardProperties = new LinkedList(context.backwardProperties);
         String currentLanguage = context.language;
 
         // TODO element.getNamespace();
-        // TODO element.getAttribute (xmlLang)
 
+        if (element.getAttributeByName(lang) != null) {
+            currentLanguage = element.getAttributeByName(lang).getValue();
+            System.err.println("We have a lang!");
+        }
         if (element.getAttributeByName(rev) == null &&
                 element.getAttributeByName(rel) == null) {
             Attribute nSubj = findAttribute(element, about, src, resource, href);
@@ -139,22 +153,37 @@ public class Parser
                 currentObject = createBNode(); // TODO generate bnode
         }
 
+        // Getting literal values. Complicated!
         if (element.getAttributeByName(property) != null) {
             List<String> props = getURIs(element, element.getAttributeByName(property));
-
-            // TODO dataypes and XMLLiterals
-
-            if (element.getAttributeByName(content) != null) {
-                emitTriplesLiteral(newSubject,
-                        props,
-                        element.getAttributeByName(content).getValue());
-            } else { // TODO this is wrong
-                StringBuilder value = new StringBuilder();
-                getPlainLiteralValue(value);
-                emitTriplesLiteral(newSubject,
-                        props,
-                        value.toString());
+            String theDatatype = getDatatype(element);
+            StringWriter lexVal = new StringWriter();
+            boolean isPlain = false;
+            if (theDatatype != null && !theDatatype.isEmpty() && !theDatatype.equals(xmlLiteral)) {
+                // Datatyped literal
+                if (element.getAttributeByName(content) != null)
+                    lexVal.append(element.getAttributeByName(content).getValue());
+                else
+                    getPlainLiteralValue(lexVal);
+            } else {
+                // Plain or XML
+                if (theDatatype != null && theDatatype.isEmpty()) { // force plain
+                    isPlain = true;
+                    getPlainLiteralValue(lexVal);
+                } else {
+                    isPlain = getLiteralValue(lexVal);
+                    if (!isPlain) theDatatype = xmlLiteral;
+                }
             }
+            lexVal.flush();
+            String lexical = lexVal.toString();
+            if (isPlain) emitTriplesPlainLiteral(newSubject,
+                    props,
+                    lexical, currentLanguage);
+            else
+                emitTriplesDatatypeLiteral(newSubject,
+                        props,
+                        lexical, theDatatype);
         }
 
         if (!skipElement && newSubject != null) {
@@ -171,9 +200,9 @@ public class Parser
             EvalContext ec = new EvalContext(context);
 
             if (skipElement) {
-                //ec.language = language;
+                ec.language = currentLanguage;
                 //copy uri mappings
-                System.err.println("Skip element");
+                ec.language = currentLanguage;
             } else {
                 if (newSubject != null)
                     ec.parentSubject = newSubject;
@@ -187,8 +216,8 @@ public class Parser
                 else
                     ec.parentObject = context.parentSubject;
 
-                ec.uriMappings = uriMappings;
-                //ec.language = language
+                //ec.uriMappings = uriMappings;
+                ec.language = currentLanguage;
                 ec.forwardProperties = forwardProperties;
                 ec.backwardProperties = backwardProperties;
             }
@@ -220,23 +249,69 @@ public class Parser
             sink.add(Node.createURI(subj), Node.createURI(prop), Node.createURI(obj));
       }
 
-    private void emitTriplesLiteral(String subj, Collection<String> props, String obj)
+    private void emitTriplesPlainLiteral(String subj, Collection<String> props, String lex, String language)
     {
+        Node subject = Node.createURI(subj);
+        Node object = Node.createLiteral(lex, language, null);
         for (String prop: props)
-            sink.add(Node.createURI(subj), Node.createURI(prop), Node.createLiteral(obj));
+            sink.add(subject, Node.createURI(prop), object);
     }
 
-    private void getPlainLiteralValue(StringBuilder value)
-            throws XMLStreamException
-      {
+    private void emitTriplesDatatypeLiteral(String subj, Collection<String> props, String lex, String datatype)
+    {
+        Node subject = Node.createURI(subj);
+        Node object = (xmlLiteral.equals(datatype)) ?
+            Node.createLiteral(lex, null, true) :
+            Node.createLiteral(lex, null, TypeMapper.getInstance().getSafeTypeByName(datatype));
+        for (String prop: props)
+            sink.add(subject, Node.createURI(prop), object);
+    }
+
+    private void getPlainLiteralValue(Writer writer)
+            throws XMLStreamException, IOException {
+        int level = 0; // keep track of when we leave
         XMLEvent event = reader.nextEvent();
-        while (!event.isEndElement()) {
-            if (event.isCharacters()) value.append(event.asCharacters().getData());
-            if (event.isStartElement()) {
-                getPlainLiteralValue(value); // TODO this is wrong!!
-            }
+        while (!(event.isEndElement() && level == 0)) {
+            if (event.isCharacters()) writer.append(event.asCharacters().getData());
+            if (event.isStartElement()) level++;
+            if (event.isEndElement()) level--;
             event = reader.nextEvent();
         }
+    }
+
+    /**
+     *
+     * @param writer Literal value will be written here
+     * @return true if this is a plain literal
+     * @throws XMLStreamException
+     */
+    private boolean getLiteralValue(Writer writer)
+            throws XMLStreamException, IOException
+      {
+        List<Characters> queuedCharacters = new LinkedList<Characters>();
+        XMLEvent event = reader.nextEvent();
+        while (event.isCharacters()) {
+            queuedCharacters.add(event.asCharacters());
+            event = reader.nextEvent();
+        }
+        if (event.isEndElement()) { // All characters, plain literal
+            for (Characters chars: queuedCharacters) writer.append(chars.getData());
+            return true;
+        }
+        // We are an xml literal! Copy everything
+        XMLEventWriter xwriter = outputFactory.createXMLEventWriter(writer);
+        for (Characters chars: queuedCharacters) xwriter.add(chars);
+
+        int level = 0; // keep track of when we leave
+        while (!(event.isEndElement() && level == 0)) {
+            xwriter.add(event);
+            if (event.isStartElement()) level++;
+            if (event.isEndElement()) level--;
+            event = reader.nextEvent();
+        }
+        //xwriter.add(event);
+        xwriter.close();
+        return false;
       }
 
     private String getURI(StartElement element, Attribute attr) {
@@ -283,12 +358,20 @@ public class Parser
             return value;
       }
 
+    private String getDatatype(StartElement element) {
+        Attribute de = element.getAttributeByName(datatype);
+        if (de == null) return null;
+        String dt = de.getValue();
+        if (dt.isEmpty()) return dt;
+        return expandCURIE(element, dt);
+    }
+
     static class EvalContext
     {
         String base;
         String parentSubject;
         String parentObject;
-        Map<String, String> uriMappings;
+        //Map<String, String> uriMappings;
         String language;
         List<String> forwardProperties;
         List<String> backwardProperties;
@@ -298,14 +381,14 @@ public class Parser
             this.parentSubject = base;
             this.forwardProperties = new LinkedList<String>();
             this.backwardProperties = new LinkedList<String>();
-            this.uriMappings = new HashMap<String, String>();
+            //this.uriMappings = new HashMap<String, String>();
         }
 
         public EvalContext(EvalContext toCopy) {
             this.base = toCopy.base;
             this.parentSubject = toCopy.parentSubject;
             this.parentObject = toCopy.parentObject;
-            this.uriMappings = new HashMap<String, String>(toCopy.uriMappings);
+            //this.uriMappings = new HashMap<String, String>(toCopy.uriMappings);
             this.language = toCopy.language;
             this.forwardProperties = new LinkedList<String>(toCopy.forwardProperties);
             this.backwardProperties = new LinkedList<String>(toCopy.backwardProperties);
