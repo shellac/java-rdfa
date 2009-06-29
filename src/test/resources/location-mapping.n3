@@ -1,0 +1,9 @@
+@prefix lm: <http://jena.hpl.hp.com/2004/08/location-mapping#> .
+
+[] lm:mapping
+   [ lm:prefix
+       "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/" ;
+     lm:altPrefix
+       "file:conf-data/"
+   ]
+   .
