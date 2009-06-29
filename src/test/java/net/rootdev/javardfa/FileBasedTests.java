@@ -82,14 +82,20 @@ public class FileBasedTests
         public void end() {}
 
         @Override
-        public void add(Node s, Node p, Node o)
-          {
-            statements.add(
-                    new Node[]{s, p, o}
-                    );
-            System.err.println("Got: -" + s + "- -" + p + "- -" + o + "-");
-          }
-        
+        public void addObject(String subject, String predicate, String object) {
+            System.err.printf("<%s> <%s> <%s>\n", subject, predicate, object);
+        }
+
+        @Override
+        public void addLiteral(String subject, String predicate, String lex, String lang, String datatype) {
+            if (lang == null && datatype == null)
+                System.err.printf("<%s> <%s> \"%s\"\n", subject, predicate, lex);
+            else if (lang != null)
+                System.err.printf("<%s> <%s> \"%s\"@%s\n", subject, predicate, lex, lang);
+            else
+                System.err.printf("<%s> <%s> \"%s\"^^%s\n", subject, predicate, lex, datatype);
+        }
+
     }
 
   }

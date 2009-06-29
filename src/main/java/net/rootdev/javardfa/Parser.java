@@ -5,17 +5,13 @@
 
 package net.rootdev.javardfa;
 
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.datatypes.TypeMapper;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -246,25 +242,19 @@ public class Parser
     private void emitTriples(String subj, Collection<String> props, String obj)
       {
         for (String prop: props)
-            sink.add(Node.createURI(subj), Node.createURI(prop), Node.createURI(obj));
+            sink.addObject(subj, prop, obj);
       }
 
     private void emitTriplesPlainLiteral(String subj, Collection<String> props, String lex, String language)
     {
-        Node subject = Node.createURI(subj);
-        Node object = Node.createLiteral(lex, language, null);
         for (String prop: props)
-            sink.add(subject, Node.createURI(prop), object);
+            sink.addLiteral(subj, prop, lex, language, null);
     }
 
     private void emitTriplesDatatypeLiteral(String subj, Collection<String> props, String lex, String datatype)
     {
-        Node subject = Node.createURI(subj);
-        Node object = (xmlLiteral.equals(datatype)) ?
-            Node.createLiteral(lex, null, true) :
-            Node.createLiteral(lex, null, TypeMapper.getInstance().getSafeTypeByName(datatype));
-        for (String prop: props)
-            sink.add(subject, Node.createURI(prop), object);
+       for (String prop: props)
+            sink.addLiteral(subj, prop, lex, null, datatype);
     }
 
     private void getPlainLiteralValue(Writer writer)

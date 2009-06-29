@@ -5,8 +5,6 @@
 
 package net.rootdev.javardfa;
 
-import com.hp.hpl.jena.graph.Node;
-
 /**
  *
  * @author pldms
@@ -15,5 +13,6 @@ public interface StatementSink
 {
     public void start();
     public void end();
-    public void add(Node s, Node p, Node o);
+    public void addObject(String subject, String predicate, String object);
+    public void addLiteral(String subject, String predicate, String lex, String lang, String datatype);
 }
