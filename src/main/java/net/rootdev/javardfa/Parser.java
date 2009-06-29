@@ -82,10 +82,9 @@ public class Parser {
 
         // TODO element.getNamespace();
 
-        if (element.getAttributeByName(lang) != null) {
+        if (element.getAttributeByName(lang) != null)
             currentLanguage = element.getAttributeByName(lang).getValue();
-            System.err.println("We have a lang!");
-        }
+        
         if (element.getAttributeByName(rev) == null &&
                 element.getAttributeByName(rel) == null) {
             Attribute nSubj = findAttribute(element, about, src, resource, href);
@@ -428,6 +427,7 @@ public class Parser {
             this.backwardProperties = new LinkedList<String>(toCopy.backwardProperties);
         }
 
+        @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("[\nbase: " + base);
