@@ -72,6 +72,7 @@ public class Parser {
     public Parser(XMLEventReader reader, StatementSink sink) {
         this.reader = reader;
         this.sink = sink;
+        outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
     }
 
     public void parse(String base) throws XMLStreamException, IOException {
