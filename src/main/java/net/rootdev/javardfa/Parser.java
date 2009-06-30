@@ -401,7 +401,10 @@ public class Parser {
         if (namespaceURI == null) {
             throw new RuntimeException("Unknown prefix: " + prefix);
         }
-        return namespaceURI + value.substring(offset + 1);
+        if (namespaceURI.endsWith("/") || namespaceURI.endsWith("#"))
+            return namespaceURI + value.substring(offset + 1);
+        else
+            return namespaceURI + "#" + value.substring(offset + 1);
     }
 
     private String expandSafeCURIE(String base, StartElement element, String value) throws URISyntaxException {

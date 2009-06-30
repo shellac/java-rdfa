@@ -107,7 +107,6 @@ public class RDFaConformance {
         this.input = input;
         this.query = query;
         this.expected = Boolean.valueOf(expected);
-        if (!this.expected) System.err.println("Somethign worked!");
         xmlFactory = XMLInputFactory.newInstance();
     }
 
