@@ -192,7 +192,10 @@ public class Parser {
                 }
             } else {
                 // Plain or XML
-                if (theDatatype != null && theDatatype.isEmpty()) { // force plain
+                if (element.getAttributeByName(content) != null) {
+                    isPlain = true;
+                    lexVal.append(element.getAttributeByName(content).getValue());
+                } else if (theDatatype != null && theDatatype.isEmpty()) { // force plain
                     isPlain = true;
                     getPlainLiteralValue(lexVal);
                 } else {
@@ -357,6 +360,7 @@ public class Parser {
         QName attrName = attr.getName();
         if (attrName.equals(href) || attrName.equals(src)) // A URI
         {
+            if (attr.getValue().isEmpty()) return base;
             URI uri = new URI(base);
             URI resolved = uri.resolve(attr.getValue());
             return resolved.toString();
@@ -397,7 +401,9 @@ public class Parser {
             throw new RuntimeException("Is this a curie? \"" + value + "\"");
         }
         String prefix = value.substring(0, offset);
-        String namespaceURI = element.getNamespaceURI(prefix);
+        String namespaceURI = prefix.isEmpty() ?
+            "http://www.w3.org/1999/xhtml/vocab#" :
+            element.getNamespaceURI(prefix) ;
         if (namespaceURI == null) {
             throw new RuntimeException("Unknown prefix: " + prefix);
         }
@@ -411,6 +417,7 @@ public class Parser {
         if (value.startsWith("[") && value.endsWith("]")) {
             return expandCURIE(element, value.substring(1, value.length() - 1));
         } else {
+            if (value.isEmpty()) return base;
             URI uri = new URI(base);
             URI resolved = uri.resolve(value);
             return resolved.toString();
