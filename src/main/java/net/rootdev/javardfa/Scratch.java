@@ -30,8 +30,8 @@ public class Scratch {
     public static void main(String[] args) throws XMLStreamException, IOException, URISyntaxException {
         xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         String base = "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/";
-        String testHTML = base + "0066.xhtml";
-        String testSPARQL = base + "0066.sparql";
+        String testHTML = base + "0114.xhtml";
+        String testSPARQL = base + "0114.sparql";
 
         check(testHTML, testSPARQL);
     }

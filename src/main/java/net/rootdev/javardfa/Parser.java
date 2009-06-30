@@ -4,11 +4,11 @@
  */
 package net.rootdev.javardfa;
 
+import com.hp.hpl.jena.iri.IRI;
+import com.hp.hpl.jena.iri.IRIFactory;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +42,8 @@ public class Parser {
 
     final static Set<String> SpecialRels = new HashSet<String>(_allowed);
 
+    final static IRIFactory IRIFact = IRIFactory.semanticWebImplementation();
+
     private final XMLEventReader reader;
     private final StatementSink sink;
     // Suggestion: switch this for object produced by factory that matches QNames
@@ -72,7 +74,7 @@ public class Parser {
         this.sink = sink;
     }
 
-    public void parse(String base) throws XMLStreamException, IOException, URISyntaxException {
+    public void parse(String base) throws XMLStreamException, IOException {
         try {
             sink.start();
             EvalContext context = new EvalContext(base);
@@ -90,7 +92,8 @@ public class Parser {
 
     //private String currentBase;
 
-    void parse(EvalContext context, StartElement element) throws XMLStreamException, IOException, URISyntaxException {
+    void parse(EvalContext context, StartElement element)
+            throws XMLStreamException, IOException {
         boolean recurse = true;
         boolean skipElement = false;
         String newSubject = null;
@@ -377,13 +380,13 @@ public class Parser {
         return false;
     }
 
-    private String getURI(String base, StartElement element, Attribute attr) throws URISyntaxException {
+    private String getURI(String base, StartElement element, Attribute attr) {
         QName attrName = attr.getName();
         if (attrName.equals(href) || attrName.equals(src)) // A URI
         {
             if (attr.getValue().isEmpty()) return base;
-            URI uri = new URI(base);
-            URI resolved = uri.resolve(attr.getValue());
+            IRI uri = IRIFact.construct(base);
+            IRI resolved = uri.resolve(attr.getValue());
             return resolved.toString();
         }
         if (attrName.equals(about) || attrName.equals(resource)) // Safe CURIE or URI
@@ -438,13 +441,13 @@ public class Parser {
             return namespaceURI + "#" + value.substring(offset + 1);
     }
 
-    private String expandSafeCURIE(String base, StartElement element, String value) throws URISyntaxException {
+    private String expandSafeCURIE(String base, StartElement element, String value) {
         if (value.startsWith("[") && value.endsWith("]")) {
             return expandCURIE(element, value.substring(1, value.length() - 1));
         } else {
             if (value.isEmpty()) return base;
-            URI uri = new URI(base);
-            URI resolved = uri.resolve(value);
+            IRI uri = IRIFact.construct(base);
+            IRI resolved = uri.resolve(value);
             return resolved.toString();
         }
     }
