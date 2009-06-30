@@ -62,7 +62,7 @@ public class Parser {
     final QName input = new QName("input");
     final QName name = new QName("name");
     final Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-    final String xmlLiteral = "www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
+    final String xmlLiteral = "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
     final XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
     public Parser(XMLEventReader reader, StatementSink sink) {
@@ -153,6 +153,8 @@ public class Parser {
             }
         }
 
+        if (newSubject == null) newSubject = context.parentSubject;
+
         if (currentObject != null) {
             if (element.getAttributeByName(rel) != null) {
                 emitTriples(newSubject,
@@ -207,6 +209,12 @@ public class Parser {
             }
             lexVal.flush();
             String lexical = lexVal.toString();
+
+            // HACK FOR TESTS
+            /*if (xmlLiteral.equals(theDatatype)) {
+                lexical = lexical.replaceAll(" xml:space=\"preserve\"", "");
+            }*/
+
             if (isPlain) {
                 emitTriplesPlainLiteral(newSubject,
                         props,
@@ -234,7 +242,6 @@ public class Parser {
             if (skipElement) {
                 ec.language = currentLanguage;
                 //copy uri mappings
-                ec.language = currentLanguage;
             } else {
                 if (newSubject != null) {
                     ec.parentSubject = newSubject;
@@ -259,6 +266,8 @@ public class Parser {
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
                 if (event.isStartElement()) {
+                    /*System.err.println("Continuing to " + event);
+                    System.err.println(ec);*/
                     parse(ec, event.asStartElement());
                 }
                 if (event.isEndDocument() || event.isEndElement()) {
@@ -339,7 +348,7 @@ public class Parser {
         for (Characters chars : queuedCharacters) {
             xwriter.add(chars);
         }
-
+        
         int level = 0; // keep track of when we leave
         while (!(event.isEndElement() && level == 0)) {
             xwriter.add(event);
@@ -382,7 +391,10 @@ public class Parser {
         for (String curie : curies) {
             if (SpecialRels.contains(curie))
                 uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie);
-            else uris.add(expandCURIE(element, curie));
+            else {
+                String uri = expandCURIE(element, curie);
+                if (uri != null) uris.add(uri);
+            }
         }
         return uris;
     }
@@ -398,7 +410,8 @@ public class Parser {
         if (value.startsWith("_:")) return value;
         int offset = value.indexOf(":");
         if (offset == -1) {
-            throw new RuntimeException("Is this a curie? \"" + value + "\"");
+            //throw new RuntimeException("Is this a curie? \"" + value + "\"");
+            return null;
         }
         String prefix = value.substring(0, offset);
         String namespaceURI = prefix.isEmpty() ?
@@ -467,14 +480,14 @@ public class Parser {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("[\nbase: " + base);
-            sb.append("\nparentSubject: " + parentSubject);
-            sb.append("\nparentObject: " + parentObject);
-            sb.append("\nforward: [");
-            for (String prop : forwardProperties) {
-                sb.append(prop);
-                sb.append(" ");
-            }
+            sb.append("[\n\tbase: " + base);
+            sb.append("\n\tparentSubject: " + parentSubject);
+            sb.append("\n\tparentObject: " + parentObject);
+            //sb.append("\nforward: [");
+            //for (String prop : forwardProperties) {
+            //    sb.append(prop);
+            //    sb.append(" ");
+            //}
             sb.append("]");
             return sb.toString();
         }

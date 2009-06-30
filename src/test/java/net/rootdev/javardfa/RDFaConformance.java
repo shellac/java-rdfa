@@ -117,7 +117,11 @@ public class RDFaConformance {
         InputStream in = FileManager.get().open(input);
         XMLEventReader reader = xmlFactory.createXMLEventReader(in);
         Parser parser = new Parser(reader, sink);
+        try {
         parser.parse(input);
+        } catch (NullPointerException e) {
+            fail("NPE <" + test + ">" );
+        }
         Query theQuery = QueryFactory.read(query);
         QueryExecution qe = QueryExecutionFactory.create(theQuery, model);
         assertEquals(title + " <" + test + ">", expected, qe.execAsk());
