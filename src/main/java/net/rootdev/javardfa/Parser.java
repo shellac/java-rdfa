@@ -58,6 +58,8 @@ public class Parser {
     final QName content = new QName("content");
     final QName lang = new QName("http://www.w3.org/XML/1998/namespace", "lang");
     final QName base = new QName("http://www.w3.org/1999/xhtml", "base");
+    final QName head = new QName("http://www.w3.org/1999/xhtml", "head");
+    final QName body = new QName("http://www.w3.org/1999/xhtml", "body");
     // Hack bits
     final QName input = new QName("input");
     final QName name = new QName("name");
@@ -116,9 +118,12 @@ public class Parser {
             if (nSubj != null) {
                 newSubject = getURI(currentBase, element, nSubj);
             } else {
-                // TODO if element is head or body assume about=""
                 if (element.getAttributeByName(typeof) != null) {
-                    newSubject = createBNode();
+                    if (body.equals(element.getName()) ||
+                            head.equals(element.getName()))
+                        newSubject = currentBase;
+                    else
+                        newSubject = createBNode();
                 } else {
                     if (context.parentObject != null) {
                         newSubject = context.parentObject;
