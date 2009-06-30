@@ -403,10 +403,12 @@ public class Parser {
     private List<String> getURIs(String base, StartElement element, Attribute attr) {
         List<String> uris = new LinkedList<String>();
         String[] curies = attr.getValue().split("\\s+");
+        boolean permitReserved = rel.equals(attr.getName()) ||
+                    rev.equals(attr.getName());
         for (String curie : curies) {
-            if (SpecialRels.contains(curie))
+            if (permitReserved && SpecialRels.contains(curie))
                 uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie);
-            else {
+            else if (!SpecialRels.contains(curie)) {
                 String uri = expandCURIE(element, curie);
                 if (uri != null) uris.add(uri);
             }
