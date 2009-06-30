@@ -108,6 +108,8 @@ public class RDFaConformance {
         this.query = query;
         this.expected = Boolean.valueOf(expected);
         xmlFactory = XMLInputFactory.newInstance();
+        /* If you want it to go slowwwwww */
+        xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     }
 
     @Test
@@ -124,9 +126,17 @@ public class RDFaConformance {
         }
         Query theQuery = QueryFactory.read(query);
         QueryExecution qe = QueryExecutionFactory.create(theQuery, model);
+		boolean result = qe.execAsk();
+		if (result != expected) {
+			System.err.println("------ " + test + " ------");
+			model.write(System.err, "TTL");
+			System.err.println("------ Query ------");
+			System.err.println(theQuery);
+			System.err.println("-----------------------");
+		}
         if (expected)
-            assertTrue(title + " <" + test + ">", qe.execAsk());
+            assertTrue(title + " <" + test + ">", result);
         else
-            assertFalse(title + " <" + test + ">", qe.execAsk());
+            assertFalse(title + " <" + test + ">", result);
     }
 }

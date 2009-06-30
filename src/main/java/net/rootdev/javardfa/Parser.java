@@ -191,6 +191,7 @@ public class Parser {
                     lexVal.append(element.getAttributeByName(content).getValue());
                 } else {
                     getPlainLiteralValue(lexVal);
+                    recurse = false;
                 }
             } else {
                 // Plain or XML
@@ -200,8 +201,10 @@ public class Parser {
                 } else if (theDatatype != null && theDatatype.isEmpty()) { // force plain
                     isPlain = true;
                     getPlainLiteralValue(lexVal);
+                    recurse = false;
                 } else {
                     isPlain = getLiteralValue(lexVal);
+                    recurse = false;
                     if (!isPlain) {
                         theDatatype = xmlLiteral;
                     }
@@ -266,9 +269,9 @@ public class Parser {
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
                 if (event.isStartElement()) {
-                    /*System.err.println("Continuing to " + event);
+                    /*System.err.println("Continuing from " + element.getName() + " to " + event.asStartElement().getName());
                     System.err.println(ec);*/
-                    parse(ec, event.asStartElement());
+                    parse(new EvalContext(ec), event.asStartElement());
                 }
                 if (event.isEndDocument() || event.isEndElement()) {
                     return;
@@ -360,7 +363,6 @@ public class Parser {
             }
             event = reader.nextEvent();
         }
-        //xwriter.add(event);
         xwriter.close();
         return false;
     }

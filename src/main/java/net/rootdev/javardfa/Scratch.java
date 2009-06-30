@@ -28,10 +28,10 @@ public class Scratch {
     private static XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
 
     public static void main(String[] args) throws XMLStreamException, IOException, URISyntaxException {
-        FileManager.get().setModelCaching(true);
+        xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         String base = "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/";
-        String testHTML = base + "0001.xhtml";
-        String testSPARQL = base + "0001.sparql";
+        String testHTML = base + "0057.xhtml";
+        String testSPARQL = base + "0057.sparql";
 
         check(testHTML, testSPARQL);
     }
