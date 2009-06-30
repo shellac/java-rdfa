@@ -124,6 +124,9 @@ public class RDFaConformance {
         }
         Query theQuery = QueryFactory.read(query);
         QueryExecution qe = QueryExecutionFactory.create(theQuery, model);
-        assertEquals(title + " <" + test + ">", expected, qe.execAsk());
+        if (expected)
+            assertTrue(title + " <" + test + ">", qe.execAsk());
+        else
+            assertFalse(title + " <" + test + ">", qe.execAsk());
     }
 }

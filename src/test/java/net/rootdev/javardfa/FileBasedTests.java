@@ -56,7 +56,7 @@ public class FileBasedTests {
     }
 
     @Test
-    public void compare() throws XMLStreamException, IOException {
+    public void compare() throws XMLStreamException, IOException, URISyntaxException {
         InputStream htmlIn =
                 this.getClass().getClassLoader().getResourceAsStream(htmlFile);
         XMLEventReader reader = xmlFactory.createXMLEventReader(htmlIn);
