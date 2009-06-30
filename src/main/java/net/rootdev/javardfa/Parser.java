@@ -13,10 +13,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
@@ -43,6 +46,8 @@ public class Parser {
     final static Set<String> SpecialRels = new HashSet<String>(_allowed);
 
     final static IRIFactory IRIFact = IRIFactory.semanticWebImplementation();
+    final static XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+    final static XMLEventFactory EventFactory = XMLEventFactory.newInstance();
 
     private final XMLEventReader reader;
     private final StatementSink sink;
@@ -58,7 +63,7 @@ public class Parser {
     final QName rel = new QName("rel"); // Link types and CURIES
     final QName rev = new QName("rev"); // Link type and CURIES
     final QName content = new QName("content");
-    final QName lang = new QName("http://www.w3.org/XML/1998/namespace", "lang");
+    final QName lang = new QName("http://www.w3.org/XML/1998/namespace", "lang", "xml");
     final QName base = new QName("http://www.w3.org/1999/xhtml", "base");
     final QName head = new QName("http://www.w3.org/1999/xhtml", "head");
     final QName body = new QName("http://www.w3.org/1999/xhtml", "body");
@@ -67,7 +72,6 @@ public class Parser {
     final QName name = new QName("name");
     final Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
     final String xmlLiteral = "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
-    final XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 
     public Parser(XMLEventReader reader, StatementSink sink) {
         this.reader = reader;
@@ -216,7 +220,7 @@ public class Parser {
                     getPlainLiteralValue(lexVal);
                     recurse = false;
                 } else {
-                    isPlain = getLiteralValue(lexVal);
+                    isPlain = getLiteralValue(lexVal, currentLanguage);
                     recurse = false;
                     if (!isPlain) {
                         theDatatype = xmlLiteral;
@@ -346,7 +350,7 @@ public class Parser {
      * @return true if this is a plain literal
      * @throws XMLStreamException
      */
-    private boolean getLiteralValue(Writer writer)
+    private boolean getLiteralValue(Writer writer, String alang)
             throws XMLStreamException, IOException {
         List<Characters> queuedCharacters = new LinkedList<Characters>();
         XMLEvent event = reader.nextEvent();
@@ -361,6 +365,7 @@ public class Parser {
             return true;
         }
         // We are an xml literal! Copy everything
+        boolean includeLang = (alang != null && !alang.isEmpty());
         XMLEventWriter xwriter = outputFactory.createXMLEventWriter(writer);
         for (Characters chars : queuedCharacters) {
             xwriter.add(chars);
@@ -368,6 +373,16 @@ public class Parser {
         
         int level = 0; // keep track of when we leave
         while (!(event.isEndElement() && level == 0)) {
+            // copy containing xml:lang in
+            if (includeLang && level == 0 && event.isStartElement()) {
+                StartElement sElem = event.asStartElement();
+                XMLEvent langAt = EventFactory.createAttribute(lang, alang);
+                event = EventFactory.createStartElement(
+                        sElem.getName(),
+                        new Appender(sElem.getAttributes(), langAt),
+                        sElem.getNamespaces()
+                        );
+            }
             xwriter.add(event);
             if (event.isStartElement()) {
                 level++;
@@ -520,5 +535,37 @@ public class Parser {
             sb.append("]");
             return sb.toString();
         }
+    }
+
+    static class Appender implements Iterator {
+
+        final Iterator parent;
+        final Object appended;
+        boolean finished;
+
+        public Appender(Iterator parent, Object appended) {
+            this.parent = parent;
+            this.appended = appended;
+            finished = false;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return parent.hasNext() || !finished;
+        }
+
+        @Override
+        public Object next() {
+            if (parent.hasNext()) return parent.next();
+            if (finished) throw new NoSuchElementException("I'm empty, dum dum");
+            finished = true;
+            return appended;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("Not supported");
+        }
+
     }
 }
