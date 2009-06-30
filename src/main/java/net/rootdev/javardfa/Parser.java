@@ -57,7 +57,7 @@ public class Parser {
     final QName rev = new QName("rev"); // Link type and CURIES
     final QName content = new QName("content");
     final QName lang = new QName("http://www.w3.org/XML/1998/namespace", "lang");
-    final QName xmlBase = new QName("http://www.w3.org/XML/1998/namespace", "base");
+    final QName base = new QName("http://www.w3.org/1999/xhtml", "base");
     // Hack bits
     final QName input = new QName("input");
     final QName name = new QName("name");
@@ -86,6 +86,8 @@ public class Parser {
         }
     }
 
+    //private String currentBase;
+
     void parse(EvalContext context, StartElement element) throws XMLStreamException, IOException, URISyntaxException {
         boolean recurse = true;
         boolean skipElement = false;
@@ -95,22 +97,24 @@ public class Parser {
         List<String> forwardProperties = new LinkedList(context.forwardProperties);
         List<String> backwardProperties = new LinkedList(context.backwardProperties);
         String currentLanguage = context.language;
-        String base = context.base;
+        String currentBase = context.base;
 
         // TODO element.getNamespace();
 
         if (element.getAttributeByName(lang) != null)
             currentLanguage = element.getAttributeByName(lang).getValue();
 
-        if (element.getAttributeByName(xmlBase) != null) {
-            base = element.getAttributeByName(xmlBase).getValue();
+        if (base.equals(element.getName()) && element.getAttributeByName(href) != null) {
+            currentBase = getBase(element.getAttributeByName(href));
+            context.base = currentBase;
+            if (context.original) context.parentSubject = currentBase;
         }
 
         if (element.getAttributeByName(rev) == null &&
                 element.getAttributeByName(rel) == null) {
             Attribute nSubj = findAttribute(element, about, src, resource, href);
             if (nSubj != null) {
-                newSubject = getURI(base, element, nSubj);
+                newSubject = getURI(currentBase, element, nSubj);
             } else {
                 // TODO if element is head or body assume about=""
                 if (element.getAttributeByName(typeof) != null) {
@@ -127,7 +131,7 @@ public class Parser {
         } else {
             Attribute nSubj = findAttribute(element, about, src);
             if (nSubj != null) {
-                newSubject = getURI(base, element, nSubj);
+                newSubject = getURI(currentBase, element, nSubj);
             } else {
                 // TODO if element is head or body assume about=""
                 if (element.getAttributeByName(typeof) != null) {
@@ -140,12 +144,12 @@ public class Parser {
             }
             Attribute cObj = findAttribute(element, resource, href);
             if (cObj != null) {
-                currentObject = getURI(base, element, cObj);
+                currentObject = getURI(currentBase, element, cObj);
             }
         }
 
         if (newSubject != null && element.getAttributeByName(typeof) != null) {
-            List<String> types = getURIs(base, element, element.getAttributeByName(typeof));
+            List<String> types = getURIs(currentBase, element, element.getAttributeByName(typeof));
             for (String type : types) {
                 emitTriples(newSubject,
                         rdfType,
@@ -158,20 +162,20 @@ public class Parser {
         if (currentObject != null) {
             if (element.getAttributeByName(rel) != null) {
                 emitTriples(newSubject,
-                        getURIs(base, element, element.getAttributeByName(rel)),
+                        getURIs(currentBase, element, element.getAttributeByName(rel)),
                         currentObject);
             }
             if (element.getAttributeByName(rev) != null) {
                 emitTriples(currentObject,
-                        getURIs(base, element, element.getAttributeByName(rev)),
+                        getURIs(currentBase, element, element.getAttributeByName(rev)),
                         newSubject);
             }
         } else {
             if (element.getAttributeByName(rel) != null) {
-                forwardProperties.addAll(getURIs(base, element, element.getAttributeByName(rel)));
+                forwardProperties.addAll(getURIs(currentBase, element, element.getAttributeByName(rel)));
             }
             if (element.getAttributeByName(rev) != null) {
-                backwardProperties.addAll(getURIs(base, element, element.getAttributeByName(rev)));
+                backwardProperties.addAll(getURIs(currentBase, element, element.getAttributeByName(rev)));
             }
             if (element.getAttributeByName(rel) != null || // if predicate present
                     element.getAttributeByName(rev) != null) {
@@ -181,7 +185,7 @@ public class Parser {
 
         // Getting literal values. Complicated!
         if (element.getAttributeByName(property) != null) {
-            List<String> props = getURIs(base, element, element.getAttributeByName(property));
+            List<String> props = getURIs(currentBase, element, element.getAttributeByName(property));
             String theDatatype = getDatatype(element);
             StringWriter lexVal = new StringWriter();
             boolean isPlain = false;
@@ -213,11 +217,6 @@ public class Parser {
             lexVal.flush();
             String lexical = lexVal.toString();
 
-            // HACK FOR TESTS
-            /*if (xmlLiteral.equals(theDatatype)) {
-                lexical = lexical.replaceAll(" xml:space=\"preserve\"", "");
-            }*/
-
             if (isPlain) {
                 emitTriplesPlainLiteral(newSubject,
                         props,
@@ -244,6 +243,7 @@ public class Parser {
 
             if (skipElement) {
                 ec.language = currentLanguage;
+                ec.original = context.original;
                 //copy uri mappings
             } else {
                 if (newSubject != null) {
@@ -269,9 +269,14 @@ public class Parser {
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
                 if (event.isStartElement()) {
-                    /*System.err.println("Continuing from " + element.getName() + " to " + event.asStartElement().getName());
+                    /*System.err.println("Continuing from " + element.getName().getLocalPart() + " to " + event.asStartElement().getName().getLocalPart());
                     System.err.println(ec);*/
-                    parse(new EvalContext(ec), event.asStartElement());
+                    parse(ec, event.asStartElement());
+                    if (!currentBase.equals(ec.base)) { // bubbling up base change
+                        // I could just let parentS = null, rather than bother with original?
+                        context.base = ec.base;
+                        if (context.original) context.parentSubject = ec.base;
+                    }
                 }
                 if (event.isEndDocument() || event.isEndElement()) {
                     return;
@@ -451,6 +456,14 @@ public class Parser {
         return expandCURIE(element, dt);
     }
 
+    private String getBase(Attribute attr) {
+        String theBase = attr.getValue();
+        if (theBase.contains("#"))
+            return theBase.substring(0, theBase.indexOf("#"));
+        else
+            return theBase;
+    }
+
     static class EvalContext {
 
         String base;
@@ -460,6 +473,7 @@ public class Parser {
         String language;
         List<String> forwardProperties;
         List<String> backwardProperties;
+        boolean original;
 
         private EvalContext(String base) {
             this.base = base;
@@ -467,6 +481,7 @@ public class Parser {
             this.forwardProperties = new LinkedList<String>();
             this.backwardProperties = new LinkedList<String>();
             //this.uriMappings = new HashMap<String, String>();
+            original = true;
         }
 
         public EvalContext(EvalContext toCopy) {
@@ -477,6 +492,7 @@ public class Parser {
             this.language = toCopy.language;
             this.forwardProperties = new LinkedList<String>(toCopy.forwardProperties);
             this.backwardProperties = new LinkedList<String>(toCopy.backwardProperties);
+            original = false;
         }
 
         @Override
