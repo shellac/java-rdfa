@@ -1,12 +1,14 @@
 prefix dc:      <http://purl.org/dc/elements/1.1/>
 prefix test:    <http://www.w3.org/2006/03/test-description#>
 
-select ?test ?title ?purpose ?input ?query
+select ?test ?title ?purpose ?input ?query ?expect
 {
     ?test a test:TestCase ;
         dc:title ?title ;
         test:purpose ?purpose ;
         test:informationResourceInput ?input ;
         test:informationResourceResults ?query ;
+        test:reviewStatus test:approved ;
+        OPTIONAL { ?test test:expectedResults ?expect }
         .
 } order by ?test

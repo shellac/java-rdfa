@@ -4,7 +4,6 @@
  */
 package net.rootdev.javardfa;
 
-import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -15,19 +14,14 @@ import com.hp.hpl.jena.query.Syntax;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.FileManager;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.transform.stream.StreamSource;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -53,10 +47,6 @@ public class RDFaConformance {
             throws URISyntaxException, IOException {
 
         FileManager fm = FileManager.get();
-
-        /*fm.getLocationMapper().
-                addAltEntry("http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/",
-                "file://conf-data/");*/
         
         Model manifest = fm.loadModel(ManifestURI);
 
@@ -72,13 +62,17 @@ public class RDFaConformance {
         while (results.hasNext()) {
 
             QuerySolution soln = results.next();
-            String[] params = new String[5];
+            String[] params = new String[6];
             params[0] = soln.getResource("test").getURI();
             params[1] = soln.getLiteral("title").getString();
             params[2] = soln.getLiteral("purpose").getString();
             params[3] = soln.getResource("input").getURI();
             params[4] = soln.getResource("query").getURI();
-
+            // getBoolean not working??
+            //boolean expected = (soln.contains("expect")) ?
+            //    soln.getLiteral("expect").getBoolean() : true;
+            params[5] = soln.contains("expect") ?
+               soln.getLiteral("expect").getLexicalForm() : "true" ;
             tests.add(params);
         }
 
@@ -102,20 +96,23 @@ public class RDFaConformance {
     private final String purpose;
     private final String input;
     private final String query;
+    private final boolean expected;
     private final XMLInputFactory xmlFactory;
 
     public RDFaConformance(String test, String title,
-            String purpose, String input, String query) {
+            String purpose, String input, String query, String expected) {
         this.test = test;
         this.title = title;
         this.purpose = purpose;
         this.input = input;
         this.query = query;
+        this.expected = Boolean.valueOf(expected);
+        if (!this.expected) System.err.println("Somethign worked!");
         xmlFactory = XMLInputFactory.newInstance();
     }
 
     @Test
-    public void compare() throws XMLStreamException, IOException {
+    public void compare() throws XMLStreamException, IOException, URISyntaxException {
         Model model = ModelFactory.createDefaultModel();
         StatementSink sink = new JenaStatementSink(model);
         InputStream in = FileManager.get().open(input);
@@ -124,35 +121,6 @@ public class RDFaConformance {
         parser.parse(input);
         Query theQuery = QueryFactory.read(query);
         QueryExecution qe = QueryExecutionFactory.create(theQuery, model);
-        assertTrue(title + " <" + test + ">", qe.execAsk());
-    }
-
-    static class StatementCollector implements StatementSink {
-
-        List<Node[]> statements = new ArrayList<Node[]>();
-
-        @Override
-        public void start() {
-        }
-
-        @Override
-        public void end() {
-        }
-
-        @Override
-        public void addObject(String subject, String predicate, String object) {
-            System.err.printf("<%s> <%s> <%s>\n", subject, predicate, object);
-        }
-
-        @Override
-        public void addLiteral(String subject, String predicate, String lex, String lang, String datatype) {
-            if (lang == null && datatype == null) {
-                System.err.printf("<%s> <%s> \"%s\"\n", subject, predicate, lex);
-            } else if (lang != null) {
-                System.err.printf("<%s> <%s> \"%s\"@%s\n", subject, predicate, lex, lang);
-            } else {
-                System.err.printf("<%s> <%s> \"%s\"^^%s\n", subject, predicate, lex, datatype);
-            }
-        }
+        assertEquals(title + " <" + test + ">", expected, qe.execAsk());
     }
 }

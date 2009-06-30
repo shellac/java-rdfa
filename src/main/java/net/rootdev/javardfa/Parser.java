@@ -7,10 +7,15 @@ package net.rootdev.javardfa;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
@@ -27,6 +32,16 @@ import javax.xml.stream.events.XMLEvent;
  */
 public class Parser {
 
+    final static List<String> _allowed = Arrays.asList(
+            "alternate", "appendix", "bookmark", "cite",
+            "chapter", "contents", "copyright", "first",
+            "glossary", "help", "icon", "index", "last",
+            "license", "meta", "next", "p3pv1", "prev",
+            "collection", "role", "section", "stylesheet",
+            "subsection", "start", "top", "up" );
+
+    final static Set<String> SpecialRels = new HashSet<String>(_allowed);
+
     private final XMLEventReader reader;
     private final StatementSink sink;
     // Suggestion: switch this for object produced by factory that matches QNames
@@ -42,6 +57,7 @@ public class Parser {
     final QName rev = new QName("rev"); // Link type and CURIES
     final QName content = new QName("content");
     final QName lang = new QName("http://www.w3.org/XML/1998/namespace", "lang");
+    final QName xmlBase = new QName("http://www.w3.org/XML/1998/namespace", "base");
     // Hack bits
     final QName input = new QName("input");
     final QName name = new QName("name");
@@ -54,7 +70,7 @@ public class Parser {
         this.sink = sink;
     }
 
-    public void parse(String base) throws XMLStreamException, IOException {
+    public void parse(String base) throws XMLStreamException, IOException, URISyntaxException {
         try {
             sink.start();
             EvalContext context = new EvalContext(base);
@@ -70,7 +86,7 @@ public class Parser {
         }
     }
 
-    void parse(EvalContext context, StartElement element) throws XMLStreamException, IOException {
+    void parse(EvalContext context, StartElement element) throws XMLStreamException, IOException, URISyntaxException {
         boolean recurse = true;
         boolean skipElement = false;
         String newSubject = null;
@@ -79,17 +95,22 @@ public class Parser {
         List<String> forwardProperties = new LinkedList(context.forwardProperties);
         List<String> backwardProperties = new LinkedList(context.backwardProperties);
         String currentLanguage = context.language;
+        String base = context.base;
 
         // TODO element.getNamespace();
 
         if (element.getAttributeByName(lang) != null)
             currentLanguage = element.getAttributeByName(lang).getValue();
-        
+
+        if (element.getAttributeByName(xmlBase) != null) {
+            base = element.getAttributeByName(xmlBase).getValue();
+        }
+
         if (element.getAttributeByName(rev) == null &&
                 element.getAttributeByName(rel) == null) {
             Attribute nSubj = findAttribute(element, about, src, resource, href);
             if (nSubj != null) {
-                newSubject = getURI(element, nSubj);
+                newSubject = getURI(base, element, nSubj);
             } else {
                 // TODO if element is head or body assume about=""
                 if (element.getAttributeByName(typeof) != null) {
@@ -106,7 +127,7 @@ public class Parser {
         } else {
             Attribute nSubj = findAttribute(element, about, src);
             if (nSubj != null) {
-                newSubject = getURI(element, nSubj);
+                newSubject = getURI(base, element, nSubj);
             } else {
                 // TODO if element is head or body assume about=""
                 if (element.getAttributeByName(typeof) != null) {
@@ -119,12 +140,12 @@ public class Parser {
             }
             Attribute cObj = findAttribute(element, resource, href);
             if (cObj != null) {
-                currentObject = getURI(element, cObj);
+                currentObject = getURI(base, element, cObj);
             }
         }
 
         if (newSubject != null && element.getAttributeByName(typeof) != null) {
-            List<String> types = getURIs(element, element.getAttributeByName(typeof));
+            List<String> types = getURIs(base, element, element.getAttributeByName(typeof));
             for (String type : types) {
                 emitTriples(newSubject,
                         rdfType,
@@ -135,20 +156,20 @@ public class Parser {
         if (currentObject != null) {
             if (element.getAttributeByName(rel) != null) {
                 emitTriples(newSubject,
-                        getURIs(element, element.getAttributeByName(rel)),
+                        getURIs(base, element, element.getAttributeByName(rel)),
                         currentObject);
             }
             if (element.getAttributeByName(rev) != null) {
                 emitTriples(currentObject,
-                        getURIs(element, element.getAttributeByName(rev)),
+                        getURIs(base, element, element.getAttributeByName(rev)),
                         newSubject);
             }
         } else {
             if (element.getAttributeByName(rel) != null) {
-                forwardProperties.addAll(getURIs(element, element.getAttributeByName(rel)));
+                forwardProperties.addAll(getURIs(base, element, element.getAttributeByName(rel)));
             }
             if (element.getAttributeByName(rev) != null) {
-                backwardProperties.addAll(getURIs(element, element.getAttributeByName(rev)));
+                backwardProperties.addAll(getURIs(base, element, element.getAttributeByName(rev)));
             }
             if (element.getAttributeByName(rel) != null || // if predicate present
                     element.getAttributeByName(rev) != null) {
@@ -158,7 +179,7 @@ public class Parser {
 
         // Getting literal values. Complicated!
         if (element.getAttributeByName(property) != null) {
-            List<String> props = getURIs(element, element.getAttributeByName(property));
+            List<String> props = getURIs(base, element, element.getAttributeByName(property));
             String theDatatype = getDatatype(element);
             StringWriter lexVal = new StringWriter();
             boolean isPlain = false;
@@ -234,8 +255,6 @@ public class Parser {
 
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
-                //System.err.println("Event: " + event);
-                //System.err.println("Context: " + ec);
                 if (event.isStartElement()) {
                     parse(ec, event.asStartElement());
                 }
@@ -334,15 +353,17 @@ public class Parser {
         return false;
     }
 
-    private String getURI(StartElement element, Attribute attr) {
+    private String getURI(String base, StartElement element, Attribute attr) throws URISyntaxException {
         QName attrName = attr.getName();
         if (attrName.equals(href) || attrName.equals(src)) // A URI
         {
-            return attr.getValue();
+            URI uri = new URI(base);
+            URI resolved = uri.resolve(attr.getValue());
+            return resolved.toString();
         }
         if (attrName.equals(about) || attrName.equals(resource)) // Safe CURIE or URI
         {
-            return expandSafeCURIE(element, attr.getValue());
+            return expandSafeCURIE(base, element, attr.getValue());
         }
         if (attrName.equals(datatype)) // A CURIE
         {
@@ -351,14 +372,17 @@ public class Parser {
         throw new RuntimeException("Unexpected attribute: " + attr);
     }
 
-    private List<String> getURIs(StartElement element, Attribute attr) {
+    private List<String> getURIs(String base, StartElement element, Attribute attr) {
         List<String> uris = new LinkedList<String>();
         String[] curies = attr.getValue().split("\\s+");
         for (String curie : curies) {
-            uris.add(expandCURIE(element, curie));
+            if (SpecialRels.contains(curie))
+                uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie);
+            else uris.add(expandCURIE(element, curie));
         }
         return uris;
     }
+    
     int bnodeId = 0;
 
     private String createBNode() // TODO probably broken? Can you write bnodes in rdfa directly?
@@ -367,8 +391,9 @@ public class Parser {
     }
 
     private String expandCURIE(StartElement element, String value) {
+        if (value.startsWith("_:")) return value;
         int offset = value.indexOf(":");
-        if (offset < 1) {
+        if (offset == -1) {
             throw new RuntimeException("Is this a curie? \"" + value + "\"");
         }
         String prefix = value.substring(0, offset);
@@ -379,11 +404,13 @@ public class Parser {
         return namespaceURI + value.substring(offset + 1);
     }
 
-    private String expandSafeCURIE(StartElement element, String value) {
+    private String expandSafeCURIE(String base, StartElement element, String value) throws URISyntaxException {
         if (value.startsWith("[") && value.endsWith("]")) {
             return expandCURIE(element, value.substring(1, value.length() - 1));
         } else {
-            return value;
+            URI uri = new URI(base);
+            URI resolved = uri.resolve(value);
+            return resolved.toString();
         }
     }
 
