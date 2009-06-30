@@ -374,7 +374,8 @@ public class Parser {
         int level = 0; // keep track of when we leave
         while (!(event.isEndElement() && level == 0)) {
             // copy containing xml:lang in
-            if (includeLang && level == 0 && event.isStartElement()) {
+            if (includeLang && level == 0 && event.isStartElement()
+                    && event.asStartElement().getAttributeByName(lang) == null) {
                 StartElement sElem = event.asStartElement();
                 XMLEvent langAt = EventFactory.createAttribute(lang, alang);
                 event = EventFactory.createStartElement(
