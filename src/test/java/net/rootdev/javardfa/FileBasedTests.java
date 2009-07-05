@@ -62,7 +62,8 @@ public class FileBasedTests {
         XMLEventReader reader = xmlFactory.createXMLEventReader(htmlIn);
         StatementCollector coll = new StatementCollector();
         Parser parser = new Parser(reader, coll);
-        parser.parse(htmlFile);
+        parser.enable(Parser.Setting.FormMode);
+        parser.parse("http://example.com/" + htmlFile);
         assertTrue(htmlFile + " and " + queryFile + " are the same",
                 htmlFile.equals(queryFile));
     }

@@ -12,11 +12,13 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
@@ -70,14 +72,26 @@ public class Parser {
     // Hack bits
     final QName input = new QName("input");
     final QName name = new QName("name");
+    final QName form = new QName("form");
+
     final Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
     final String xmlLiteral = "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
+
+    final Set<Setting> settings = EnumSet.noneOf(Setting.class);
+
+    public enum Setting {
+        FormMode, ManualNamespaces
+    }
 
     public Parser(XMLEventReader reader, StatementSink sink) {
         this.reader = reader;
         this.sink = sink;
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
     }
+
+    public void enable(Setting setting) { settings.add(setting); }
+
+    public void disable(Setting setting) { settings.remove(setting); }
 
     public void parse(String base) throws XMLStreamException, IOException {
         try {
@@ -171,6 +185,16 @@ public class Parser {
         }
 
         if (newSubject == null) newSubject = context.parentSubject;
+
+        // Dodgy extension
+        if (settings.contains(Setting.FormMode)) {
+            if (form.equals(element.getName()))
+                emitTriples(newSubject, rdfType, "http://www.w3.org/1999/xhtml/vocab/#form"); // Signal entering form
+            if (input.equals(element.getName()) &&
+                    element.getAttributeByName(name) != null)
+                currentObject = "?:" + element.getAttributeByName(name).getValue();
+
+        }
 
         if (currentObject != null) {
             if (element.getAttributeByName(rel) != null) {
@@ -465,6 +489,10 @@ public class Parser {
             return expandCURIE(element, value.substring(1, value.length() - 1));
         } else {
             if (value.isEmpty()) return base;
+
+            if (settings.contains(Setting.FormMode) &&
+                    value.startsWith("?:")) return value;
+
             IRI uri = IRIFact.construct(base);
             IRI resolved = uri.resolve(value);
             return resolved.toString();
