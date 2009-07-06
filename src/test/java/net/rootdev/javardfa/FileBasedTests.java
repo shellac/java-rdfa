@@ -17,6 +17,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -55,6 +56,7 @@ public class FileBasedTests {
         xmlFactory = XMLInputFactory.newInstance();
     }
 
+    @Ignore
     @Test
     public void compare() throws XMLStreamException, IOException, URISyntaxException {
         InputStream htmlIn =
