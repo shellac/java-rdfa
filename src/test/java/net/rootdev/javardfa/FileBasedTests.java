@@ -72,20 +72,20 @@ public class FileBasedTests {
 
         List<Node[]> statements = new ArrayList<Node[]>();
 
-        @Override
+        //@Override
         public void start() {
         }
 
-        @Override
+        //@Override
         public void end() {
         }
 
-        @Override
+        //@Override
         public void addObject(String subject, String predicate, String object) {
             System.err.printf("<%s> <%s> <%s>\n", subject, predicate, object);
         }
 
-        @Override
+        //@Override
         public void addLiteral(String subject, String predicate, String lex, String lang, String datatype) {
             if (lang == null && datatype == null) {
                 System.err.printf("<%s> <%s> \"%s\"\n", subject, predicate, lex);

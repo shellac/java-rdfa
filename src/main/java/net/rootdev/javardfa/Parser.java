@@ -226,7 +226,7 @@ public class Parser {
             String theDatatype = getDatatype(element);
             StringWriter lexVal = new StringWriter();
             boolean isPlain = false;
-            if (theDatatype != null && !theDatatype.isEmpty() && !theDatatype.equals(xmlLiteral)) {
+            if (theDatatype != null && theDatatype.length() != 0 && !theDatatype.equals(xmlLiteral)) {
                 // Datatyped literal
                 if (element.getAttributeByName(content) != null) {
                     lexVal.append(element.getAttributeByName(content).getValue());
@@ -239,7 +239,7 @@ public class Parser {
                 if (element.getAttributeByName(content) != null) {
                     isPlain = true;
                     lexVal.append(element.getAttributeByName(content).getValue());
-                } else if (theDatatype != null && theDatatype.isEmpty()) { // force plain
+                } else if (theDatatype != null && theDatatype.length() == 0) { // force plain
                     isPlain = true;
                     getPlainLiteralValue(lexVal);
                     recurse = false;
@@ -389,7 +389,7 @@ public class Parser {
             return true;
         }
         // We are an xml literal! Copy everything
-        boolean includeLang = (alang != null && !alang.isEmpty());
+        boolean includeLang = (alang != null && alang.length() != 0);
         XMLEventWriter xwriter = outputFactory.createXMLEventWriter(writer);
         for (Characters chars : queuedCharacters) {
             xwriter.add(chars);
@@ -425,7 +425,7 @@ public class Parser {
         QName attrName = attr.getName();
         if (attrName.equals(href) || attrName.equals(src)) // A URI
         {
-            if (attr.getValue().isEmpty()) return base;
+            if (attr.getValue().length() == 0) return base;
             IRI uri = IRIFact.construct(base);
             IRI resolved = uri.resolve(attr.getValue());
             return resolved.toString();
@@ -472,7 +472,7 @@ public class Parser {
             return null;
         }
         String prefix = value.substring(0, offset);
-        String namespaceURI = prefix.isEmpty() ?
+        String namespaceURI = prefix.length() == 0 ?
             "http://www.w3.org/1999/xhtml/vocab#" :
             element.getNamespaceURI(prefix) ;
         if (namespaceURI == null) {
@@ -488,7 +488,7 @@ public class Parser {
         if (value.startsWith("[") && value.endsWith("]")) {
             return expandCURIE(element, value.substring(1, value.length() - 1));
         } else {
-            if (value.isEmpty()) return base;
+            if (value.length() == 0) return base;
 
             if (settings.contains(Setting.FormMode) &&
                     value.startsWith("?:")) return value;
@@ -505,7 +505,7 @@ public class Parser {
             return null;
         }
         String dt = de.getValue();
-        if (dt.isEmpty()) {
+        if (dt.length() == 0) {
             return dt;
         }
         return expandCURIE(element, dt);
@@ -550,7 +550,7 @@ public class Parser {
             original = false;
         }
 
-        @Override
+        //@Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("[\n\tbase: " + base);
@@ -578,12 +578,12 @@ public class Parser {
             finished = false;
         }
 
-        @Override
+        //@Override
         public boolean hasNext() {
             return parent.hasNext() || !finished;
         }
 
-        @Override
+        //@Override
         public Object next() {
             if (parent.hasNext()) return parent.next();
             if (finished) throw new NoSuchElementException("I'm empty, dum dum");
@@ -591,7 +591,7 @@ public class Parser {
             return appended;
         }
 
-        @Override
+        //@Override
         public void remove() {
             throw new UnsupportedOperationException("Not supported");
         }

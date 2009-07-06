@@ -24,13 +24,13 @@ public class JenaStatementSink implements StatementSink {
         this.model = model;
     }
 
-    @Override
+    //@Override
     public void start() { bnodeLookup = new HashMap<String, Resource>(); }
 
-    @Override
+    //@Override
     public void end() { bnodeLookup = null; }
 
-    @Override
+    //@Override
     public void addObject(String subject, String predicate, String object) {
         Resource s = getResource(subject);
         Property p = model.createProperty(predicate);
@@ -38,7 +38,7 @@ public class JenaStatementSink implements StatementSink {
         model.add(s, p, o);
     }
 
-    @Override
+    //@Override
     public void addLiteral(String subject, String predicate, String lex, String lang, String datatype) {
         Resource s = getResource(subject);
         Property p = model.createProperty(predicate);
