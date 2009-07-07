@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 public class RDFaConformance {
 
     final static Logger log = LoggerFactory.getLogger(RDFaConformance.class);
-
     final static String ManifestURI =
             "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/rdfa-xhtml1-test-manifest.rdf";
 
@@ -47,7 +46,7 @@ public class RDFaConformance {
             throws URISyntaxException, IOException {
 
         FileManager fm = FileManager.get();
-        
+
         Model manifest = fm.loadModel(ManifestURI);
 
         Query manifestExtract = QueryFactory.read("manifest-extract.rq");
@@ -58,7 +57,9 @@ public class RDFaConformance {
 
         ResultSet results = qe.execSelect();
 
-        if (!results.hasNext()) throw new RuntimeException("No results");
+        if (!results.hasNext()) {
+            throw new RuntimeException("No results");
+        }
         while (results.hasNext()) {
 
             QuerySolution soln = results.next();
@@ -71,8 +72,7 @@ public class RDFaConformance {
             // getBoolean not working??
             //boolean expected = (soln.contains("expect")) ?
             //    soln.getLiteral("expect").getBoolean() : true;
-            params[5] = soln.contains("expect") ?
-               soln.getLiteral("expect").getLexicalForm() : "true" ;
+            params[5] = soln.contains("expect") ? soln.getLiteral("expect").getLexicalForm() : "true";
             tests.add(params);
         }
 
@@ -86,11 +86,12 @@ public class RDFaConformance {
 
         int numOfResults = results.next().getLiteral("count").getInt();
 
-        if (numOfResults != tests.size()) log.warn("Query <{}> is missing some tests");
+        if (numOfResults != tests.size()) {
+            log.warn("Query <{}> is missing some tests");
+        }
 
         return tests;
     }
-
     private final String test;
     private final String title;
     private final String purpose;
@@ -120,23 +121,24 @@ public class RDFaConformance {
         XMLEventReader reader = xmlFactory.createXMLEventReader(in);
         Parser parser = new Parser(reader, sink);
         try {
-        parser.parse(input);
+            parser.parse(input);
         } catch (NullPointerException e) {
-            fail("NPE <" + test + ">" );
+            fail("NPE <" + test + ">");
         }
         Query theQuery = QueryFactory.read(query);
         QueryExecution qe = QueryExecutionFactory.create(theQuery, model);
-		boolean result = qe.execAsk();
-		if (result != expected) {
-			System.err.println("------ " + test + " ------");
-			model.write(System.err, "TTL");
-			System.err.println("------ Query ------");
-			System.err.println(theQuery);
-			System.err.println("-----------------------");
-		}
-        if (expected)
+        boolean result = qe.execAsk();
+        if (result != expected) {
+            System.err.println("------ " + test + " ------");
+            model.write(System.err, "TTL");
+            System.err.println("------ Query ------");
+            System.err.println(theQuery);
+            System.err.println("-----------------------");
+        }
+        if (expected) {
             assertTrue(title + " <" + test + ">", result);
-        else
+        } else {
             assertFalse(title + " <" + test + ">", result);
+        }
     }
 }
