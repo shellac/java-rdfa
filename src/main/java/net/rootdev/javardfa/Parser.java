@@ -466,6 +466,8 @@ public class Parser {
 
     private String expandCURIE(StartElement element, String value) {
         if (value.startsWith("_:")) return value;
+        if (settings.contains(Setting.FormMode) && // variable
+                value.startsWith("?:")) return value;
         int offset = value.indexOf(":");
         if (offset == -1) {
             //throw new RuntimeException("Is this a curie? \"" + value + "\"");

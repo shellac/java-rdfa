@@ -1,9 +1,31 @@
-<form xmlns:foaf="http://xmlns.com/foaf/0.1/">
-    <div about="?:subject">
-        <span property="foaf:name" xml:lang="en">Damian</span>
-        <input rel="foaf:foo" name="p"/>
-        <span rel="foaf:depiction foaf:piccie">
-            <img src="http://example.com/1.gif"/>
-        </span>
-    </div>
+<div>
+include "header.ftl"/>
+<h2>${title}</h2>
+
+<form about="#x" method="GET" target="stars">
+<div about="[?:foo]">
+<input type="hidden" name="st" value="action-question.ftl" />
+<input xmlns:ns="http://xmlns.com/foaf/0.1/" rel="ns:name" name="name" class="complete" />
+<input type="submit" value="Submit!" />
+</div>
 </form>
+
+            <div id="pfleft">
+            <h4>STEP 1 - Choose a question</h4>
+                <div id="proformaquestions">
+                <p><a href="">Who is at [where]?</a></p>
+                <p><a href="">Who's involved in practice-based research into [what]?</a></p>
+                <p><a href="">Who's researching [what] in their practice as research?</a></p>
+                <p><a href="">Who has worked with [who]?</a></p>
+                <p><a href="">Who mentioned [what] at [conference]?</a></p>
+                <p><a href="">Who's used [which] processes?</a></p>
+                <p><a href="">Who is producing practice for both [research topic] and [research topic]?</a></p>
+                <p><a href="">Who has referenced in their own works [research topic]?</a></p>
+                <p><a href="">Who are credited as the makers of [who]'s work(s)?</a></p>
+                <p><a href="">Who has participated in [assessment mode]?</a></p>
+                </div>
+            </div>
+
+
+include "footer.ftl"/>
+</div>
