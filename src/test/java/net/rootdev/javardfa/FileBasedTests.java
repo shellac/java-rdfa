@@ -13,15 +13,18 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.xml.stream.XMLEventReader;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import org.junit.Test;
-import org.junit.Ignore;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
@@ -56,16 +59,21 @@ public class FileBasedTests {
         xmlFactory = XMLInputFactory.newInstance();
     }
 
-    @Ignore
+    //@Ignore
     @Test
-    public void compare() throws XMLStreamException, IOException, URISyntaxException {
+    public void compare() throws XMLStreamException, IOException, ParserConfigurationException, SAXException {
         InputStream htmlIn =
                 this.getClass().getClassLoader().getResourceAsStream(htmlFile);
-        XMLEventReader reader = xmlFactory.createXMLEventReader(htmlIn);
+        //XMLEventReader reader = xmlFactory.createXMLEventReader(htmlIn);
+        XMLReader reader = XMLReaderFactory.createXMLReader();
         StatementCollector coll = new StatementCollector();
-        Parser parser = new Parser(reader, coll);
+        Parser parser = new Parser(coll);
         parser.enable(Parser.Setting.FormMode);
-        parser.parse("http://example.com/" + htmlFile);
+        //parser.parse("http://example.com/" + htmlFile);
+
+        reader.setContentHandler(parser);
+        reader.parse(new InputSource(htmlIn));
+
         assertTrue(htmlFile + " and " + queryFile + " are the same",
                 htmlFile.equals(queryFile));
     }

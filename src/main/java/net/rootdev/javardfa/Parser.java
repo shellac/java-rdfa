@@ -7,19 +7,23 @@ package net.rootdev.javardfa;
 import com.hp.hpl.jena.iri.IRI;
 import com.hp.hpl.jena.iri.IRIFactory;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
-import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
@@ -28,14 +32,19 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
 
 /**
  *
  * @author pldms
  */
-public class Parser {
+public class Parser implements ContentHandler {
 
     final static List<String> _allowed = Arrays.asList(
             "alternate", "appendix", "bookmark", "cite",
@@ -89,6 +98,12 @@ public class Parser {
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
     }
 
+    public Parser(StatementSink sink) {
+        this.reader = null;
+        this.sink = sink;
+        outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
+    }
+
     public void enable(Setting setting) { settings.add(setting); }
 
     public void disable(Setting setting) { settings.remove(setting); }
@@ -111,7 +126,7 @@ public class Parser {
 
     //private String currentBase;
 
-    void parse(EvalContext context, StartElement element)
+    EvalContext parse(EvalContext context, StartElement element)
             throws XMLStreamException, IOException {
         boolean recurse = true;
         boolean skipElement = false;
@@ -221,6 +236,8 @@ public class Parser {
         }
 
         // Getting literal values. Complicated!
+
+        
         if (element.getAttributeByName(property) != null) {
             List<String> props = getURIs(currentBase, element, element.getAttributeByName(property));
             String theDatatype = getDatatype(element);
@@ -302,12 +319,10 @@ public class Parser {
                 ec.forwardProperties = forwardProperties;
                 ec.backwardProperties = backwardProperties;
             }
-
+            /*
             while (reader.hasNext()) {
                 XMLEvent event = reader.nextEvent();
                 if (event.isStartElement()) {
-                    /*System.err.println("Continuing from " + element.getName().getLocalPart() + " to " + event.asStartElement().getName().getLocalPart());
-                    System.err.println(ec);*/
                     parse(ec, event.asStartElement());
                     if (!currentBase.equals(ec.base)) { // bubbling up base change
                         // I could just let parentS = null, rather than bother with original?
@@ -319,7 +334,12 @@ public class Parser {
                     return;
                 }
             }
+             */
+
+            return ec;
         }
+
+        return null;
     }
 
     private Attribute findAttribute(StartElement element, QName... names) {
@@ -478,6 +498,9 @@ public class Parser {
             "http://www.w3.org/1999/xhtml/vocab#" :
             element.getNamespaceURI(prefix) ;
         if (namespaceURI == null) {
+            System.err.println("Looking for: " + prefix);
+            Iterator it = element.getNamespaces();
+            while (it.hasNext()) System.err.println("NS: " + it.next());
             throw new RuntimeException("Unknown prefix: " + prefix);
         }
         if (namespaceURI.endsWith("/") || namespaceURI.endsWith("#"))
@@ -523,6 +546,7 @@ public class Parser {
 
     static class EvalContext {
 
+        EvalContext parent;
         String base;
         String parentSubject;
         String parentObject;
@@ -550,6 +574,7 @@ public class Parser {
             this.forwardProperties = new LinkedList<String>(toCopy.forwardProperties);
             this.backwardProperties = new LinkedList<String>(toCopy.backwardProperties);
             original = false;
+            this.parent = toCopy;
         }
 
         //@Override
@@ -598,5 +623,122 @@ public class Parser {
             throw new UnsupportedOperationException("Not supported");
         }
 
+    }
+
+    /**
+     * SAX methods
+     */
+
+    private Locator locator;
+    private NSMapping mapping;
+    private EvalContext context = new EvalContext("http://www.example.com/");
+
+    public void setDocumentLocator(Locator arg0) { this.locator = arg0; }
+
+    public void startDocument() throws SAXException {
+        sink.start();
+        mapping = new NSMapping();
+    }
+
+    public void endDocument() throws SAXException { sink.end(); }
+
+    public void startPrefixMapping(String arg0, String arg1) throws SAXException {
+        //System.err.println("Mapping: " + arg0 + " " + arg1);
+        mapping.add(arg0, arg1);
+    }
+
+    public void endPrefixMapping(String arg0) throws SAXException {
+        mapping.remove(arg0);
+    }
+
+    public void startElement(String arg0, String arg1, String arg2, Attributes arg3) throws SAXException {
+        try {
+            //System.err.println("Start element: " + arg0 + " " + arg1 + " " + arg2);
+            StartElement e = EventFactory.createStartElement(
+                    arg0, arg1, arg2,
+                    fromAttributes(arg3), mapping.current(), mapping);
+            /* new context = */
+            context = parse(context, e);
+        } catch (XMLStreamException ex) {
+            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void endElement(String arg0, String arg1, String arg2) throws SAXException {
+        //System.err.println("End element: " + arg0 + " " + arg1 + " " + arg2);
+        context = context.parent;
+    }
+
+    public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
+        //System.err.println("Characters...");
+    }
+
+    public void ignorableWhitespace(char[] arg0, int arg1, int arg2) throws SAXException {
+        //System.err.println("Whitespace...");
+    }
+
+    public void processingInstruction(String arg0, String arg1) throws SAXException {}
+
+    public void skippedEntity(String arg0) throws SAXException {}
+
+    private Iterator fromAttributes(Attributes attributes) {
+        List toReturn = new LinkedList();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Attribute attr = EventFactory.createAttribute(
+                    attributes.getQName(i), attributes.getURI(i),
+                    attributes.getLocalName(i), attributes.getValue(i));
+            toReturn.add(attr);
+        }
+        return toReturn.iterator();
+    }
+
+    static class NSMapping implements NamespaceContext {
+        Map<String, LinkedList<String>> mappings =
+                new HashMap<String, LinkedList<String>>();
+
+        public String getNamespaceURI(String prefix) {
+            if (mappings.containsKey(prefix))
+                return mappings.get(prefix).getLast();
+            return null;
+        }
+
+        public void add(String prefix, String uri) {
+            if (mappings.containsKey(prefix))
+                mappings.get(prefix).add(uri);
+            else {
+                LinkedList<String> list = new LinkedList<String>();
+                list.add(uri);
+                mappings.put(prefix, list);
+            }
+        }
+
+        public void remove(String prefix) {
+            if (mappings.containsKey(prefix)) {
+                mappings.get(prefix).removeLast();
+                if (mappings.get(prefix).isEmpty())
+                    mappings.remove(prefix);
+            }
+        }
+
+        public Iterator<Namespace> current() {
+            List<Namespace> toReturn = new LinkedList<Namespace>();
+            for (Entry<String, LinkedList<String>> e: mappings.entrySet()) {
+                toReturn.add(
+                        EventFactory.createNamespace(e.getKey(), e.getValue().getLast())
+                        );
+            }
+            return toReturn.iterator();
+        }
+
+        public String getPrefix(String arg0) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public Iterator getPrefixes(String arg0) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 }

@@ -19,8 +19,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -29,6 +27,10 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
@@ -98,7 +100,6 @@ public class RDFaConformance {
     private final String input;
     private final String query;
     private final boolean expected;
-    private final XMLInputFactory xmlFactory;
 
     public RDFaConformance(String test, String title,
             String purpose, String input, String query, String expected) {
@@ -108,20 +109,20 @@ public class RDFaConformance {
         this.input = input;
         this.query = query;
         this.expected = Boolean.valueOf(expected);
-        xmlFactory = XMLInputFactory.newInstance();
         /* If you want it to go slowwwwww */
-        xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
     }
 
     @Test
-    public void compare() throws XMLStreamException, IOException, URISyntaxException {
+    public void compare() throws SAXException, IOException {
         Model model = ModelFactory.createDefaultModel();
         StatementSink sink = new JenaStatementSink(model);
         InputStream in = FileManager.get().open(input);
-        XMLEventReader reader = xmlFactory.createXMLEventReader(in);
-        Parser parser = new Parser(reader, sink);
+        XMLReader reader = XMLReaderFactory.createXMLReader();
+        Parser parser = new Parser(sink);
+        reader.setContentHandler(parser);
+        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         try {
-            parser.parse(input);
+            reader.parse(new InputSource(in));
         } catch (NullPointerException e) {
             fail("NPE <" + test + ">");
         }
