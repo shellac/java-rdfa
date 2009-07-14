@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.xml.stream.XMLStreamException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -119,6 +118,7 @@ public class RDFaConformance {
         InputStream in = FileManager.get().open(input);
         XMLReader reader = XMLReaderFactory.createXMLReader();
         Parser parser = new Parser(sink);
+        parser.setBase(test);
         reader.setContentHandler(parser);
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         try {

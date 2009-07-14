@@ -18,6 +18,10 @@ import java.net.URISyntaxException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
@@ -27,22 +31,25 @@ public class Scratch {
 
     private static XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
 
-    public static void main(String[] args) throws XMLStreamException, IOException, URISyntaxException {
+    public static void main(String[] args) throws SAXException, IOException {
         xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         String base = "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/";
-        String testHTML = base + "0102.xhtml";
-        String testSPARQL = base + "0102.sparql";
+        String testHTML = base + "0008.xhtml";
+        String testSPARQL = base + "0008.sparql";
 
         check(testHTML, testSPARQL);
     }
 
-    private static void check(String testHTML, String testSPARQL) throws XMLStreamException, IOException, URISyntaxException {
+    private static void check(String testHTML, String testSPARQL) throws SAXException, IOException {
         Model model = ModelFactory.createDefaultModel();
         StatementSink sink = new JenaStatementSink(model);
         InputStream in = FileManager.get().open(testHTML);
-        XMLEventReader reader = xmlFactory.createXMLEventReader(in);
-        Parser parser = new Parser(reader, sink);
-        parser.parse(testHTML);
+        Parser parser = new Parser(sink);
+        parser.setBase(testHTML);
+        XMLReader reader = XMLReaderFactory.createXMLReader();
+        reader.setContentHandler(parser);
+        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        reader.parse(new InputSource(in));
         Query theQuery = QueryFactory.read(testSPARQL);
         QueryExecution qe = QueryExecutionFactory.create(theQuery, model);
         if (qe.execAsk()) {
@@ -52,6 +59,7 @@ public class Scratch {
 
         System.err.println("Failed: ");
         model.write(System.err, "TTL");
+        System.err.println(theQuery);
     }
 
 }
