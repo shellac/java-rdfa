@@ -118,7 +118,7 @@ public class RDFaConformance {
         InputStream in = FileManager.get().open(input);
         XMLReader reader = XMLReaderFactory.createXMLReader();
         Parser parser = new Parser(sink);
-        parser.setBase(test);
+        parser.setBase(input);
         reader.setContentHandler(parser);
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         try {

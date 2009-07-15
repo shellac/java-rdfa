@@ -589,7 +589,7 @@ public class Parser implements ContentHandler {
     public void ignorableWhitespace(char[] arg0, int arg1, int arg2) throws SAXException {
         //System.err.println("Whitespace...");
         if (level != -1) {
-            XMLEvent e = EventFactory.createSpace(String.valueOf(arg0, arg1, arg2));
+            XMLEvent e = EventFactory.createIgnorableSpace(String.valueOf(arg0, arg1, arg2));
             handleForLiteral(e);
         }
     }
