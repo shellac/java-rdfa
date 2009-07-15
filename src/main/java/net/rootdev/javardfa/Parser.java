@@ -640,7 +640,7 @@ public class Parser implements ContentHandler {
                         literalWriter.append(ev.asCharacters().getData());
                 }
                 String lex = literalWriter.toString();
-                if (theDatatype == null)
+                if (theDatatype == null || theDatatype.length() == 0)
                     emitTriplesPlainLiteral(context.parentSubject,
                             litProps, lex, context.language);
                 else
