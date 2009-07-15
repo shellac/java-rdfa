@@ -387,9 +387,6 @@ public class Parser implements ContentHandler {
             "http://www.w3.org/1999/xhtml/vocab#" :
             element.getNamespaceURI(prefix) ;
         if (namespaceURI == null) {
-            System.err.println("Looking for: " + prefix);
-            Iterator it = element.getNamespaces();
-            while (it.hasNext()) System.err.println("NS: " + it.next());
             throw new RuntimeException("Unknown prefix: " + prefix);
         }
         if (namespaceURI.endsWith("/") || namespaceURI.endsWith("#"))
@@ -548,12 +545,16 @@ public class Parser implements ContentHandler {
         mapping.remove(arg0);
     }
 
-    public void startElement(String arg0, String arg1, String arg2, Attributes arg3) throws SAXException {
+    public void startElement(String arg0, String localname, String qname, Attributes arg3) throws SAXException {
         try {
             //System.err.println("Start element: " + arg0 + " " + arg1 + " " + arg2);
+            // Dammit, not quit the same as XMLEventFactory
+            String prefix = (localname.equals(qname)) ? ""
+                    : qname.substring(0, qname.indexOf(':'));
             StartElement e = EventFactory.createStartElement(
-                    arg0, arg1, arg2,
+                    prefix, arg0, localname,
                     fromAttributes(arg3), mapping.current(), mapping);
+
             if (level != -1) { // getting literal
                 handleForLiteral(e);
                 return;
@@ -620,7 +621,6 @@ public class Parser implements ContentHandler {
     }
 
     private void handleForLiteralEx(XMLEvent e) throws XMLStreamException, IOException {
-        System.err.println("Level is " + level + " " + e);
         if (e.isStartElement()) {
             level++;
             if (queuedEvents != null) { // Aha, we ain't plain
