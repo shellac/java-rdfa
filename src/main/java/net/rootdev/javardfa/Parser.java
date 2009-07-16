@@ -560,8 +560,10 @@ public class Parser implements ContentHandler {
                 handleForLiteral(e);
                 return;
             }
+            //System.err.println("Start: " + qname);
+            //System.err.println("Context is : " + context.hashCode());
             context = parse(context, e);
-
+            //System.err.println("Context now: " + context.hashCode());
         } catch (XMLStreamException ex) {
             Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -570,14 +572,19 @@ public class Parser implements ContentHandler {
 
     }
 
-    public void endElement(String arg0, String arg1, String arg2) throws SAXException {
+    public void endElement(String arg0, String localname, String qname) throws SAXException {
         //System.err.println("End element: " + arg0 + " " + arg1 + " " + arg2);
         if (level != -1) { // getting literal
-            XMLEvent e = EventFactory.createEndElement(arg0, arg1, arg2);
+            String prefix = (localname.equals(qname)) ? ""
+                    : qname.substring(0, qname.indexOf(':'));
+            XMLEvent e = EventFactory.createEndElement(prefix, arg0, localname);
             handleForLiteral(e);
-            return;
+            if (level != -1) return; // if still handling literal duck out now
         }
+        //System.err.println("End: " + qname);
+        //System.err.println("Context is : " + context.hashCode());
         context = context.parent;
+        //System.err.println("Context now: " + context.hashCode());
     }
 
     public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
