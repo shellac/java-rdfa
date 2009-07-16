@@ -11,11 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
 import org.junit.Test;
-import org.junit.Ignore;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -29,10 +25,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
-import javax.xml.transform.Source;
-import javax.xml.transform.sax.SAXSource;
+import nu.validator.htmlparser.common.XmlViolationPolicy;
 import org.xml.sax.InputSource;
 import nu.validator.htmlparser.sax.HtmlParser;
+import org.xml.sax.SAXException;
 
 
 /**
@@ -74,51 +70,55 @@ public class RDFaInHTML {
         // Infelicity in junit
         Collection<HTMLTest[]> toReturn = new LinkedList<HTMLTest[]>();
         for (HTMLTest test : tests) {
-            toReturn.add(new HTMLTest[]{test});
+            if (!test.purpose.contains("Scripted"))
+                toReturn.add(new HTMLTest[]{test});
         }
 
         return toReturn;
     }
     private final HTMLTest test;
-    private final XMLInputFactory xmlFactory;
 
     public RDFaInHTML(HTMLTest test) {
         this.test = test;
-        xmlFactory = XMLInputFactory.newInstance();
-        /* If you want it to go slowwwwww */
-        xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-        xmlFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
     }
 
-    @Ignore
+    //@Ignore
     @Test
-    public void compare() throws XMLStreamException, IOException, URISyntaxException {
+    public void compare() throws SAXException, IOException, Throwable {
         Model model = ModelFactory.createDefaultModel();
         StatementSink sink = new JenaStatementSink(model);
-
         Reader sreader = new StringReader(test.input);
-
-        Source source = new SAXSource(new HtmlParser(), new InputSource(sreader));
-        //source.setSystemId("");
-
-        XMLEventReader reader = xmlFactory.createXMLEventReader(source);
-        Parser parser = new Parser(reader, sink);
+        Parser parser = new Parser(sink);
+        parser.setBase("http://example.com/");
+        parser.enable(Parser.Setting.ManualNamespaces);
+        HtmlParser reader = new HtmlParser();
+        reader.setXmlPolicy(XmlViolationPolicy.ALLOW);
+        reader.setXmlnsPolicy(XmlViolationPolicy.ALLOW);
+        //reader.setMappingLangToXmlLang(true);
+        reader.setContentHandler(parser);
+        Throwable error = null;
         try {
-            parser.parse("http://example.com/");
-        } catch (NullPointerException e) {
-            fail("NPE <" + test + ">");
+            reader.parse(new InputSource(sreader));
+        } catch (Throwable e) {
+            error = e;
         }
         String actual = test.expected.replaceAll("<>", "<http://example.com/>");
+        actual = actual.replaceAll("\\{BASE\\}", "http://example.com/");
         Model expectedModel = ModelFactory.createDefaultModel();
-        expectedModel.read(new StringReader(test.expected), null, "N-TRIPLE");
+        expectedModel.read(new StringReader(actual), null, "N-TRIPLE");
         boolean result = expectedModel.isIsomorphicWith(model);
         if (!result) {
-            System.err.println("------ " + test + " ------");
+            System.err.println("------ " + test.id + " ------");
             model.write(System.err, "TTL");
+            System.err.println("------ Input ------");
+            System.err.println(test.input);
             System.err.println("------ Expected ------");
             expectedModel.write(System.err, "TTL");
             System.err.println("-----------------------");
         }
+        if (error != null) 
+            throw new Error("Error in " + test.id + "(" + error.getMessage()
+                    + ")", error);
         assertTrue(test.id + " (" + test.purpose + ")", result);
     }
 }

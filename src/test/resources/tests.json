@@ -1,0 +1,279 @@
+[
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n",
+      "expected" : "",
+      "purpose" : "Empty document",
+      "type" : "html",
+      "id" : "000"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<link rel=\"next\" href=\"http://example.org/test.css\" />\n",
+      "expected" : "<> <http://www.w3.org/1999/xhtml/vocab#next> <http://example.org/test.css> .\n",
+      "purpose" : "Basic <link rel>",
+      "type" : "html",
+      "id" : "001"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<link rel=\"\" href=\"http://example.org/test.css\" />\n",
+      "expected" : "",
+      "purpose" : "Empty <link rel>",
+      "type" : "html",
+      "id" : "002"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<link rel href=\"http://example.org/test.css\" />\n",
+      "expected" : "",
+      "purpose" : "Valueless <link rel>",
+      "type" : "html",
+      "id" : "003"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<link rel=\"  next  \" href=\"http://example.org/test.css\" />\n",
+      "expected" : "<> <http://www.w3.org/1999/xhtml/vocab#next> <http://example.org/test.css> .\n",
+      "purpose" : "Whitespace around <link rel>",
+      "type" : "html",
+      "id" : "004"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<link rel=\"next&#x20;prev&#x09;first&#x0a;last&#x0c;section&#x0d;subsection\" href=\"http://example.org/test.css\" />\n",
+      "notes" : "These are space characters as defined by HTML 5 (http://www.whatwg.org/specs/web-apps/current-work/multipage/infrastructure.html#space-character)",
+      "expected" : "<> <http://www.w3.org/1999/xhtml/vocab#next> <http://example.org/test.css> .\n<> <http://www.w3.org/1999/xhtml/vocab#prev> <http://example.org/test.css> .\n<> <http://www.w3.org/1999/xhtml/vocab#first> <http://example.org/test.css> .\n<> <http://www.w3.org/1999/xhtml/vocab#last> <http://example.org/test.css> .\n<> <http://www.w3.org/1999/xhtml/vocab#section> <http://example.org/test.css> .\n<> <http://www.w3.org/1999/xhtml/vocab#subsection> <http://example.org/test.css> .\n",
+      "purpose" : "Whitespace in <link rel>",
+      "type" : "html",
+      "id" : "005"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<link rel=\"next&#x0b;prev\" href=\"http://example.org/test.css\" />\n",
+      "notes" : "This is no longer a space character as defined by HTML 5 (http://www.whatwg.org/specs/web-apps/current-work/multipage/infrastructure.html#space-character)",
+      "expected" : "",
+      "purpose" : "Not-whitespace in <link rel>",
+      "type" : "html",
+      "id" : "006"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<link rel=\"NEXT\" href=\"http://example.org/test.css\" />\n",
+      "expected" : "<> <http://www.w3.org/1999/xhtml/vocab#next> <http://example.org/test.css> .\n",
+      "purpose" : "Uppercase in <link rel>",
+      "type" : "html",
+      "id" : "007"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<link rel=\"next bogus prev\" href=\"http://example.org/test.css\" />\n",
+      "expected" : "<> <http://www.w3.org/1999/xhtml/vocab#next> <http://example.org/test.css> .\n<> <http://www.w3.org/1999/xhtml/vocab#prev> <http://example.org/test.css> .\n",
+      "purpose" : "Bogus reserved words in <link rel>",
+      "type" : "html",
+      "id" : "008"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<link rel=\"next http://example.org/test prev\" href=\"http://example.org/test.css\" />\n",
+      "notes" : "These are interpreted as CURIEs with the undeclared prefix 'http'",
+      "expected" : "<> <http://www.w3.org/1999/xhtml/vocab#next> <http://example.org/test.css> .\n<> <http://www.w3.org/1999/xhtml/vocab#prev> <http://example.org/test.css> .\n",
+      "purpose" : "URLs in <link rel>",
+      "type" : "html",
+      "id" : "009"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<link xmlns:ex=\"http://example.org/\" rel=\"next ex:test prev\" href=\"http://example.org/test.css\" />\n",
+      "expected" : "<> <http://www.w3.org/1999/xhtml/vocab#next> <http://example.org/test.css> .\n<> <http://example.org/test> <http://example.org/test.css> .\n<> <http://www.w3.org/1999/xhtml/vocab#prev> <http://example.org/test.css> .\n",
+      "purpose" : "CURIEs in <link rel>",
+      "type" : "html",
+      "id" : "010"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"http://example.org/\" property=\"ex:test\">Test</p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\".\n",
+      "purpose" : "Basic xmlns",
+      "type" : "html",
+      "id" : "011"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p XMLNS:EX=\"http://example.org/\" property=\"ex:test\">Test</p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\".\n",
+      "purpose" : "Uppercase xmlns, lowercase CURIE",
+      "type" : "html",
+      "id" : "012"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p XMLNS:EX=\"http://example.org/\" property=\"EX:test\">Test</p>\n",
+      "expected" : "",
+      "purpose" : "Uppercase xmlns, uppercase CURIE",
+      "type" : "html",
+      "id" : "013"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:0=\"http://example.org/\" property=\"0:test\">Test</p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\".\n",
+      "purpose" : "Non-NCName xmlns prefix",
+      "type" : "html",
+      "id" : "014"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:=\"http://example.org/\" property=\":test\">Test</p>\n",
+      "expected" : "<> <http://www.w3.org/1999/xhtml/vocab#test> \"Test\".\n",
+      "purpose" : "Empty xmlns prefix",
+      "type" : "html",
+      "id" : "015"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:_=\"http://example.org/\" property=\"_:test\">Test</p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\".\n",
+      "purpose" : "Underscore xmlns prefix",
+      "type" : "html",
+      "id" : "016"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"\" property=\"ex:#test\">Test</p>\n",
+      "expected" : "<> <{BASE}#test> \"Test\".\n",
+      "purpose" : "Empty xmlns value",
+      "type" : "html",
+      "id" : "017"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"http://example.org/\"><span xmlns:ex=\"\" property=\"ex:#test\">Test</span></p>\n",
+      "expected" : "<> <{BASE}#test> \"Test\".\n",
+      "purpose" : "Empty xmlns value overriding non-empty",
+      "type" : "html",
+      "id" : "018"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"http://example.org/1/\" xmlns:ex:two=\"http://example.org/2/\" property=\"ex:two:three:test\">Test</p>\n",
+      "expected" : "<> <http://example.org/1/two:three:test> \"Test\".\n",
+      "purpose" : "Colon in prefix",
+      "type" : "html",
+      "id" : "019"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:testŀ=\"http://example.org/\">\n  <span xmlns:test=\"http://example.org/error/\" property=\"testŀ:test\">Test</span>\n</p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\".\n",
+      "purpose" : "Non-XML4e xmlns prefix",
+      "type" : "html",
+      "id" : "020"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:testÁ=\"http://example.org/1/\">\n  <span xmlns:testá=\"http://example.org/2/\">\n    <span property=\"testÁ:one\">Test</span>\n    <span property=\"testá:two\">Test</span>\n  </span>\n</p>\n",
+      "expected" : "<> <http://example.org/1/one> \"Test\".\n<> <http://example.org/2/two> \"Test\".\n",
+      "purpose" : "Non-ASCII case insensitivity in xmlns prefix (1)",
+      "type" : "html",
+      "id" : "021"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:testᾈ=\"http://example.org/1/\">\n  <span xmlns:testᾀ=\"http://example.org/2/\">\n    <span property=\"testᾈ:one\">Test</span>\n    <span property=\"testᾀ:two\">Test</span>\n  </span>\n</p>\n",
+      "expected" : "<> <http://example.org/1/one> \"Test\".\n<> <http://example.org/2/two> \"Test\".\n",
+      "purpose" : "Non-ASCII case insensitivity in xmlns prefix (2)",
+      "type" : "html",
+      "id" : "022"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:t=\"test1:\" id=\"d\">\n<span property=\"t:test\">Test</span>\n</p>\n<script>\ndocument.getElementById('d').setAttributeNS(\n    'http://www.w3.org/2000/xmlns/', 'xmlns:t', 'test2:');\n    /* (now the element has two distinct attributes,\n        each in different namespaces) */\n</script>\n",
+      "expected" : "<> <test2:test> \"Test\".\n",
+      "purpose" : "Scripted: Conflicting xmlns values",
+      "type" : "html",
+      "id" : "023"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p property=\"foobar:test\">Test</p>\n",
+      "expected" : "",
+      "purpose" : "Undeclared prefix",
+      "type" : "html",
+      "id" : "024"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p property=\"rdf:test\">Test</p>\n",
+      "expected" : "",
+      "purpose" : "Undeclared prefix 'rdf'",
+      "type" : "html",
+      "id" : "025"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p property=\"dc:test\">Test</p>\n<p property=\"foaf:test\">Test</p>\n<p property=\"owl:test\">Test</p>\n<p property=\"rdfs:test\">Test</p>\n<p property=\"xv:test\">Test</p>\n<p property=\"xsd:test\">Test</p>\n",
+      "expected" : "",
+      "purpose" : "Undeclared common prefixes",
+      "type" : "html",
+      "id" : "026"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"http://example.org/\" property=\"ex:one2three4\">Test</p>\n",
+      "notes" : "rdfQuery seems to strip everything after the digit",
+      "expected" : "<> <http://example.org/one2three4> \"Test\".\n",
+      "purpose" : "Digits in CURIE value",
+      "type" : "html",
+      "id" : "027"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"http://example.org/1/\" xmlns:[ex=\"http://example.org/2/\" about=\"[[ex:test]]\" property=\"ex:test\">Test</p>\n",
+      "expected" : "<http://example.org/2/test]> <http://example.org/1/test> \"Test\".\n",
+      "purpose" : "Safe CURIE containing square brackets",
+      "type" : "html",
+      "id" : "028"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"http://example.org/\" property=\"ex:test\" xml:lang=\"aa\">Test</p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\"@aa.\n",
+      "purpose" : "Language in xml:lang",
+      "type" : "html",
+      "id" : "029"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"http://example.org/\" property=\"ex:test\" lang=\"aa\">Test</p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\"@aa.\n",
+      "purpose" : "Language in lang",
+      "type" : "html",
+      "id" : "030"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p lang=\"aa\"><span lang=\"bb\"><span xmlns:ex=\"http://example.org/\" property=\"ex:test\" lang=\"cc\">Test</span></span></p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\"@cc.\n",
+      "purpose" : "Language inheritance",
+      "type" : "html",
+      "id" : "031"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"http://example.org/\" property=\"ex:test\" lang=\"aa\" xml:lang=\"bb\">Test</p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\"@aa.\n",
+      "purpose" : "Conflicting languages",
+      "type" : "html",
+      "id" : "032"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"http://example.org/\" property=\"ex:test\" xml:lang=\"aa\" lang=\"bb\" lang=\"cc\" xml:lang=\"dd\">Test</p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\"@bb.\n",
+      "purpose" : "Duplicate language attributes",
+      "type" : "html",
+      "id" : "033"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p lang=\"aa\"><span xmlns:ex=\"http://example.org/\" property=\"ex:test\" xml:lang=\"bb\">Test</span></p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\"@aa.\n",
+      "purpose" : "Conflicting language inheritance (1)",
+      "type" : "html",
+      "id" : "034"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xml:lang=\"aa\"><span xmlns:ex=\"http://example.org/\" property=\"ex:test\" lang=\"bb\">Test</span></p>\n",
+      "expected" : "<> <http://example.org/test> \"Test\"@bb.\n",
+      "purpose" : "Conflicting language inheritance (2)",
+      "type" : "html",
+      "id" : "035"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p xmlns:ex=\"http://example.org/\" property=\"ex:test\" lang=\"aa\" xml:lang=\"bb\" id=\"d\">Test</p>\n<script>\ndocument.getElementById('d').setAttributeNS(\n  'http://www.w3.org/XML/1998/namespace', 'xml:lang', 'cc');\n</script>\n",
+      "expected" : "<> <http://example.org/test> \"Test\"@cc.\n",
+      "purpose" : "Scripted: Conflicting languages",
+      "type" : "html",
+      "id" : "036"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p id=\"d\"><span xmlns:ex=\"http://example.org/\" property=\"ex:test\" lang=\"aa\" xml:lang=\"bb\">Test</span></p>\n<script>\ndocument.getElementById('d').setAttributeNS(\n  'http://www.w3.org/XML/1998/namespace', 'xml:lang', 'cc');\n</script>\n",
+      "expected" : "<> <http://example.org/test> \"Test\"@aa.\n",
+      "purpose" : "Scripted: Conflicting language inheritance (1)",
+      "type" : "html",
+      "id" : "037"
+   },
+   {
+      "input" : "<!DOCTYPE html>\n<meta charset=\"utf-8\">\n<title>Test</title>\n<p lang=\"aa\" xml:lang=\"bb\"><span xmlns:ex=\"http://example.org/\" property=\"ex:test\" id=\"d\">Test</span></p>\n<script>\ndocument.getElementById('d').setAttributeNS(\n  'http://www.w3.org/XML/1998/namespace', 'xml:lang', 'cc');\n</script>\n",
+      "expected" : "<> <http://example.org/test> \"Test\"@cc.\n",
+      "purpose" : "Scripted: Conflicting language inheritance (2)",
+      "type" : "html",
+      "id" : "038"
+   }
+]

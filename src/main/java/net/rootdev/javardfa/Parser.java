@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
@@ -70,7 +69,8 @@ public class Parser implements ContentHandler {
     final QName rel = new QName("rel"); // Link types and CURIES
     final QName rev = new QName("rev"); // Link type and CURIES
     final QName content = new QName("content");
-    final QName lang = new QName("http://www.w3.org/XML/1998/namespace", "lang", "xml");
+    final QName xmllang = new QName("http://www.w3.org/XML/1998/namespace", "lang", "xml");
+    final QName lang = new QName("lang");
     final QName base = new QName("http://www.w3.org/1999/xhtml", "base");
     final QName head = new QName("http://www.w3.org/1999/xhtml", "head");
     final QName body = new QName("http://www.w3.org/1999/xhtml", "body");
@@ -102,8 +102,7 @@ public class Parser implements ContentHandler {
         this.context = new EvalContext(base);
     }
 
-    EvalContext parse(EvalContext context, StartElement element)
-            throws XMLStreamException, IOException {
+    EvalContext parse(EvalContext context, StartElement element) throws XMLStreamException {
         boolean recurse = true;
         boolean skipElement = false;
         String newSubject = null;
@@ -112,7 +111,11 @@ public class Parser implements ContentHandler {
         List<String> backwardProperties = new LinkedList(context.backwardProperties);
         String currentLanguage = context.language;
 
-        if (element.getAttributeByName(lang) != null)
+        if (element.getAttributeByName(xmllang) != null)
+            currentLanguage = element.getAttributeByName(xmllang).getValue();
+
+        if (settings.contains(Setting.ManualNamespaces) &&
+                element.getAttributeByName(lang) != null)
             currentLanguage = element.getAttributeByName(lang).getValue();
 
         if (base.equals(element.getName()) && element.getAttributeByName(href) != null) {
@@ -217,7 +220,7 @@ public class Parser implements ContentHandler {
                 else
                     emitTriplesDatatypeLiteral(newSubject, props, lex, dt);
             } else {
-                recurse = false;
+                //recurse = false;
                 level = 1;
                 theDatatype = dt;
                 literalWriter = new StringWriter();
@@ -326,9 +329,14 @@ public class Parser implements ContentHandler {
         boolean permitReserved = rel.equals(attr.getName()) ||
                     rev.equals(attr.getName());
         for (String curie : curies) {
-            if (permitReserved && SpecialRels.contains(curie))
+            boolean isSpecial = (settings.contains(Setting.ManualNamespaces)) ?
+                SpecialRels.contains(curie.toLowerCase()) :
+                SpecialRels.contains(curie);
+            if (isSpecial && settings.contains(Setting.ManualNamespaces))
+                curie = curie.toLowerCase();
+            if (permitReserved && isSpecial)
                 uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie);
-            else if (!SpecialRels.contains(curie)) {
+            else if (!isSpecial) {
                 String uri = expandCURIE(element, curie);
                 if (uri != null) uris.add(uri);
             }
@@ -344,7 +352,7 @@ public class Parser implements ContentHandler {
     }
 
     private String expandCURIE(StartElement element, String value) {
-        if (value.startsWith("_:")) return value;
+        if (value.startsWith("_:") && element.getNamespaceURI("_") == null) return value;
         if (settings.contains(Setting.FormMode) && // variable
                 value.startsWith("?:")) return value;
         int offset = value.indexOf(":");
@@ -357,7 +365,8 @@ public class Parser implements ContentHandler {
             "http://www.w3.org/1999/xhtml/vocab#" :
             element.getNamespaceURI(prefix) ;
         if (namespaceURI == null) {
-            throw new RuntimeException("Unknown prefix: " + prefix);
+            return null;
+            //throw new RuntimeException("Unknown prefix: " + prefix);
         }
         if (namespaceURI.endsWith("/") || namespaceURI.endsWith("#"))
             return namespaceURI + value.substring(offset + 1);
@@ -435,6 +444,25 @@ public class Parser implements ContentHandler {
 
     }
 
+    private void getNamespaces(Attributes attrs) {
+        for (int i = 0; i < attrs.getLength(); i++) {
+            String qname = attrs.getQName(i);
+            String prefix = getPrefix(qname);
+            if ("xmlns".equals(prefix))
+                mapping.add(getLocal(prefix, qname), attrs.getValue(i));
+        }
+    }
+
+    private String getPrefix(String qname) {
+        if (!qname.contains(":")) return "";
+        return qname.substring(0, qname.indexOf(":"));
+    }
+
+    private String getLocal(String prefix, String qname) {
+        if (prefix.length() == 0) return qname;
+        return qname.substring(prefix.length() + 1);
+    }
+
     /**
      * SAX methods
      */
@@ -475,6 +503,8 @@ public class Parser implements ContentHandler {
             // Dammit, not quite the same as XMLEventFactory
             String prefix = (localname.equals(qname)) ? ""
                     : qname.substring(0, qname.indexOf(':'));
+            if (settings.contains(Setting.ManualNamespaces))
+                getNamespaces(arg3);
             StartElement e = EventFactory.createStartElement(
                     prefix, arg0, localname,
                     fromAttributes(arg3), mapping.current(), mapping);
@@ -486,8 +516,6 @@ public class Parser implements ContentHandler {
             context = parse(context, e);
         } catch (XMLStreamException ex) {
             throw new RuntimeException("Streaming issue", ex);
-        } catch (IOException ex) {
-            throw new RuntimeException("IO Problem", ex);
         }
 
     }
@@ -537,14 +565,14 @@ public class Parser implements ContentHandler {
             Attribute attr = EventFactory.createAttribute(
                     prefix, attributes.getURI(i),
                     attributes.getLocalName(i), attributes.getValue(i));
-            if (lang.getLocalPart().equals(attributes.getLocalName(i)) &&
-                    lang.getNamespaceURI().equals(attributes.getURI(i)))
+            if (xmllang.getLocalPart().equals(attributes.getLocalName(i)) &&
+                    xmllang.getNamespaceURI().equals(attributes.getURI(i)))
                 haveLang = true;
             toReturn.add(attr);
         }
         // Copy xml lang across if in literal
         if (level == 1 && context.language != null && !haveLang)
-            toReturn.add(EventFactory.createAttribute(lang, context.language));
+            toReturn.add(EventFactory.createAttribute(xmllang, context.language));
         return toReturn.iterator();
     }
 
@@ -601,17 +629,20 @@ public class Parser implements ContentHandler {
             literalWriter.append(e.asCharacters().getData());
     }
 
-    static class NSMapping implements NamespaceContext {
+    class NSMapping implements NamespaceContext {
         Map<String, LinkedList<String>> mappings =
                 new HashMap<String, LinkedList<String>>();
 
         public String getNamespaceURI(String prefix) {
+            //System.err.println(""+ hashCode() + " Get: " + prefix);
             if (mappings.containsKey(prefix))
                 return mappings.get(prefix).getLast();
             return null;
         }
 
         public void add(String prefix, String uri) {
+            //System.err.println(""+ hashCode() + " Add: {" + prefix + "} " + uri);
+            if (uri.length() == 0) uri = context.base;
             if (mappings.containsKey(prefix))
                 mappings.get(prefix).add(uri);
             else {
