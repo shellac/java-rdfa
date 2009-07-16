@@ -117,7 +117,6 @@ public class Parser implements ContentHandler {
         List<String> forwardProperties = new LinkedList(context.forwardProperties);
         List<String> backwardProperties = new LinkedList(context.backwardProperties);
         String currentLanguage = context.language;
-        String currentBase = context.base;
 
         // TODO element.getNamespace();
 
@@ -125,21 +124,19 @@ public class Parser implements ContentHandler {
             currentLanguage = element.getAttributeByName(lang).getValue();
 
         if (base.equals(element.getName()) && element.getAttributeByName(href) != null) {
-            currentBase = getBase(element.getAttributeByName(href));
-            context.base = currentBase;
-            if (context.original) context.parentSubject = currentBase;
+            context.setBase(element.getAttributeByName(href).getValue());
         }
 
         if (element.getAttributeByName(rev) == null &&
                 element.getAttributeByName(rel) == null) {
             Attribute nSubj = findAttribute(element, about, src, resource, href);
             if (nSubj != null) {
-                newSubject = getURI(currentBase, element, nSubj);
+                newSubject = getURI(context.base, element, nSubj);
             } else {
                 if (element.getAttributeByName(typeof) != null) {
                     if (body.equals(element.getName()) ||
                             head.equals(element.getName()))
-                        newSubject = currentBase;
+                        newSubject = context.base;
                     else
                         newSubject = createBNode();
                 } else {
@@ -154,7 +151,7 @@ public class Parser implements ContentHandler {
         } else {
             Attribute nSubj = findAttribute(element, about, src);
             if (nSubj != null) {
-                newSubject = getURI(currentBase, element, nSubj);
+                newSubject = getURI(context.base, element, nSubj);
             } else {
                 // TODO if element is head or body assume about=""
                 if (element.getAttributeByName(typeof) != null) {
@@ -167,12 +164,12 @@ public class Parser implements ContentHandler {
             }
             Attribute cObj = findAttribute(element, resource, href);
             if (cObj != null) {
-                currentObject = getURI(currentBase, element, cObj);
+                currentObject = getURI(context.base, element, cObj);
             }
         }
 
         if (newSubject != null && element.getAttributeByName(typeof) != null) {
-            List<String> types = getURIs(currentBase, element, element.getAttributeByName(typeof));
+            List<String> types = getURIs(context.base, element, element.getAttributeByName(typeof));
             for (String type : types) {
                 emitTriples(newSubject,
                         rdfType,
@@ -195,20 +192,20 @@ public class Parser implements ContentHandler {
         if (currentObject != null) {
             if (element.getAttributeByName(rel) != null) {
                 emitTriples(newSubject,
-                        getURIs(currentBase, element, element.getAttributeByName(rel)),
+                        getURIs(context.base, element, element.getAttributeByName(rel)),
                         currentObject);
             }
             if (element.getAttributeByName(rev) != null) {
                 emitTriples(currentObject,
-                        getURIs(currentBase, element, element.getAttributeByName(rev)),
+                        getURIs(context.base, element, element.getAttributeByName(rev)),
                         newSubject);
             }
         } else {
             if (element.getAttributeByName(rel) != null) {
-                forwardProperties.addAll(getURIs(currentBase, element, element.getAttributeByName(rel)));
+                forwardProperties.addAll(getURIs(context.base, element, element.getAttributeByName(rel)));
             }
             if (element.getAttributeByName(rev) != null) {
-                backwardProperties.addAll(getURIs(currentBase, element, element.getAttributeByName(rev)));
+                backwardProperties.addAll(getURIs(context.base, element, element.getAttributeByName(rev)));
             }
             if (element.getAttributeByName(rel) != null || // if predicate present
                     element.getAttributeByName(rev) != null) {
@@ -219,7 +216,7 @@ public class Parser implements ContentHandler {
         // Getting literal values. Complicated!
         
         if (element.getAttributeByName(property) != null) {
-            List<String> props = getURIs(currentBase, element, element.getAttributeByName(property));
+            List<String> props = getURIs(context.base, element, element.getAttributeByName(property));
             String dt = getDatatype(element);
             if (element.getAttributeByName(content) != null) { // The easy bit
                 String lex = element.getAttributeByName(content).getValue();
@@ -437,7 +434,6 @@ public class Parser implements ContentHandler {
         String base;
         String parentSubject;
         String parentObject;
-        //Map<String, String> uriMappings;
         String language;
         List<String> forwardProperties;
         List<String> backwardProperties;
@@ -448,7 +444,6 @@ public class Parser implements ContentHandler {
             this.parentSubject = base;
             this.forwardProperties = new LinkedList<String>();
             this.backwardProperties = new LinkedList<String>();
-            //this.uriMappings = new HashMap<String, String>();
             original = true;
         }
 
@@ -463,6 +458,17 @@ public class Parser implements ContentHandler {
             original = false;
             this.parent = toCopy;
         }
+
+        public void setBase(String abase) {
+            if (abase.contains("#"))
+                this.base = abase.substring(0, abase.indexOf("#"));
+            else
+                this.base = abase;
+            if (this.original) this.parentSubject = this.base;
+            if (parent != null) parent.setBase(base);
+        }
+
+
 
         //@Override
         public String toString() {
@@ -609,6 +615,7 @@ public class Parser implements ContentHandler {
 
     private Iterator fromAttributes(Attributes attributes) {
         List toReturn = new LinkedList();
+        boolean haveLang = false;
         for (int i = 0; i < attributes.getLength(); i++) {
             String qname = attributes.getQName(i);
             String prefix = qname.contains(":") ?
@@ -616,8 +623,14 @@ public class Parser implements ContentHandler {
             Attribute attr = EventFactory.createAttribute(
                     prefix, attributes.getURI(i),
                     attributes.getLocalName(i), attributes.getValue(i));
+            if (lang.getLocalPart().equals(attributes.getLocalName(i)) &&
+                    lang.getNamespaceURI().equals(attributes.getURI(i)))
+                haveLang = true;
             toReturn.add(attr);
         }
+        // Copy xml lang across if in literal
+        if (level == 1 && context.language != null && !haveLang)
+            toReturn.add(EventFactory.createAttribute(lang, context.language));
         return toReturn.iterator();
     }
 
