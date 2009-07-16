@@ -223,7 +223,7 @@ public class Parser implements ContentHandler {
             String dt = getDatatype(element);
             if (element.getAttributeByName(content) != null) { // The easy bit
                 String lex = element.getAttributeByName(content).getValue();
-                if (dt == null || dt.length() != 0)
+                if (dt == null || dt.length() == 0)
                     emitTriplesPlainLiteral(newSubject, props, lex, currentLanguage);
                 else
                     emitTriplesDatatypeLiteral(newSubject, props, lex, dt);
@@ -239,6 +239,7 @@ public class Parser implements ContentHandler {
                     ;
                 else if (xmlLiteral.equals(dt)) // definitely xml?
                     xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
+
             }
         }
 
