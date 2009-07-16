@@ -610,8 +610,11 @@ public class Parser implements ContentHandler {
     private Iterator fromAttributes(Attributes attributes) {
         List toReturn = new LinkedList();
         for (int i = 0; i < attributes.getLength(); i++) {
+            String qname = attributes.getQName(i);
+            String prefix = qname.contains(":") ?
+                qname.substring(0, qname.indexOf(":")) : "";
             Attribute attr = EventFactory.createAttribute(
-                    attributes.getQName(i), attributes.getURI(i),
+                    prefix, attributes.getURI(i),
                     attributes.getLocalName(i), attributes.getValue(i));
             toReturn.add(attr);
         }
