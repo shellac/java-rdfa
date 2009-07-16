@@ -654,6 +654,7 @@ public class Parser implements ContentHandler {
                 else
                     emitTriplesDatatypeLiteral(context.parentSubject,
                             litProps, lex, theDatatype);
+                queuedEvents = null;
                 xmlWriter = null;
                 literalWriter = null;
                 theDatatype = null;
@@ -698,6 +699,7 @@ public class Parser implements ContentHandler {
             }
         }
 
+        // This is all wrong. current just means defined on element, I think
         public Iterator<Namespace> current() {
             List<Namespace> toReturn = new LinkedList<Namespace>();
             for (Entry<String, LinkedList<String>> e: mappings.entrySet()) {
@@ -705,7 +707,8 @@ public class Parser implements ContentHandler {
                         EventFactory.createNamespace(e.getKey(), e.getValue().getLast())
                         );
             }
-            return toReturn.iterator();
+            //return toReturn.iterator();
+            return null;
         }
 
         public String getPrefix(String arg0) {

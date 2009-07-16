@@ -31,8 +31,8 @@ public class Scratch {
     public static void main(String[] args) throws SAXException, IOException {
         xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         String base = "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/";
-        String testHTML = base + "0057.xhtml";
-        String testSPARQL = base + "0057.sparql";
+        String testHTML = base + "0092.xhtml";
+        String testSPARQL = base + "0092.sparql";
 
         check(testHTML, testSPARQL);
     }
