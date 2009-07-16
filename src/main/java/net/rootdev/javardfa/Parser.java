@@ -19,10 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
@@ -105,20 +102,15 @@ public class Parser implements ContentHandler {
         this.context = new EvalContext(base);
     }
 
-    //private String currentBase;
-
     EvalContext parse(EvalContext context, StartElement element)
             throws XMLStreamException, IOException {
         boolean recurse = true;
         boolean skipElement = false;
         String newSubject = null;
         String currentObject = null;
-        //Map<String, String> uriMappings = context.uriMappings;
         List<String> forwardProperties = new LinkedList(context.forwardProperties);
         List<String> backwardProperties = new LinkedList(context.backwardProperties);
         String currentLanguage = context.language;
-
-        // TODO element.getNamespace();
 
         if (element.getAttributeByName(lang) != null)
             currentLanguage = element.getAttributeByName(lang).getValue();
@@ -209,7 +201,7 @@ public class Parser implements ContentHandler {
             }
             if (element.getAttributeByName(rel) != null || // if predicate present
                     element.getAttributeByName(rev) != null) {
-                currentObject = createBNode(); // TODO generate bnode
+                currentObject = createBNode();
             }
         }
 
@@ -225,15 +217,13 @@ public class Parser implements ContentHandler {
                 else
                     emitTriplesDatatypeLiteral(newSubject, props, lex, dt);
             } else {
-                //recurse = false;
+                recurse = false;
                 level = 1;
                 theDatatype = dt;
                 literalWriter = new StringWriter();
                 litProps = props;
-                if (dt == null) // either plain or xml
+                if (dt == null) // either plain or xml. defer decision
                     queuedEvents = new LinkedList<XMLEvent>();
-                else if (dt.length() == 0) // force plain
-                    ;
                 else if (xmlLiteral.equals(dt)) // definitely xml?
                     xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
 
@@ -256,7 +246,6 @@ public class Parser implements ContentHandler {
             if (skipElement) {
                 ec.language = currentLanguage;
                 ec.original = context.original;
-                //copy uri mappings
             } else {
                 if (newSubject != null) {
                     ec.parentSubject = newSubject;
@@ -271,28 +260,11 @@ public class Parser implements ContentHandler {
                 } else {
                     ec.parentObject = context.parentSubject;
                 }
-
-                //ec.uriMappings = uriMappings;
+                
                 ec.language = currentLanguage;
                 ec.forwardProperties = forwardProperties;
                 ec.backwardProperties = backwardProperties;
             }
-            /*
-            while (reader.hasNext()) {
-                XMLEvent event = reader.nextEvent();
-                if (event.isStartElement()) {
-                    parse(ec, event.asStartElement());
-                    if (!currentBase.equals(ec.base)) { // bubbling up base change
-                        // I could just let parentS = null, rather than bother with original?
-                        context.base = ec.base;
-                        if (context.original) context.parentSubject = ec.base;
-                    }
-                }
-                if (event.isEndDocument() || event.isEndElement()) {
-                    return;
-                }
-            }
-             */
 
             return ec;
         }
@@ -420,14 +392,6 @@ public class Parser implements ContentHandler {
         return expandCURIE(element, dt);
     }
 
-    private String getBase(Attribute attr) {
-        String theBase = attr.getValue();
-        if (theBase.contains("#"))
-            return theBase.substring(0, theBase.indexOf("#"));
-        else
-            return theBase;
-    }
-
     static class EvalContext {
 
         EvalContext parent;
@@ -451,7 +415,6 @@ public class Parser implements ContentHandler {
             this.base = toCopy.base;
             this.parentSubject = toCopy.parentSubject;
             this.parentObject = toCopy.parentObject;
-            //this.uriMappings = new HashMap<String, String>(toCopy.uriMappings);
             this.language = toCopy.language;
             this.forwardProperties = new LinkedList<String>(toCopy.forwardProperties);
             this.backwardProperties = new LinkedList<String>(toCopy.backwardProperties);
@@ -464,56 +427,10 @@ public class Parser implements ContentHandler {
                 this.base = abase.substring(0, abase.indexOf("#"));
             else
                 this.base = abase;
+            // Not great, but passes tests.
+            // We want to say: if parentSubject hasn't been changed, it's base
             if (this.original) this.parentSubject = this.base;
             if (parent != null) parent.setBase(base);
-        }
-
-
-
-        //@Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("[\n\tbase: " + base);
-            sb.append("\n\tparentSubject: " + parentSubject);
-            sb.append("\n\tparentObject: " + parentObject);
-            //sb.append("\nforward: [");
-            //for (String prop : forwardProperties) {
-            //    sb.append(prop);
-            //    sb.append(" ");
-            //}
-            sb.append("]");
-            return sb.toString();
-        }
-    }
-
-    static class Appender implements Iterator {
-
-        final Iterator parent;
-        final Object appended;
-        boolean finished;
-
-        public Appender(Iterator parent, Object appended) {
-            this.parent = parent;
-            this.appended = appended;
-            finished = false;
-        }
-
-        //@Override
-        public boolean hasNext() {
-            return parent.hasNext() || !finished;
-        }
-
-        //@Override
-        public Object next() {
-            if (parent.hasNext()) return parent.next();
-            if (finished) throw new NoSuchElementException("I'm empty, dum dum");
-            finished = true;
-            return appended;
-        }
-
-        //@Override
-        public void remove() {
-            throw new UnsupportedOperationException("Not supported");
         }
 
     }
@@ -555,7 +472,7 @@ public class Parser implements ContentHandler {
     public void startElement(String arg0, String localname, String qname, Attributes arg3) throws SAXException {
         try {
             //System.err.println("Start element: " + arg0 + " " + arg1 + " " + arg2);
-            // Dammit, not quit the same as XMLEventFactory
+            // Dammit, not quite the same as XMLEventFactory
             String prefix = (localname.equals(qname)) ? ""
                     : qname.substring(0, qname.indexOf(':'));
             StartElement e = EventFactory.createStartElement(
@@ -566,14 +483,11 @@ public class Parser implements ContentHandler {
                 handleForLiteral(e);
                 return;
             }
-            //System.err.println("Start: " + qname);
-            //System.err.println("Context is : " + context.hashCode());
             context = parse(context, e);
-            //System.err.println("Context now: " + context.hashCode());
         } catch (XMLStreamException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("Streaming issue", ex);
         } catch (IOException ex) {
-            Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException("IO Problem", ex);
         }
 
     }
@@ -717,13 +631,13 @@ public class Parser implements ContentHandler {
 
         // This is all wrong. current just means defined on element, I think
         public Iterator<Namespace> current() {
-            List<Namespace> toReturn = new LinkedList<Namespace>();
+            /*List<Namespace> toReturn = new LinkedList<Namespace>();
             for (Entry<String, LinkedList<String>> e: mappings.entrySet()) {
                 toReturn.add(
                         EventFactory.createNamespace(e.getKey(), e.getValue().getLast())
                         );
             }
-            //return toReturn.iterator();
+            return toReturn.iterator();*/
             return null;
         }
 
