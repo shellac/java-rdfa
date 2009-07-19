@@ -1,6 +1,7 @@
 /*
- * (c) 2009
- * Damian Steer <mailto:pldms@mac.com>
+ * (c) Copyright 2009 University of Bristol
+ * All rights reserved.
+ * [See end of file]
  */
 package net.rootdev.javardfa;
 
@@ -35,8 +36,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
 /**
- *
- * @author pldms
+ * @author Damian Steer <pldms@mac.com>
  */
 public class Parser implements ContentHandler {
 
@@ -46,14 +46,11 @@ public class Parser implements ContentHandler {
             "glossary", "help", "icon", "index", "last",
             "license", "meta", "next", "p3pv1", "prev",
             "collection", "role", "section", "stylesheet",
-            "subsection", "start", "top", "up" );
-
+            "subsection", "start", "top", "up");
     final static Set<String> SpecialRels = new HashSet<String>(_allowed);
-
     final static IRIFactory IRIFact = IRIFactory.semanticWebImplementation();
     final static XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
     final static XMLEventFactory EventFactory = XMLEventFactory.newInstance();
-
     private final XMLEventReader reader;
     private final StatementSink sink;
     // Suggestion: switch this for object produced by factory that matches QNames
@@ -71,7 +68,6 @@ public class Parser implements ContentHandler {
     final QName xmllang = new QName("http://www.w3.org/XML/1998/namespace", "lang", "xml");
     final QName lang = new QName("lang");
     final QName fakeXmlLang = new QName("xml:lang");
-
     final QName base = new QName("http://www.w3.org/1999/xhtml", "base");
     final QName head = new QName("http://www.w3.org/1999/xhtml", "head");
     final QName body = new QName("http://www.w3.org/1999/xhtml", "body");
@@ -79,13 +75,12 @@ public class Parser implements ContentHandler {
     final QName input = new QName("input");
     final QName name = new QName("name");
     final QName form = new QName("form");
-
     final Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
     final String xmlLiteral = "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
-
     final Set<Setting> settings = EnumSet.noneOf(Setting.class);
 
     public enum Setting {
+
         FormMode, ManualNamespaces
     }
 
@@ -95,9 +90,13 @@ public class Parser implements ContentHandler {
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
     }
 
-    public void enable(Setting setting) { settings.add(setting); }
+    public void enable(Setting setting) {
+        settings.add(setting);
+    }
 
-    public void disable(Setting setting) { settings.remove(setting); }
+    public void disable(Setting setting) {
+        settings.remove(setting);
+    }
 
     public void setBase(String base) {
         this.context = new EvalContext(base);
@@ -113,13 +112,15 @@ public class Parser implements ContentHandler {
         String currentLanguage = context.language;
         boolean langIsLang = context.langIsLang;
 
-        if (element.getAttributeByName(xmllang) != null)
+        if (element.getAttributeByName(xmllang) != null) {
             currentLanguage = element.getAttributeByName(xmllang).getValue();
+        }
 
         if (settings.contains(Setting.ManualNamespaces) &&
                 element.getAttributeByName(fakeXmlLang) != null &&
-                !langIsLang)
+                !langIsLang) {
             currentLanguage = element.getAttributeByName(fakeXmlLang).getValue();
+        }
 
         if (settings.contains(Setting.ManualNamespaces) &&
                 element.getAttributeByName(lang) != null) {
@@ -128,8 +129,9 @@ public class Parser implements ContentHandler {
         }
 
         if (base.equals(element.getName()) &&
-                element.getAttributeByName(href) != null)
+                element.getAttributeByName(href) != null) {
             context.setBase(element.getAttributeByName(href).getValue());
+        }
 
         if (element.getAttributeByName(rev) == null &&
                 element.getAttributeByName(rel) == null) {
@@ -139,10 +141,11 @@ public class Parser implements ContentHandler {
             } else {
                 if (element.getAttributeByName(typeof) != null) {
                     if (body.equals(element.getName()) ||
-                            head.equals(element.getName()))
+                            head.equals(element.getName())) {
                         newSubject = context.base;
-                    else
+                    } else {
                         newSubject = createBNode();
+                    }
                 } else {
                     if (context.parentObject != null) {
                         newSubject = context.parentObject;
@@ -181,15 +184,19 @@ public class Parser implements ContentHandler {
             }
         }
 
-        if (newSubject == null) newSubject = context.parentSubject;
+        if (newSubject == null) {
+            newSubject = context.parentSubject;
+        }
 
         // Dodgy extension
         if (settings.contains(Setting.FormMode)) {
-            if (form.equals(element.getName()))
+            if (form.equals(element.getName())) {
                 emitTriples(newSubject, rdfType, "http://www.w3.org/1999/xhtml/vocab/#form"); // Signal entering form
+            }
             if (input.equals(element.getName()) &&
-                    element.getAttributeByName(name) != null)
+                    element.getAttributeByName(name) != null) {
                 currentObject = "?:" + element.getAttributeByName(name).getValue();
+            }
 
         }
 
@@ -218,16 +225,17 @@ public class Parser implements ContentHandler {
         }
 
         // Getting literal values. Complicated!
-        
+
         if (element.getAttributeByName(property) != null) {
             List<String> props = getURIs(context.base, element, element.getAttributeByName(property));
             String dt = getDatatype(element);
             if (element.getAttributeByName(content) != null) { // The easy bit
                 String lex = element.getAttributeByName(content).getValue();
-                if (dt == null || dt.length() == 0)
+                if (dt == null || dt.length() == 0) {
                     emitTriplesPlainLiteral(newSubject, props, lex, currentLanguage);
-                else
+                } else {
                     emitTriplesDatatypeLiteral(newSubject, props, lex, dt);
+                }
             } else {
                 //recurse = false;
                 level = 1;
@@ -235,9 +243,12 @@ public class Parser implements ContentHandler {
                 literalWriter = new StringWriter();
                 litProps = props;
                 if (dt == null) // either plain or xml. defer decision
+                {
                     queuedEvents = new LinkedList<XMLEvent>();
-                else if (xmlLiteral.equals(dt)) // definitely xml?
+                } else if (xmlLiteral.equals(dt)) // definitely xml?
+                {
                     xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
+                }
 
             }
         }
@@ -273,7 +284,7 @@ public class Parser implements ContentHandler {
                 } else {
                     ec.parentObject = context.parentSubject;
                 }
-                
+
                 ec.language = currentLanguage;
                 ec.langIsLang = langIsLang;
                 ec.forwardProperties = forwardProperties;
@@ -318,7 +329,9 @@ public class Parser implements ContentHandler {
         QName attrName = attr.getName();
         if (attrName.equals(href) || attrName.equals(src)) // A URI
         {
-            if (attr.getValue().length() == 0) return base;
+            if (attr.getValue().length() == 0) {
+                return base;
+            }
             IRI uri = IRIFact.construct(base);
             IRI resolved = uri.resolve(attr.getValue());
             return resolved.toString();
@@ -338,23 +351,23 @@ public class Parser implements ContentHandler {
         List<String> uris = new LinkedList<String>();
         String[] curies = attr.getValue().split("\\s+");
         boolean permitReserved = rel.equals(attr.getName()) ||
-                    rev.equals(attr.getName());
+                rev.equals(attr.getName());
         for (String curie : curies) {
-            boolean isSpecial = (settings.contains(Setting.ManualNamespaces)) ?
-                SpecialRels.contains(curie.toLowerCase()) :
-                SpecialRels.contains(curie);
-            if (isSpecial && settings.contains(Setting.ManualNamespaces))
+            boolean isSpecial = (settings.contains(Setting.ManualNamespaces)) ? SpecialRels.contains(curie.toLowerCase()) : SpecialRels.contains(curie);
+            if (isSpecial && settings.contains(Setting.ManualNamespaces)) {
                 curie = curie.toLowerCase();
-            if (permitReserved && isSpecial)
+            }
+            if (permitReserved && isSpecial) {
                 uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie);
-            else if (!isSpecial) {
+            } else if (!isSpecial) {
                 String uri = expandCURIE(element, curie);
-                if (uri != null) uris.add(uri);
+                if (uri != null) {
+                    uris.add(uri);
+                }
             }
         }
         return uris;
     }
-    
     int bnodeId = 0;
 
     private String createBNode() // TODO probably broken? Can you write bnodes in rdfa directly?
@@ -363,37 +376,46 @@ public class Parser implements ContentHandler {
     }
 
     private String expandCURIE(StartElement element, String value) {
-        if (value.startsWith("_:") && element.getNamespaceURI("_") == null) return value;
+        if (value.startsWith("_:") && element.getNamespaceURI("_") == null) {
+            return value;
+        }
         if (settings.contains(Setting.FormMode) && // variable
-                value.startsWith("?:")) return value;
+                value.startsWith("?:")) {
+            return value;
+        }
         int offset = value.indexOf(":") + 1;
         if (offset == 0) {
             //throw new RuntimeException("Is this a curie? \"" + value + "\"");
             return null;
         }
         String prefix = value.substring(0, offset - 1);
-        String namespaceURI = prefix.length() == 0 ?
-            "http://www.w3.org/1999/xhtml/vocab#" :
-            element.getNamespaceURI(prefix) ;
+        String namespaceURI = prefix.length() == 0 ? "http://www.w3.org/1999/xhtml/vocab#" : element.getNamespaceURI(prefix);
         if (namespaceURI == null) {
             return null;
             //throw new RuntimeException("Unknown prefix: " + prefix);
         }
-        if (offset != value.length() && value.charAt(offset) == '#') offset += 1; // ex:#bar
-        if (namespaceURI.endsWith("/") || namespaceURI.endsWith("#"))
+        if (offset != value.length() && value.charAt(offset) == '#') {
+            offset += 1; // ex:#bar
+        }
+        if (namespaceURI.endsWith("/") || namespaceURI.endsWith("#")) {
             return namespaceURI + value.substring(offset);
-        else
+        } else {
             return namespaceURI + "#" + value.substring(offset);
+        }
     }
 
     private String expandSafeCURIE(String base, StartElement element, String value) {
         if (value.startsWith("[") && value.endsWith("]")) {
             return expandCURIE(element, value.substring(1, value.length() - 1));
         } else {
-            if (value.length() == 0) return base;
+            if (value.length() == 0) {
+                return base;
+            }
 
             if (settings.contains(Setting.FormMode) &&
-                    value.startsWith("?:")) return value;
+                    value.startsWith("?:")) {
+                return value;
+            }
 
             IRI uri = IRIFact.construct(base);
             IRI resolved = uri.resolve(value);
@@ -447,25 +469,36 @@ public class Parser implements ContentHandler {
         }
 
         public void setBase(String abase) {
-            if (abase.contains("#"))
+            if (abase.contains("#")) {
                 this.base = abase.substring(0, abase.indexOf("#"));
-            else
+            } else {
                 this.base = abase;
+            }
             // Not great, but passes tests.
             // We want to say: if parentSubject hasn't been changed, it's base
-            if (this.original) this.parentSubject = this.base;
-            if (parent != null) parent.setBase(base);
+            if (this.original) {
+                this.parentSubject = this.base;
+            }
+            if (parent != null) {
+                parent.setBase(base);
+            }
         }
 
         public void setNamespaceURI(String prefix, String uri) {
-            if (uri.length() == 0) uri = base;
+            if (uri.length() == 0) {
+                uri = base;
+            }
             prefixToUri.put(prefix, uri);
         }
 
         public String getNamespaceURI(String prefix) {
-            if (prefixToUri.containsKey(prefix)) return prefixToUri.get(prefix);
-            else if (parent != null) return parent.getNamespaceURI(prefix);
-            else return null;
+            if (prefixToUri.containsKey(prefix)) {
+                return prefixToUri.get(prefix);
+            } else if (parent != null) {
+                return parent.getNamespaceURI(prefix);
+            } else {
+                return null;
+            }
         }
 
         public String getPrefix(String uri) {
@@ -475,36 +508,37 @@ public class Parser implements ContentHandler {
         public Iterator getPrefixes(String uri) {
             throw new UnsupportedOperationException("Not supported yet.");
         }
-
     }
 
     private void getNamespaces(Attributes attrs) {
         for (int i = 0; i < attrs.getLength(); i++) {
             String qname = attrs.getQName(i);
             String prefix = getPrefix(qname);
-            if ("xmlns".equals(prefix))
+            if ("xmlns".equals(prefix)) {
                 context.setNamespaceURI(getLocal(prefix, qname), attrs.getValue(i));
+            }
         }
     }
 
     private String getPrefix(String qname) {
-        if (!qname.contains(":")) return "";
+        if (!qname.contains(":")) {
+            return "";
+        }
         return qname.substring(0, qname.indexOf(":"));
     }
 
     private String getLocal(String prefix, String qname) {
-        if (prefix.length() == 0) return qname;
+        if (prefix.length() == 0) {
+            return qname;
+        }
         return qname.substring(prefix.length() + 1);
     }
-
     /**
      * SAX methods
      */
-
     private Locator locator;
     //private NSMapping mapping;
     private EvalContext context = new EvalContext("http://www.example.com/");
-    
     // For literals (what fun!)
     private List<XMLEvent> queuedEvents;
     private int level = -1;
@@ -513,16 +547,25 @@ public class Parser implements ContentHandler {
     private String theDatatype;
     private List<String> litProps;
 
-    public void setDocumentLocator(Locator arg0) { this.locator = arg0; }
+    public void setDocumentLocator(Locator arg0) {
+        this.locator = arg0;
+    }
 
-    public void startDocument() throws SAXException { sink.start(); }
+    public void startDocument() throws SAXException {
+        sink.start();
+    }
 
-    public void endDocument() throws SAXException { sink.end(); }
+    public void endDocument() throws SAXException {
+        sink.end();
+    }
 
     public void startPrefixMapping(String arg0, String arg1)
-            throws SAXException { context.setNamespaceURI(arg0, arg1); }
+            throws SAXException {
+        context.setNamespaceURI(arg0, arg1);
+    }
 
-    public void endPrefixMapping(String arg0) throws SAXException { }
+    public void endPrefixMapping(String arg0) throws SAXException {
+    }
 
     public void startElement(String arg0, String localname, String qname, Attributes arg3) throws SAXException {
         try {
@@ -530,8 +573,9 @@ public class Parser implements ContentHandler {
             // Dammit, not quite the same as XMLEventFactory
             String prefix = (localname.equals(qname)) ? ""
                     : qname.substring(0, qname.indexOf(':'));
-            if (settings.contains(Setting.ManualNamespaces))
+            if (settings.contains(Setting.ManualNamespaces)) {
                 getNamespaces(arg3);
+            }
             StartElement e = EventFactory.createStartElement(
                     prefix, arg0, localname,
                     fromAttributes(arg3), null, context);
@@ -554,7 +598,9 @@ public class Parser implements ContentHandler {
                     : qname.substring(0, qname.indexOf(':'));
             XMLEvent e = EventFactory.createEndElement(prefix, arg0, localname);
             handleForLiteral(e);
-            if (level != -1) return; // if still handling literal duck out now
+            if (level != -1) {
+                return; // if still handling literal duck out now
+            }
         }
         context = context.parent;
     }
@@ -575,28 +621,31 @@ public class Parser implements ContentHandler {
         }
     }
 
-    public void processingInstruction(String arg0, String arg1) throws SAXException {}
+    public void processingInstruction(String arg0, String arg1) throws SAXException {
+    }
 
-    public void skippedEntity(String arg0) throws SAXException {}
+    public void skippedEntity(String arg0) throws SAXException {
+    }
 
     private Iterator fromAttributes(Attributes attributes) {
         List toReturn = new LinkedList();
         boolean haveLang = false;
         for (int i = 0; i < attributes.getLength(); i++) {
             String qname = attributes.getQName(i);
-            String prefix = qname.contains(":") ?
-                qname.substring(0, qname.indexOf(":")) : "";
+            String prefix = qname.contains(":") ? qname.substring(0, qname.indexOf(":")) : "";
             Attribute attr = EventFactory.createAttribute(
                     prefix, attributes.getURI(i),
                     attributes.getLocalName(i), attributes.getValue(i));
             if (xmllang.getLocalPart().equals(attributes.getLocalName(i)) &&
-                    xmllang.getNamespaceURI().equals(attributes.getURI(i)))
+                    xmllang.getNamespaceURI().equals(attributes.getURI(i))) {
                 haveLang = true;
+            }
             toReturn.add(attr);
         }
         // Copy xml lang across if in literal
-        if (level == 1 && context.language != null && !haveLang)
+        if (level == 1 && context.language != null && !haveLang) {
             toReturn.add(EventFactory.createAttribute(xmllang, context.language));
+        }
         return toReturn.iterator();
     }
 
@@ -615,7 +664,9 @@ public class Parser implements ContentHandler {
             level++;
             if (queuedEvents != null) { // Aha, we ain't plain
                 xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
-                for (XMLEvent ev: queuedEvents) xmlWriter.add(ev);
+                for (XMLEvent ev : queuedEvents) {
+                    xmlWriter.add(ev);
+                }
                 queuedEvents = null;
                 theDatatype = xmlLiteral;
             }
@@ -624,18 +675,21 @@ public class Parser implements ContentHandler {
         if (e.isEndElement()) {
             level--;
             if (level == 0) { // Finished!
-                if (xmlWriter != null) xmlWriter.close();
-                else if (queuedEvents != null) {
-                    for (XMLEvent ev: queuedEvents)
+                if (xmlWriter != null) {
+                    xmlWriter.close();
+                } else if (queuedEvents != null) {
+                    for (XMLEvent ev : queuedEvents) {
                         literalWriter.append(ev.asCharacters().getData());
+                    }
                 }
                 String lex = literalWriter.toString();
-                if (theDatatype == null || theDatatype.length() == 0)
+                if (theDatatype == null || theDatatype.length() == 0) {
                     emitTriplesPlainLiteral(context.parentSubject,
                             litProps, lex, context.language);
-                else
+                } else {
                     emitTriplesDatatypeLiteral(context.parentSubject,
                             litProps, lex, theDatatype);
+                }
                 queuedEvents = null;
                 xmlWriter = null;
                 literalWriter = null;
@@ -646,10 +700,39 @@ public class Parser implements ContentHandler {
             }
         }
 
-        if (xmlWriter != null) xmlWriter.add(e);
-        else if (e.isCharacters() && queuedEvents != null)
+        if (xmlWriter != null) {
+            xmlWriter.add(e);
+        } else if (e.isCharacters() && queuedEvents != null) {
             queuedEvents.add(e);
-        else if (e.isCharacters())
+        } else if (e.isCharacters()) {
             literalWriter.append(e.asCharacters().getData());
+        }
     }
 }
+
+/*
+ * (c) Copyright 2009 University of Bristol
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
