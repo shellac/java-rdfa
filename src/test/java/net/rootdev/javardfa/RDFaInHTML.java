@@ -96,7 +96,7 @@ public class RDFaInHTML {
         HtmlParser reader = new HtmlParser();
         reader.setXmlPolicy(XmlViolationPolicy.ALLOW);
         reader.setXmlnsPolicy(XmlViolationPolicy.ALLOW);
-        //reader.setMappingLangToXmlLang(true);
+        reader.setMappingLangToXmlLang(false);
         reader.setContentHandler(parser);
         Throwable error = null;
         try {

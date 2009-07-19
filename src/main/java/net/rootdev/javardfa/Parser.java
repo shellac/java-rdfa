@@ -111,21 +111,25 @@ public class Parser implements ContentHandler {
         List<String> forwardProperties = new LinkedList(context.forwardProperties);
         List<String> backwardProperties = new LinkedList(context.backwardProperties);
         String currentLanguage = context.language;
+        boolean langIsLang = context.langIsLang;
 
         if (element.getAttributeByName(xmllang) != null)
             currentLanguage = element.getAttributeByName(xmllang).getValue();
 
         if (settings.contains(Setting.ManualNamespaces) &&
-                element.getAttributeByName(fakeXmlLang) != null)
+                element.getAttributeByName(fakeXmlLang) != null &&
+                !langIsLang)
             currentLanguage = element.getAttributeByName(fakeXmlLang).getValue();
 
         if (settings.contains(Setting.ManualNamespaces) &&
-                element.getAttributeByName(lang) != null)
+                element.getAttributeByName(lang) != null) {
+            langIsLang = true;
             currentLanguage = element.getAttributeByName(lang).getValue();
-
-        if (base.equals(element.getName()) && element.getAttributeByName(href) != null) {
-            context.setBase(element.getAttributeByName(href).getValue());
         }
+
+        if (base.equals(element.getName()) &&
+                element.getAttributeByName(href) != null)
+            context.setBase(element.getAttributeByName(href).getValue());
 
         if (element.getAttributeByName(rev) == null &&
                 element.getAttributeByName(rel) == null) {
@@ -253,6 +257,7 @@ public class Parser implements ContentHandler {
 
             if (skipElement) {
                 ec.language = currentLanguage;
+                ec.langIsLang = langIsLang;
                 ec.original = context.original;
             } else {
                 if (newSubject != null) {
@@ -270,6 +275,7 @@ public class Parser implements ContentHandler {
                 }
                 
                 ec.language = currentLanguage;
+                ec.langIsLang = langIsLang;
                 ec.forwardProperties = forwardProperties;
                 ec.backwardProperties = backwardProperties;
             }
@@ -435,7 +441,8 @@ public class Parser implements ContentHandler {
             this.language = toCopy.language;
             this.forwardProperties = new LinkedList<String>(toCopy.forwardProperties);
             this.backwardProperties = new LinkedList<String>(toCopy.backwardProperties);
-            original = false;
+            this.langIsLang = toCopy.langIsLang;
+            this.original = false;
             this.parent = toCopy;
         }
 

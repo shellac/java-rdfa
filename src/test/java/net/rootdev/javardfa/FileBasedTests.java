@@ -16,6 +16,7 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -59,7 +60,7 @@ public class FileBasedTests {
         xmlFactory = XMLInputFactory.newInstance();
     }
 
-    //@Ignore
+    @Ignore
     @Test
     public void compare() throws XMLStreamException, IOException, ParserConfigurationException, SAXException {
         InputStream htmlIn =
