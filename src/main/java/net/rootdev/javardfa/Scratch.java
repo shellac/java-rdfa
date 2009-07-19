@@ -28,13 +28,19 @@ public class Scratch {
 
     private static XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
 
-    public static void main(String[] args) throws SAXException, IOException {
-        xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+    public static void main(String[] args) throws SAXException, IOException, ClassNotFoundException {
+        /*xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         String base = "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/";
         String testHTML = base + "0101.xhtml";
         String testSPARQL = base + "0101.sparql";
 
-        check(testHTML, testSPARQL);
+        check(testHTML, testSPARQL);*/
+
+        Class.forName(RDFaReader.class.getName());
+        Model model = ModelFactory.createDefaultModel();
+        model.read("http://www.ivan-herman.net/foaf.html", "XHTML");
+        System.err.println("== Read ==");
+        model.write(System.err, "TTL");
     }
 
     private static void check(String testHTML, String testSPARQL) throws SAXException, IOException {

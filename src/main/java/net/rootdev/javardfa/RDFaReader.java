@@ -8,8 +8,16 @@ package net.rootdev.javardfa;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFErrorHandler;
 import com.hp.hpl.jena.rdf.model.RDFReader;
+import com.hp.hpl.jena.rdf.model.impl.RDFReaderFImpl;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import nu.validator.htmlparser.common.XmlViolationPolicy;
+import nu.validator.htmlparser.sax.HtmlParser;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author Damian Steer <pldms@mac.com>
@@ -17,16 +25,45 @@ import java.io.Reader;
 
 public class RDFaReader implements RDFReader {
 
+    static {
+        RDFReaderFImpl.setBaseReaderClassName("HTML", HTMLRDFaReader.class.getName());
+        RDFReaderFImpl.setBaseReaderClassName("XHTML", XHTMLRDFaReader.class.getName());
+    }
+
+    public static class HTMLRDFaReader extends RDFaReader {
+        @Override public XMLReader getReader() {
+            HtmlParser reader = new HtmlParser();
+            reader.setXmlPolicy(XmlViolationPolicy.ALLOW);
+            reader.setXmlnsPolicy(XmlViolationPolicy.ALLOW);
+            reader.setMappingLangToXmlLang(false);
+            return reader;
+        }
+
+        @Override public void initParser(Parser parser) {
+            parser.enable(Parser.Setting.ManualNamespaces);
+        }
+    }
+
+    public static class XHTMLRDFaReader extends RDFaReader {
+        @Override public XMLReader getReader() throws SAXException {
+            XMLReader reader = XMLReaderFactory.createXMLReader();
+            reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            return reader;
+        }
+    }
+
+    private XMLReader xmlReader;
+
     public void read(Model arg0, Reader arg1, String arg2) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.runParser(arg0, arg2, new InputSource(arg1));
     }
 
     public void read(Model arg0, InputStream arg1, String arg2) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.runParser(arg0, arg2, new InputSource(arg1));
     }
 
     public void read(Model arg0, String arg1) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.runParser(arg0, null, new InputSource(arg1));
     }
 
     public Object setProperty(String arg0, Object arg1) {
@@ -36,6 +73,31 @@ public class RDFaReader implements RDFReader {
     public RDFErrorHandler setErrorHandler(RDFErrorHandler arg0) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    public void setReader(XMLReader reader) { this.xmlReader = reader; }
+    public XMLReader getReader() throws SAXException { return xmlReader; }
+    public void initParser(Parser parser) { }
+
+    private StatementSink getSink(Model arg0) {
+        return new JenaStatementSink(arg0);
+    }
+
+    private void runParser(Model arg0, String arg2, InputSource source) {
+        StatementSink sink = getSink(arg0);
+        Parser parser = new Parser(sink);
+        parser.setBase(arg2);
+        initParser(parser);
+        try {
+            XMLReader xreader = getReader();
+            xreader.setContentHandler(parser);
+            xreader.parse(source);
+        } catch (IOException ex) {
+            throw new RuntimeException("IO Error when parsing", ex);
+        } catch (SAXException ex) {
+            throw new RuntimeException("SAX Error when parsing", ex);
+        }
+    }
+
 }
 
 /*
