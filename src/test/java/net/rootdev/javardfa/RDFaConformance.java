@@ -77,20 +77,6 @@ public class RDFaConformance {
             tests.add(params);
         }
 
-        Query numOfTests = QueryFactory.create(
-                "select (count(*) as ?count) { ?test a <http://www.w3.org/2006/03/test-description#TestCase> }",
-                Syntax.syntaxARQ);
-
-        qe = QueryExecutionFactory.create(numOfTests, manifest);
-
-        results = qe.execSelect();
-
-        int numOfResults = results.next().getLiteral("count").getInt();
-
-        if (numOfResults != tests.size()) {
-            log.warn("Query <{}> is missing some tests");
-        }
-
         return tests;
     }
     private final String test;

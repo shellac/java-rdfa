@@ -41,6 +41,8 @@ public class RDFaInHTML {
     final static Logger log = LoggerFactory.getLogger(RDFaInHTML.class);
     final static String ManifestURI =
             "http://philip.html5.org/demos/rdfa/tests.json";
+    final static String Base = "http://www.example.com/BASE";
+
 
     public static class HTMLTest {
         String input;
@@ -89,7 +91,7 @@ public class RDFaInHTML {
         StatementSink sink = new JenaStatementSink(model);
         Reader sreader = new StringReader(test.input);
         Parser parser = new Parser(sink);
-        parser.setBase("http://example.com/");
+        parser.setBase(Base);
         parser.enable(Parser.Setting.ManualNamespaces);
         HtmlParser reader = new HtmlParser();
         reader.setXmlPolicy(XmlViolationPolicy.ALLOW);
@@ -102,8 +104,8 @@ public class RDFaInHTML {
         } catch (Throwable e) {
             error = e;
         }
-        String actual = test.expected.replaceAll("<>", "<http://example.com/>");
-        actual = actual.replaceAll("\\{BASE\\}", "http://example.com/");
+        String actual = test.expected.replaceAll("<>", "<" + Base + ">");
+        actual = actual.replaceAll("\\{BASE\\}", Base);
         Model expectedModel = ModelFactory.createDefaultModel();
         expectedModel.read(new StringReader(actual), null, "N-TRIPLE");
         boolean result = expectedModel.isIsomorphicWith(model);

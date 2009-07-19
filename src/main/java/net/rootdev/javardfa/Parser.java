@@ -27,7 +27,6 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import org.xml.sax.Attributes;
@@ -361,12 +360,12 @@ public class Parser implements ContentHandler {
         if (value.startsWith("_:") && element.getNamespaceURI("_") == null) return value;
         if (settings.contains(Setting.FormMode) && // variable
                 value.startsWith("?:")) return value;
-        int offset = value.indexOf(":");
-        if (offset == -1) {
+        int offset = value.indexOf(":") + 1;
+        if (offset == 0) {
             //throw new RuntimeException("Is this a curie? \"" + value + "\"");
             return null;
         }
-        String prefix = value.substring(0, offset);
+        String prefix = value.substring(0, offset - 1);
         String namespaceURI = prefix.length() == 0 ?
             "http://www.w3.org/1999/xhtml/vocab#" :
             element.getNamespaceURI(prefix) ;
@@ -374,10 +373,11 @@ public class Parser implements ContentHandler {
             return null;
             //throw new RuntimeException("Unknown prefix: " + prefix);
         }
+        if (offset != value.length() && value.charAt(offset) == '#') offset += 1; // ex:#bar
         if (namespaceURI.endsWith("/") || namespaceURI.endsWith("#"))
-            return namespaceURI + value.substring(offset + 1);
+            return namespaceURI + value.substring(offset);
         else
-            return namespaceURI + "#" + value.substring(offset + 1);
+            return namespaceURI + "#" + value.substring(offset);
     }
 
     private String expandSafeCURIE(String base, StartElement element, String value) {
@@ -407,7 +407,7 @@ public class Parser implements ContentHandler {
         return expandCURIE(element, dt);
     }
 
-    static class EvalContext {
+    static class EvalContext implements NamespaceContext {
 
         EvalContext parent;
         String base;
@@ -416,7 +416,9 @@ public class Parser implements ContentHandler {
         String language;
         List<String> forwardProperties;
         List<String> backwardProperties;
+        Map<String, String> prefixToUri = new HashMap<String, String>();
         boolean original;
+        boolean langIsLang = false; // html 5 oddity
 
         private EvalContext(String base) {
             this.base = base;
@@ -448,6 +450,25 @@ public class Parser implements ContentHandler {
             if (parent != null) parent.setBase(base);
         }
 
+        public void setNamespaceURI(String prefix, String uri) {
+            if (uri.length() == 0) uri = base;
+            prefixToUri.put(prefix, uri);
+        }
+
+        public String getNamespaceURI(String prefix) {
+            if (prefixToUri.containsKey(prefix)) return prefixToUri.get(prefix);
+            else if (parent != null) return parent.getNamespaceURI(prefix);
+            else return null;
+        }
+
+        public String getPrefix(String uri) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public Iterator getPrefixes(String uri) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
     }
 
     private void getNamespaces(Attributes attrs) {
@@ -455,7 +476,7 @@ public class Parser implements ContentHandler {
             String qname = attrs.getQName(i);
             String prefix = getPrefix(qname);
             if ("xmlns".equals(prefix))
-                mapping.add(getLocal(prefix, qname), attrs.getValue(i));
+                context.setNamespaceURI(getLocal(prefix, qname), attrs.getValue(i));
         }
     }
 
@@ -474,7 +495,7 @@ public class Parser implements ContentHandler {
      */
 
     private Locator locator;
-    private NSMapping mapping;
+    //private NSMapping mapping;
     private EvalContext context = new EvalContext("http://www.example.com/");
     
     // For literals (what fun!)
@@ -487,21 +508,14 @@ public class Parser implements ContentHandler {
 
     public void setDocumentLocator(Locator arg0) { this.locator = arg0; }
 
-    public void startDocument() throws SAXException {
-        sink.start();
-        mapping = new NSMapping();
-    }
+    public void startDocument() throws SAXException { sink.start(); }
 
     public void endDocument() throws SAXException { sink.end(); }
 
-    public void startPrefixMapping(String arg0, String arg1) throws SAXException {
-        //System.err.println("Mapping: " + arg0 + " " + arg1);
-        mapping.add(arg0, arg1);
-    }
+    public void startPrefixMapping(String arg0, String arg1)
+            throws SAXException { context.setNamespaceURI(arg0, arg1); }
 
-    public void endPrefixMapping(String arg0) throws SAXException {
-        mapping.remove(arg0);
-    }
+    public void endPrefixMapping(String arg0) throws SAXException { }
 
     public void startElement(String arg0, String localname, String qname, Attributes arg3) throws SAXException {
         try {
@@ -513,7 +527,7 @@ public class Parser implements ContentHandler {
                 getNamespaces(arg3);
             StartElement e = EventFactory.createStartElement(
                     prefix, arg0, localname,
-                    fromAttributes(arg3), mapping.current(), mapping);
+                    fromAttributes(arg3), null, context);
 
             if (level != -1) { // getting literal
                 handleForLiteral(e);
@@ -535,10 +549,7 @@ public class Parser implements ContentHandler {
             handleForLiteral(e);
             if (level != -1) return; // if still handling literal duck out now
         }
-        //System.err.println("End: " + qname);
-        //System.err.println("Context is : " + context.hashCode());
         context = context.parent;
-        //System.err.println("Context now: " + context.hashCode());
     }
 
     public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
@@ -633,57 +644,5 @@ public class Parser implements ContentHandler {
             queuedEvents.add(e);
         else if (e.isCharacters())
             literalWriter.append(e.asCharacters().getData());
-    }
-
-    class NSMapping implements NamespaceContext {
-        Map<String, LinkedList<String>> mappings =
-                new HashMap<String, LinkedList<String>>();
-
-        public String getNamespaceURI(String prefix) {
-            //System.err.println(""+ hashCode() + " Get: " + prefix);
-            if (mappings.containsKey(prefix))
-                return mappings.get(prefix).getLast();
-            return null;
-        }
-
-        public void add(String prefix, String uri) {
-            //System.err.println(""+ hashCode() + " Add: {" + prefix + "} " + uri);
-            if (uri.length() == 0) uri = context.base;
-            if (mappings.containsKey(prefix))
-                mappings.get(prefix).add(uri);
-            else {
-                LinkedList<String> list = new LinkedList<String>();
-                list.add(uri);
-                mappings.put(prefix, list);
-            }
-        }
-
-        public void remove(String prefix) {
-            if (mappings.containsKey(prefix)) {
-                mappings.get(prefix).removeLast();
-                if (mappings.get(prefix).isEmpty())
-                    mappings.remove(prefix);
-            }
-        }
-
-        // This is all wrong. current just means defined on element, I think
-        public Iterator<Namespace> current() {
-            /*List<Namespace> toReturn = new LinkedList<Namespace>();
-            for (Entry<String, LinkedList<String>> e: mappings.entrySet()) {
-                toReturn.add(
-                        EventFactory.createNamespace(e.getKey(), e.getValue().getLast())
-                        );
-            }
-            return toReturn.iterator();*/
-            return null;
-        }
-
-        public String getPrefix(String arg0) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        public Iterator getPrefixes(String arg0) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
     }
 }
