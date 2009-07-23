@@ -195,7 +195,7 @@ public class Parser implements ContentHandler {
             }
             if (input.equals(element.getName()) &&
                     element.getAttributeByName(name) != null) {
-                currentObject = "?:" + element.getAttributeByName(name).getValue();
+                currentObject = "?" + element.getAttributeByName(name).getValue();
             }
 
         }
@@ -380,7 +380,7 @@ public class Parser implements ContentHandler {
             return value;
         }
         if (settings.contains(Setting.FormMode) && // variable
-                value.startsWith("?:")) {
+                value.startsWith("?")) {
             return value;
         }
         int offset = value.indexOf(":") + 1;
@@ -413,7 +413,7 @@ public class Parser implements ContentHandler {
             }
 
             if (settings.contains(Setting.FormMode) &&
-                    value.startsWith("?:")) {
+                    value.startsWith("?")) {
                 return value;
             }
 

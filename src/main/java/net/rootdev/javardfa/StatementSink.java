@@ -12,9 +12,34 @@ package net.rootdev.javardfa;
 
 public interface StatementSink
 {
+    /**
+     * Begin parsing
+     */
     public void start();
+
+    /**
+     * Complete parsing
+     */
     public void end();
+
+    /**
+     * Add statement with non-literal object.
+     * Blank nodes begin with _:, variables with ?, otherwise IRI
+     * @param subject Subject of triple
+     * @param predicate Predicate
+     * @param object Object
+     */
     public void addObject(String subject, String predicate, String object);
+
+    /**
+     * Add statement with a literal object.
+     * As above, blank nodes begin with _:, variables with ?, otherwise IRI
+     * @param subject Subject of triple
+     * @param predicate Predicate
+     * @param lex Lexical form
+     * @param lang Language (may be null)
+     * @param datatype Datatype IRI (may be null)
+     */
     public void addLiteral(String subject, String predicate, String lex, String lang, String datatype);
 }
 
