@@ -60,7 +60,6 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <linksource>true</linksource>
-                    <aggregate>true</aggregate>
                     <links>
                         <link>http://java.sun.com/javase/6/docs/api/</link>
                         <link>http://jena.sourceforge.net/javadoc/</link>
@@ -80,9 +79,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <configuration>
-                    <inputDirectory>${project.reporting.outputDirectory}/apidocs</inputDirectory>
-                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -147,18 +143,33 @@
         <repository>
             <id>rootdev.repo.ssh</id>
             <name>Rootdev maven repository, via ssh</name>
-            <url>scp://maven@www.rootdev.net/home/maven/repo</url>
+            <url>scp://maven@www.rootdev.net/home/maven/site/repo</url>
         </repository>
         <snapshotRepository>
             <id>rootdev.repo.ssh</id>
             <name>Rootdev maven repository, via ssh</name>
-            <url>scp://maven@www.rootdev.net/home/maven/snapshot-repo</url>
+            <url>scp://maven@www.rootdev.net/home/maven/site/snapshot-repo</url>
         </snapshotRepository>
         <site>
             <id>rootdev.repo.ssh</id>
-            <url>scp://maven@www.rootdev.net/home/maven/javadoc/${project.name}</url>
+            <url>scp://maven@www.rootdev.net/home/maven/site/projects/${project.name}</url>
         </site>
     </distributionManagement>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <linksource>true</linksource>
+                    <links>
+                        <link>http://java.sun.com/javase/6/docs/api/</link>
+                        <link>http://jena.sourceforge.net/javadoc/</link>
+                    </links>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
