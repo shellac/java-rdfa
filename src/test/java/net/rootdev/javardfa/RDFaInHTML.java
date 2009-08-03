@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import org.json.JSONException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -19,17 +20,15 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.reflect.Type;
 import java.util.LinkedList;
 import nu.validator.htmlparser.common.XmlViolationPolicy;
 import org.xml.sax.InputSource;
 import nu.validator.htmlparser.sax.HtmlParser;
 import org.xml.sax.SAXException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * @author Damian Steer <pldms@mac.com>
@@ -53,27 +52,31 @@ public class RDFaInHTML {
 
     @Parameters
     public static Collection<HTMLTest[]> testFiles()
-            throws URISyntaxException, IOException {
+            throws URISyntaxException, IOException, JSONException {
 
         FileManager fm = FileManager.get();
 
-        Gson gson = new Gson();
-
         InputStream in = fm.open(ManifestURI);
-        Reader reader = new InputStreamReader(in, "UTF-8");
 
-        Type collectionType = new TypeToken<Collection<HTMLTest>>() {
-        }.getType();
-        Collection<HTMLTest> tests = gson.fromJson(reader, collectionType);
-        reader.close();
-        in.close();
+        String jsonData = fm.readWholeFileAsUTF8(in);
+
+        // I want GSON back. Stupid maven!
+        //Collection<HTMLTest> tests = gson.fromJson(reader, collectionType);
 
         // Infelicity in junit
         Collection<HTMLTest[]> toReturn = new LinkedList<HTMLTest[]>();
-        for (HTMLTest test : tests) {
-            if (!test.purpose.contains("Scripted")) {
+
+        JSONArray allTests = new JSONArray(jsonData);
+        for (int i = 0; i < allTests.length(); i++) {
+            JSONObject obj = allTests.getJSONObject(i);
+            HTMLTest test = new HTMLTest();
+            test.expected = obj.getString("expected");
+            test.id = obj.getString("id");
+            test.input = obj.getString("input");
+            test.purpose = obj.getString("purpose");
+            test.type = obj.getString("type");
+            if (!test.purpose.contains("Scripted"))
                 toReturn.add(new HTMLTest[]{test});
-            }
         }
 
         return toReturn;
