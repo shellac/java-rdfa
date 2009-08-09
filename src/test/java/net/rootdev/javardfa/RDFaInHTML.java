@@ -122,7 +122,7 @@ public class RDFaInHTML {
             System.err.println("-----------------------");
         }
         if (error != null) {
-            throw new Error("Error in " + test.id + "(" + error.getMessage() + ")", error);
+            throw new Error("Error in " + test.id + "(" + error.getClass() + ":" + error.getMessage() + ")", error);
         }
         assertTrue(test.id + " (" + test.purpose + ")", result);
     }

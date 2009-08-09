@@ -9,14 +9,18 @@ import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.shared.PrefixMapping.IllegalPrefixException;
 import java.util.HashMap;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Damian Steer <pldms@mac.com>
  */
 public class JenaStatementSink implements StatementSink {
 
+    private static Logger log = LoggerFactory.getLogger(JenaStatementSink.class);
     private final Model model;
     private Map<String, Resource> bnodeLookup;
 
@@ -67,6 +71,14 @@ public class JenaStatementSink implements StatementSink {
             return bnode;
         } else {
             return model.createResource(res);
+        }
+    }
+
+    public void addPrefix(String prefix, String uri) {
+        try {
+            model.setNsPrefix(prefix, uri);
+        } catch (IllegalPrefixException e) {
+            log.warn("Bad prefix, continuing.", e);
         }
     }
 }

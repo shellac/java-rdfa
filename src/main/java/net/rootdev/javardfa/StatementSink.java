@@ -41,6 +41,13 @@ public interface StatementSink
      * @param datatype Datatype IRI (may be null)
      */
     public void addLiteral(String subject, String predicate, String lex, String lang, String datatype);
+
+    /**
+     * Add a prefix mapping.
+     * @param prefix
+     * @param uri
+     */
+    public void addPrefix(String prefix, String uri);
 }
 
 /*

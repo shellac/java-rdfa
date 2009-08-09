@@ -108,6 +108,10 @@ public class FileBasedTests {
                 System.err.printf("<%s> <%s> \"%s\"^^%s\n", subject, predicate, lex, datatype);
             }
         }
+
+        public void addPrefix(String prefix, String uri) {
+            System.err.printf("PREFIX %s: <%s>\n", prefix, uri);
+        }
     }
 }
 

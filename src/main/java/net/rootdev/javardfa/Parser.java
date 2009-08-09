@@ -515,7 +515,10 @@ public class Parser implements ContentHandler {
             String qname = attrs.getQName(i);
             String prefix = getPrefix(qname);
             if ("xmlns".equals(prefix)) {
-                context.setNamespaceURI(getLocal(prefix, qname), attrs.getValue(i));
+                String pre = getLocal(prefix, qname);
+                String uri = attrs.getValue(i);
+                context.setNamespaceURI(pre, uri);
+                sink.addPrefix(pre, uri);
             }
         }
     }
@@ -562,6 +565,7 @@ public class Parser implements ContentHandler {
     public void startPrefixMapping(String arg0, String arg1)
             throws SAXException {
         context.setNamespaceURI(arg0, arg1);
+        sink.addPrefix(arg0, arg1);
     }
 
     public void endPrefixMapping(String arg0) throws SAXException {
