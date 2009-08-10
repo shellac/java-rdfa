@@ -368,6 +368,7 @@ public class Parser implements ContentHandler {
         }
         return uris;
     }
+    
     int bnodeId = 0;
 
     private String createBNode() // TODO probably broken? Can you write bnodes in rdfa directly?
@@ -433,81 +434,6 @@ public class Parser implements ContentHandler {
             return dt;
         }
         return expandCURIE(element, dt);
-    }
-
-    static class EvalContext implements NamespaceContext {
-
-        EvalContext parent;
-        String base;
-        String parentSubject;
-        String parentObject;
-        String language;
-        List<String> forwardProperties;
-        List<String> backwardProperties;
-        Map<String, String> prefixToUri = new HashMap<String, String>();
-        boolean original;
-        boolean langIsLang = false; // html 5 oddity
-
-        private EvalContext(String base) {
-            this.base = base;
-            this.parentSubject = base;
-            this.forwardProperties = new LinkedList<String>();
-            this.backwardProperties = new LinkedList<String>();
-            original = true;
-        }
-
-        public EvalContext(EvalContext toCopy) {
-            this.base = toCopy.base;
-            this.parentSubject = toCopy.parentSubject;
-            this.parentObject = toCopy.parentObject;
-            this.language = toCopy.language;
-            this.forwardProperties = new LinkedList<String>(toCopy.forwardProperties);
-            this.backwardProperties = new LinkedList<String>(toCopy.backwardProperties);
-            this.langIsLang = toCopy.langIsLang;
-            this.original = false;
-            this.parent = toCopy;
-        }
-
-        public void setBase(String abase) {
-            if (abase.contains("#")) {
-                this.base = abase.substring(0, abase.indexOf("#"));
-            } else {
-                this.base = abase;
-            }
-            // Not great, but passes tests.
-            // We want to say: if parentSubject hasn't been changed, it's base
-            if (this.original) {
-                this.parentSubject = this.base;
-            }
-            if (parent != null) {
-                parent.setBase(base);
-            }
-        }
-
-        public void setNamespaceURI(String prefix, String uri) {
-            if (uri.length() == 0) {
-                uri = base;
-            }
-            prefixToUri.put(prefix, uri);
-        }
-
-        public String getNamespaceURI(String prefix) {
-            if (prefixToUri.containsKey(prefix)) {
-                return prefixToUri.get(prefix);
-            } else if (parent != null) {
-                return parent.getNamespaceURI(prefix);
-            } else {
-                return null;
-            }
-        }
-
-        public String getPrefix(String uri) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        public Iterator getPrefixes(String uri) {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
     }
 
     private void getNamespaces(Attributes attrs) {
