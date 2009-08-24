@@ -63,6 +63,10 @@
                     <includes>
                         <include>**/*.java</include>
                     </includes>
+                    <excludes>
+                        <exclude>**/Scratch.java</exclude>
+                        <exclude>**/*$*.java</exclude>
+                    </excludes>
                     <forkMode>once</forkMode>
                 </configuration>
             </plugin>

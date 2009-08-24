@@ -40,7 +40,7 @@ public class RDFaReader implements RDFReader {
         }
 
         @Override public void initParser(Parser parser) {
-            parser.enable(Parser.Setting.ManualNamespaces);
+            parser.enable(Setting.ManualNamespaces);
         }
     }
 

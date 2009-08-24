@@ -5,6 +5,7 @@
 
 package net.rootdev.javardfa;
 
+import net.rootdev.javardfa.*;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;

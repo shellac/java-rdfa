@@ -71,7 +71,7 @@ public class FileBasedTests {
         XMLReader reader = XMLReaderFactory.createXMLReader();
         StatementCollector coll = new StatementCollector();
         Parser parser = new Parser(coll);
-        parser.enable(Parser.Setting.FormMode);
+        parser.enable(Setting.FormMode);
         //parser.parse("http://example.com/" + htmlFile);
 
         reader.setContentHandler(parser);

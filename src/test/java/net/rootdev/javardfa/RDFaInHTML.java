@@ -95,7 +95,7 @@ public class RDFaInHTML {
         Reader sreader = new StringReader(test.input);
         Parser parser = new Parser(sink);
         parser.setBase(Base);
-        parser.enable(Parser.Setting.ManualNamespaces);
+        parser.enable(Setting.ManualNamespaces);
         HtmlParser reader = new HtmlParser();
         reader.setXmlPolicy(XmlViolationPolicy.ALLOW);
         reader.setXmlnsPolicy(XmlViolationPolicy.ALLOW);
