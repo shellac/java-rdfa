@@ -39,7 +39,8 @@ public class Scratch {
 
         Class.forName(RDFaReader.class.getName());
         Model model = ModelFactory.createDefaultModel();
-        model.read("http://www.ivan-herman.net/foaf.html", "HTML");
+        //model.read("http://www.ivan-herman.net/foaf.html", "HTML");
+        model.read("http://www.myspace.com/parishilton", "HTML");
         System.err.println("== Read ==");
         model.write(System.err, "TTL");
     }
