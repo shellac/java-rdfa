@@ -43,7 +43,7 @@ public class VersionTest {
      */
     @Test
     public void testToString() {
-        assertTrue(Version.get().toString().matches("java-rdfa (.*)"));
+        assertTrue(Version.get().toString().matches("java-rdfa \\S+"));
     }
 
 }

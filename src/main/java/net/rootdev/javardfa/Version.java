@@ -41,7 +41,7 @@ public class Version {
 
     public String getName() { return this.name; }
     public String getVersion() { return this.version; }
-    public String toString() { return getName() + " (" + getVersion() + ")"; }
+    public String toString() { return getName() + " " + getVersion(); }
 }
 
 /*

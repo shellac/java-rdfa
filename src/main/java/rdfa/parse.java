@@ -12,6 +12,7 @@ import com.hp.hpl.jena.util.FileManager;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+import net.rootdev.javardfa.Version;
 
 /**
  * Simple command line tool
@@ -22,6 +23,7 @@ public class parse {
 
     public static void main(String... args) throws ClassNotFoundException {
         if (args.length == 0) usage();
+        if ("--version".equals(args[0]) || "-v".equals(args[0])) version();
 
         // Ensure hooks run
         Class.forName("net.rootdev.javardfa.RDFaReader");
@@ -50,7 +52,12 @@ public class parse {
     }
 
     private static void usage() {
-        System.err.println("rdfa.parse [--format XHTML|HTML] <url> [...]");
+        System.err.println("rdfa.parse [--version] [--format XHTML|HTML] <url> [...]");
+        System.exit(0);
+    }
+
+    private static void version() {
+        System.err.println(Version.get());
         System.exit(0);
     }
 
