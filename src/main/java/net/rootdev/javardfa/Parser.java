@@ -33,8 +33,8 @@ import org.xml.sax.SAXException;
  */
 public class Parser implements ContentHandler {
 
-    final static XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-    final static XMLEventFactory EventFactory = XMLEventFactory.newInstance();
+    private final XMLOutputFactory outputFactory;
+    private final XMLEventFactory EventFactory;
     private final XMLEventReader reader;
     private final StatementSink sink;
     private final Set<Setting> settings = EnumSet.noneOf(Setting.class);
@@ -42,6 +42,8 @@ public class Parser implements ContentHandler {
     private final URIExtractor uriex;
 
     public Parser(StatementSink sink) {
+        outputFactory = new com.sun.xml.stream.ZephyrWriterFactory();
+        EventFactory = XMLEventFactory.newInstance();
         this.reader = null;
         this.sink = sink;
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
