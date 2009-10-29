@@ -29,7 +29,7 @@ public class RDFaReader implements RDFReader {
 
     public static class HTMLRDFaReader extends RDFaReader {
         @Override public XMLReader getReader() {
-            return SimpleXMLReaderFactory.createHTML5Reader();
+            return ParserFactory.createHTML5Reader();
         }
 
         @Override public void initParser(Parser parser) {
@@ -39,7 +39,7 @@ public class RDFaReader implements RDFReader {
 
     public static class XHTMLRDFaReader extends RDFaReader {
         @Override public XMLReader getReader() throws SAXException {
-            return SimpleXMLReaderFactory.createNonvalidatingReader();
+            return ParserFactory.createNonvalidatingReader();
         }
     }
 

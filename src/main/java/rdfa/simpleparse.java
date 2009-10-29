@@ -7,16 +7,12 @@
 package rdfa;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
 import net.rootdev.javardfa.NTripleSink;
-import net.rootdev.javardfa.Parser;
-import net.rootdev.javardfa.Setting;
-import net.rootdev.javardfa.SimpleXMLReaderFactory;
+import net.rootdev.javardfa.ParserFactory;
+import net.rootdev.javardfa.ParserFactory.Format;
 import net.rootdev.javardfa.StatementSink;
 import net.rootdev.javardfa.Version;
 import org.xml.sax.SAXException;
@@ -28,16 +24,6 @@ import org.xml.sax.XMLReader;
  * @author pldms
  */
 public class simpleparse {
-
-    enum Format {
-        HTML, XHTML;
-
-        public static Format lookup(String format) {
-            if ("xhtml".equalsIgnoreCase(format)) return XHTML;
-            if ("html".equalsIgnoreCase(format)) return HTML;
-            return null;
-        }
-    }
 
     public static void main(String... args) throws ClassNotFoundException, MalformedURLException, IOException, SAXException {
         if (args.length == 0) usage();
@@ -61,26 +47,8 @@ public class simpleparse {
 
         for (String uri: uris) {
             StatementSink sink = new NTripleSink(System.out);
-            XMLReader reader = getReader(format);
-            Parser parser = getParser(format, sink);
-            reader.setContentHandler(parser);
+            XMLReader reader = ParserFactory.createReaderForFormat(sink, format);
             reader.parse(uri);
-        }
-    }
-
-    private static XMLReader getReader(Format format) throws SAXException {
-        switch (format) {
-            case XHTML: return SimpleXMLReaderFactory.createNonvalidatingReader();
-            default: return SimpleXMLReaderFactory.createHTML5Reader();
-        }
-    }
-
-    private static Parser getParser(Format format, StatementSink sink) {
-        switch (format) {
-            case XHTML: return new Parser(sink);
-            default: Parser p = new Parser(sink); 
-                p.enable(Setting.ManualNamespaces);
-                return p;
         }
     }
 

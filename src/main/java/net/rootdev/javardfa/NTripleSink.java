@@ -21,7 +21,7 @@ public class NTripleSink implements StatementSink {
     private final PrintWriter out;
 
     public NTripleSink(OutputStream os) throws UnsupportedEncodingException {
-        this(new OutputStreamWriter(os, "utf-8"));
+        this(new OutputStreamWriter(os, "US-ASCII")); // N-Triples is 7-bit ascii
     }
 
     public NTripleSink(Writer writer) {
@@ -60,14 +60,37 @@ public class NTripleSink implements StatementSink {
         if (lang != null)
             return quote(lex) + "@" + lang + " ";
         if (datatype != null)
-            return quote(lex) + "^^" + datatype + " ";
+            return quote(lex) + "^^<" + datatype + "> ";
         return quote(lex) + " ";
     }
 
     private Pattern quotePattern = Pattern.compile("\"");
     protected final String quote(String lex) {
-        // Oh boy, when quotes go nuts
-        String escaped = quotePattern.matcher(lex).replaceAll("\\\\\"");
-        return "\"" + escaped + "\"";
+        return "\"" + encode(lex) + "\"";
+    }
+
+    protected final String encode(String s) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            int c = s.codePointAt(i);
+            if (c <= 8) b.append(enc(c));
+            else if (c == '\t') b.append("\\t");
+            else if (c == '\n') b.append("\\n");
+            else if (c == '\r') b.append("\\r");
+            else if (c == '"')  b.append("\\\"");
+            else if (c == '\\') b.append("\\\\");
+            else if (c <= 127)  b.appendCodePoint(c);
+            else if (c <= 0xFFFF) b.append(enc(c));
+            else b.append(longenc(c));
+        }
+        return b.toString();
+    }
+
+    protected final String enc(int codepoint) {
+        return String.format("\\u%04x", codepoint);
+    }
+
+    protected final String longenc(int codepoint) {
+        return String.format("\\u%08x", codepoint);
     }
 }
