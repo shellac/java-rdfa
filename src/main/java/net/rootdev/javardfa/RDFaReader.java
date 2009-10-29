@@ -12,12 +12,9 @@ import com.hp.hpl.jena.rdf.model.impl.RDFReaderFImpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import nu.validator.htmlparser.common.XmlViolationPolicy;
-import nu.validator.htmlparser.sax.HtmlParser;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author Damian Steer <pldms@mac.com>
@@ -32,11 +29,7 @@ public class RDFaReader implements RDFReader {
 
     public static class HTMLRDFaReader extends RDFaReader {
         @Override public XMLReader getReader() {
-            HtmlParser reader = new HtmlParser();
-            reader.setXmlPolicy(XmlViolationPolicy.ALLOW);
-            reader.setXmlnsPolicy(XmlViolationPolicy.ALLOW);
-            reader.setMappingLangToXmlLang(false);
-            return reader;
+            return SimpleXMLReaderFactory.createHTML5Reader();
         }
 
         @Override public void initParser(Parser parser) {
@@ -46,9 +39,7 @@ public class RDFaReader implements RDFReader {
 
     public static class XHTMLRDFaReader extends RDFaReader {
         @Override public XMLReader getReader() throws SAXException {
-            XMLReader reader = XMLReaderFactory.createXMLReader();
-            reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-            return reader;
+            return SimpleXMLReaderFactory.createNonvalidatingReader();
         }
     }
 
