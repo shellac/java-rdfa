@@ -34,21 +34,46 @@ import org.xml.sax.SAXException;
 public class Parser implements ContentHandler {
 
     private final XMLOutputFactory outputFactory;
-    private final XMLEventFactory EventFactory;
+    private final XMLEventFactory eventFactory;
     private final XMLEventReader reader;
     private final StatementSink sink;
-    private final Set<Setting> settings = EnumSet.noneOf(Setting.class);
+    private final Set<Setting> settings;
     private final Constants consts;
     private final URIExtractor uriex;
 
     public Parser(StatementSink sink) {
-        outputFactory = new com.sun.xml.stream.ZephyrWriterFactory();
-        EventFactory = XMLEventFactory.newInstance();
-        this.reader = null;
+        //outputFactory = new com.sun.xml.stream.ZephyrWriterFactory();
+        //eventFactory = XMLEventFactory.newInstance();
+        //this.reader = null;
+        //this.sink = sink;
+        //outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
+        //consts = new Constants();
+        //uriex = new URIExtractor(consts, IRIFactory.semanticWebImplementation(), settings);
+        this(
+                sink,
+                XMLOutputFactory.newInstance(),
+                XMLEventFactory.newInstance(),
+                new URIExtractor(IRIFactory.semanticWebImplementation())
+        );
+    }
+
+    public Parser(StatementSink sink,
+            XMLOutputFactory outputFactory,
+            XMLEventFactory eventFactory,
+            URIExtractor uriex) {
         this.sink = sink;
+        this.outputFactory = outputFactory;
+        this.eventFactory = eventFactory;
+        this.uriex = uriex;
+        this.reader = null;
+        this.settings = EnumSet.noneOf(Setting.class);
+        this.consts = new Constants();
+
+        uriex.setSettings(settings);
+        uriex.setConstants(consts);
+
+        // Important, although I guess the caller doesn't get total control
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
-        consts = new Constants();
-        uriex = new URIExtractor(consts, IRIFactory.semanticWebImplementation(), settings);
     }
 
     public void enable(Setting setting) {
@@ -375,7 +400,7 @@ public class Parser implements ContentHandler {
             if (settings.contains(Setting.ManualNamespaces)) {
                 getNamespaces(arg3);
             }
-            StartElement e = EventFactory.createStartElement(
+            StartElement e = eventFactory.createStartElement(
                     prefix, arg0, localname,
                     fromAttributes(arg3), null, context);
 
@@ -395,7 +420,7 @@ public class Parser implements ContentHandler {
         if (level != -1) { // getting literal
             String prefix = (localname.equals(qname)) ? ""
                     : qname.substring(0, qname.indexOf(':'));
-            XMLEvent e = EventFactory.createEndElement(prefix, arg0, localname);
+            XMLEvent e = eventFactory.createEndElement(prefix, arg0, localname);
             handleForLiteral(e);
             if (level != -1) {
                 return; // if still handling literal duck out now
@@ -406,7 +431,7 @@ public class Parser implements ContentHandler {
 
     public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
         if (level != -1) {
-            XMLEvent e = EventFactory.createCharacters(String.valueOf(arg0, arg1, arg2));
+            XMLEvent e = eventFactory.createCharacters(String.valueOf(arg0, arg1, arg2));
             handleForLiteral(e);
             return;
         }
@@ -415,7 +440,7 @@ public class Parser implements ContentHandler {
     public void ignorableWhitespace(char[] arg0, int arg1, int arg2) throws SAXException {
         //System.err.println("Whitespace...");
         if (level != -1) {
-            XMLEvent e = EventFactory.createIgnorableSpace(String.valueOf(arg0, arg1, arg2));
+            XMLEvent e = eventFactory.createIgnorableSpace(String.valueOf(arg0, arg1, arg2));
             handleForLiteral(e);
         }
     }
@@ -432,7 +457,7 @@ public class Parser implements ContentHandler {
         for (int i = 0; i < attributes.getLength(); i++) {
             String qname = attributes.getQName(i);
             String prefix = qname.contains(":") ? qname.substring(0, qname.indexOf(":")) : "";
-            Attribute attr = EventFactory.createAttribute(
+            Attribute attr = eventFactory.createAttribute(
                     prefix, attributes.getURI(i),
                     attributes.getLocalName(i), attributes.getValue(i));
             if (consts.xmllang.getLocalPart().equals(attributes.getLocalName(i)) &&
@@ -443,7 +468,7 @@ public class Parser implements ContentHandler {
         }
         // Copy xml lang across if in literal
         if (level == 1 && context.language != null && !haveLang) {
-            toReturn.add(EventFactory.createAttribute(consts.xmllang, context.language));
+            toReturn.add(eventFactory.createAttribute(consts.xmllang, context.language));
         }
         return toReturn.iterator();
     }

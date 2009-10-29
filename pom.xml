@@ -152,6 +152,7 @@
             <artifactId>sjsxp</artifactId>
             <version>1.0.1</version>
             <type>jar</type>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

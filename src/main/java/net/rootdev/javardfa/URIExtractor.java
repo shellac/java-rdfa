@@ -20,14 +20,16 @@ import javax.xml.stream.events.StartElement;
  */
 public class URIExtractor {
     final private IRIFactory iriFact;
-    final private Constants consts;
-    final private Set<Setting> settings;
+    private Constants consts;
+    private Set<Setting> settings;
 
-    public URIExtractor(Constants consts, IRIFactory iriFact, Set<Setting> settings) {
-        this.consts = consts;
+    public URIExtractor(IRIFactory iriFact) {
         this.iriFact = iriFact;
-        this.settings = settings;
     }
+
+    public void setSettings(Set<Setting> settings) { this.settings = settings; }
+
+    public void setConstants(Constants consts) { this.consts = consts; }
 
     public String getURI(String base, StartElement element, Attribute attr) {
         QName attrName = attr.getName();

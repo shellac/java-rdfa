@@ -5,6 +5,7 @@
  */
 package net.rootdev.javardfa;
 
+import com.hp.hpl.jena.iri.IRIFactory;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -19,6 +20,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.xml.stream.XMLEventFactory;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -102,7 +104,12 @@ public class RDFaConformance {
         StatementSink sink = new JenaStatementSink(model);
         InputStream in = FileManager.get().open(input);
         XMLReader reader = XMLReaderFactory.createXMLReader();
-        Parser parser = new Parser(sink);
+        Parser parser = new Parser(
+                sink,
+                new com.sun.xml.stream.ZephyrWriterFactory(),
+                XMLEventFactory.newInstance(),
+                new URIExtractor(IRIFactory.semanticWebImplementation())
+                );
         parser.setBase(input);
         reader.setContentHandler(parser);
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
