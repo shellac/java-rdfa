@@ -80,6 +80,9 @@ public class NTripleSinkTest {
     @Test
     public void testQuote() {
         assertEquals("Quote me", "\"a\\\"b\"", sink.quote("a\"b"));
+        assertEquals("Quote tab", "\"a\\tb\"", sink.quote("a\tb"));
+        assertEquals("Quote newline", "\"a\\nb\"", sink.quote("a\nb"));
+        assertEquals("Quote non-ascii", "\"a\\ufeffb\"", sink.quote("a\ufeffb"));
     }
 
 }
