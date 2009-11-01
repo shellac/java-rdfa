@@ -6,7 +6,6 @@
 package net.rootdev.javardfa;
 
 import java.io.OutputStream;
-import java.util.logging.Level;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -22,8 +21,10 @@ public class RDFXMLSink implements StatementSink {
     final static String RDFNS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
     private final XMLStreamWriter out;
+    private final String[] comments;
 
-    public RDFXMLSink(OutputStream os) {
+    public RDFXMLSink(OutputStream os, String... comments) {
+        this.comments = comments;
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         factory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
         try {
@@ -36,6 +37,13 @@ public class RDFXMLSink implements StatementSink {
     public void start() {
         try {
             out.writeStartDocument("utf-8", "1.0");
+            if (comments.length != 0) {
+                out.writeCharacters("\n");
+                StringBuilder sb = new StringBuilder("\n");
+                for (String line: comments) { sb.append(line); sb.append("\n"); }
+                out.writeComment(sb.toString());
+            }
+            out.writeCharacters("\n");
             out.writeStartElement(RDFNS, "RDF");
             out.writeNamespace("rdf", RDFNS);
             out.writeCharacters("\n");

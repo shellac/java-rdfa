@@ -19,16 +19,23 @@ import java.util.regex.Pattern;
  */
 public class NTripleSink implements StatementSink {
     private final PrintWriter out;
+    private final String[] comments;
 
-    public NTripleSink(OutputStream os) throws UnsupportedEncodingException {
-        this(new OutputStreamWriter(os, "US-ASCII")); // N-Triples is 7-bit ascii
+    public NTripleSink(OutputStream os, String... comments) throws UnsupportedEncodingException {
+        this(new OutputStreamWriter(os, "US-ASCII"), comments); // N-Triples is 7-bit ascii
     }
 
-    public NTripleSink(Writer writer) {
+    public NTripleSink(Writer writer, String... comments) {
         this.out = new PrintWriter(writer);
+        this.comments = comments;
     }
 
-    public void start() { }
+    public void start() {
+        for (String line: comments) {
+            out.print("# ");
+            out.println(line);
+        }
+    }
 
     public void end() {
         out.flush();
