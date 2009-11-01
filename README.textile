@@ -1,0 +1,47 @@
+h1. Welcome to java-rdfa
+
+The _cruftiest_ RDFa parser in the world, I'll bet. Apologies that there isn't much documentation. Things may explode: you have been warned.
+
+Currently passing all "conformance":http://www.w3.org/2006/07/SWD/RDFa/testsuite/ and (scripting free) "RDFa-in-text/html":http://philip.html5.org/demos/rdfa/tests.html tests.
+
+This was written by "Damian Steer":mailto:pldms@mac.com. It is an offshoot of the "Stars Project":http://stars.ilrt.bris.ac.uk/blog/ which was funded by "JISC":http://www.jisc.ac.uk/
+
+h2. Useful Links
+
+"Maven repository":http://www.rootdev.net/maven/repo/ ("snapshots":http://www.rootdev.net/maven/snapshot-repo/)
+"Java api documentation":http://www.rootdev.net/maven/projects/java-rdfa/apidocs/index.html
+
+h2. Basic Use
+
+Add to classpath, with "jena":http://jena.sourceforge.net/. If you want (non-xml) HTML support get the "validator.nu":http://about.validator.nu/htmlparser/ parser. You will now be able to:
+
+<pre>
+Class.forName("net.rootdev.javardfa.RDFaReader"); // this will hook in to jena and add the readers
+model.read(url, "XHTML"); // xml parsing
+model.read(other, "HTML"); // html parsing
+</pre>
+
+From the command line you can try it out:
+
+<pre>
+$ java rdfa.simpleparse http://examples.tobyinkster.co.uk/hcard
+<http://www.example.com/> <http://xmlns.com/foaf/0.1/primaryTopic> <http://www.example.com/#jack> .
+<http://www.example.com/> <http://purl.org/dc/terms/abstract> "This page is intended to be a demonstration of\n\t\tthe use of RDFa (including FOAF, Dublin Core and W3C PIM vocabularies) in\n\t\tconjunction with Microformats (including hCard and rel-tag)."@en .
+...
+</pre>
+
+or
+
+<pre>
+$ java rdfa.parse --format HTML http://www.slideshare.net/intdiabetesfed/world-diabetes-day-2009
+<http://www.slideshare.net/intdiabetesfed/world-diabetes-day-2009>
+      <http://purl.org/dc/terms/creator>
+              "intdiabetesfed"@en ;
+...
+</pre>
+
+Simpleparse has no dependencies beyond validator.nu (only in the case that the HTML format is used), and streams. However the output looks nasty, and the jena-based rdfa.parse is better tested.
+
+h2. Form Mode
+
+There is a secret form mode (that prompted the development of this parser). In this mode you can generate basic graph patterns by including ?variables where curies are allowed, and INPUT tags generate @name variables.
