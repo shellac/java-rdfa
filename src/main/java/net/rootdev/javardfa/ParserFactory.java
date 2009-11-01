@@ -3,9 +3,10 @@
  * All rights reserved.
  * [See end of file]
  */
-
 package net.rootdev.javardfa;
 
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLOutputFactory;
 import nu.validator.htmlparser.common.XmlViolationPolicy;
 import nu.validator.htmlparser.sax.HtmlParser;
 import org.xml.sax.SAXException;
@@ -58,16 +59,33 @@ public class ParserFactory {
     }
 
     /**
-     * Get an XMLReader with rdfa parsing plumbed in to the sink.
+     * Makes an XMLReader appropriate to the format, with an rdfa parser plumbed
+     * to the StatementSink sink. Uses IRI resolver.
      *
      * @param sink
      * @param format
      * @return
      * @throws SAXException
      */
-    public static XMLReader createReaderForFormat(StatementSink sink, Format format) throws SAXException {
+    public static XMLReader createReaderForFormat(StatementSink sink,
+            Format format) throws SAXException {
+        return createReaderForFormat(sink, format, new IRIResolver());
+    }
+
+    /**
+     * Makes an XMLReader appropriate to the format, with an rdfa parser plumbed
+     * to the StatementSink sink.
+     *
+     * @param sink
+     * @param format
+     * @param resolver
+     * @return
+     * @throws SAXException
+     */
+    public static XMLReader createReaderForFormat(StatementSink sink,
+            Format format, Resolver resolver) throws SAXException {
         XMLReader reader = getReader(format);
-        Parser parser = getParser(format, sink);
+        Parser parser = getParser(format, sink, resolver);
         reader.setContentHandler(parser);
         return reader;
     }
@@ -81,12 +99,18 @@ public class ParserFactory {
         }
     }
 
-    private static Parser getParser(Format format, StatementSink sink) {
+    private static Parser getParser(Format format, StatementSink sink, Resolver resolver) {
+        return getParser(format, sink, XMLOutputFactory.newInstance(), XMLEventFactory.newInstance(), resolver);
+    }
+
+    private static Parser getParser(Format format, StatementSink sink,
+            XMLOutputFactory outputFactory, XMLEventFactory eventFactory,
+            Resolver resolver) {
         switch (format) {
             case XHTML:
-                return new Parser(sink);
+                return new Parser(sink, outputFactory, eventFactory, resolver);
             default:
-                Parser p = new Parser(sink);
+                Parser p = new Parser(sink, outputFactory, eventFactory, resolver);
                 p.enable(Setting.ManualNamespaces);
                 return p;
         }

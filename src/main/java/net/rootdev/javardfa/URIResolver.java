@@ -4,62 +4,29 @@
  * [See end of file]
  */
 
-package rdfa;
+package net.rootdev.javardfa;
 
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.util.FileManager;
-import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.List;
-import net.rootdev.javardfa.Version;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
- * Simple command line tool. Uses Jena, and doesn't stream, so output
- * is much nicer than simpleparse.
+ * Resolver that uses java's URI library.
+ * The IRI resolver is strongly recommended over this.
  *
  * @author pldms
  */
-public class parse {
+public class URIResolver implements Resolver {
 
-    public static void main(String... args) throws ClassNotFoundException {
-        if (args.length == 0) usage();
-        if ("--version".equals(args[0]) || "-v".equals(args[0])) version();
+    public URIResolver() { }
 
-        // Ensure hooks run
-        Class.forName("net.rootdev.javardfa.RDFaReader");
-
-        String format = "XHTML";
-        boolean getFormat = false;
-
-        List<String> uris = new LinkedList<String>();
-
-        for (String arg: args) {
-            if (getFormat) { format = arg; getFormat = false; }
-            else if ("--help".equalsIgnoreCase(arg)) usage();
-            else if ("--format".equalsIgnoreCase(arg)) getFormat = true;
-            else uris.add(arg);
+    public String resolve(String first, String second) {
+        try {
+            URI uri = new URI(first);
+            return uri.resolve(second).toString();
+        } catch (URISyntaxException ex) {
+            throw new RuntimeException("Problem resolving URI: " +
+                    first + " " + second, ex);
         }
-
-        if (getFormat) usage();
-
-        Model m = ModelFactory.createDefaultModel();
-        FileManager fm = FileManager.get();
-        for (String uri: uris) {
-            InputStream in = fm.open(uri);
-            m.read(in, uri, format);
-        }
-        m.write(System.out, "TTL");
-    }
-
-    private static void usage() {
-        System.err.println("rdfa.parse [--version] [--format XHTML|HTML] <url> [...]");
-        System.exit(0);
-    }
-
-    private static void version() {
-        System.err.println(Version.get());
-        System.exit(0);
     }
 
 }

@@ -108,7 +108,7 @@ public class RDFaConformance {
                 sink,
                 new com.sun.xml.stream.ZephyrWriterFactory(),
                 XMLEventFactory.newInstance(),
-                new URIExtractor(IRIFactory.semanticWebImplementation())
+                new IRIResolver()
                 );
         parser.setBase(input);
         reader.setContentHandler(parser);

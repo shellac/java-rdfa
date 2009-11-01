@@ -14,6 +14,7 @@ import net.rootdev.javardfa.NTripleSink;
 import net.rootdev.javardfa.ParserFactory;
 import net.rootdev.javardfa.ParserFactory.Format;
 import net.rootdev.javardfa.StatementSink;
+import net.rootdev.javardfa.URIResolver;
 import net.rootdev.javardfa.Version;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -47,7 +48,7 @@ public class simpleparse {
 
         for (String uri: uris) {
             StatementSink sink = new NTripleSink(System.out);
-            XMLReader reader = ParserFactory.createReaderForFormat(sink, format);
+            XMLReader reader = ParserFactory.createReaderForFormat(sink, format, new URIResolver());
             reader.parse(uri);
         }
     }
