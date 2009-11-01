@@ -10,6 +10,7 @@ h2. Useful Links
 
 "Maven repository":http://www.rootdev.net/maven/repo/ ("snapshots":http://www.rootdev.net/maven/snapshot-repo/)
 "Java api documentation":http://www.rootdev.net/maven/projects/java-rdfa/apidocs/index.html
+"Online parser":http://rdf-in-html.appspot.com/
 
 h2. Basic Use
 
