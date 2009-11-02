@@ -358,6 +358,8 @@ public class Parser implements ContentHandler {
 
     public void setDocumentLocator(Locator arg0) {
         this.locator = arg0;
+        if (locator.getSystemId() != null)
+            this.setBase(arg0.getSystemId());
     }
 
     public void startDocument() throws SAXException {
