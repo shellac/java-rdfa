@@ -16,6 +16,7 @@ import com.hp.hpl.jena.util.FileManager;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.xml.stream.XMLInputFactory;
+import net.rootdev.javardfa.ParserFactory.Format;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -30,13 +31,15 @@ public class Scratch {
     private static XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
 
     public static void main(String[] args) throws SAXException, IOException, ClassNotFoundException {
-        xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        /*xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
         String base = "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/";
         String testHTML = base + "0103.xhtml";
         String testSPARQL = base + "0103.sparql";
 
-        check(testHTML, testSPARQL);
+        check(testHTML, testSPARQL);*/
 
+        XMLReader parser = ParserFactory.createReaderForFormat(new NTripleSink(System.out), Format.HTML);
+        parser.parse(Scratch.class.getResource("/simple.html").toExternalForm());
         /*Class.forName(RDFaReader.class.getName());
         Model model = ModelFactory.createDefaultModel();
         //model.read("http://www.ivan-herman.net/foaf.html", "HTML");

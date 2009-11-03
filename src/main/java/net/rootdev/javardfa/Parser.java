@@ -347,7 +347,7 @@ public class Parser implements ContentHandler {
      */
     private Locator locator;
     //private NSMapping mapping;
-    private EvalContext context = new EvalContext("http://www.example.com/");
+    private EvalContext context; // = new EvalContext("BASE_NOT_SET");
     // For literals (what fun!)
     private List<XMLEvent> queuedEvents;
     private int level = -1;
@@ -382,6 +382,11 @@ public class Parser implements ContentHandler {
     public void startElement(String arg0, String localname, String qname, Attributes arg3) throws SAXException {
         try {
             //System.err.println("Start element: " + arg0 + " " + arg1 + " " + arg2);
+
+            // This is set very late in some html5 cases (not even ready by document start)
+            if (context == null) {
+                this.setBase(locator.getSystemId());
+            }
             // Dammit, not quite the same as XMLEventFactory
             String prefix = (localname.equals(qname)) ? ""
                     : qname.substring(0, qname.indexOf(':'));
