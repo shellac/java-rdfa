@@ -45,9 +45,9 @@ public class Constants {
     final QName head = new QName("http://www.w3.org/1999/xhtml", "head");
     final QName body = new QName("http://www.w3.org/1999/xhtml", "body");
     // Hack bits
-    final QName input = new QName("input");
+    final QName input = new QName("http://www.w3.org/1999/xhtml", "input");
     final QName name = new QName("name");
-    final QName form = new QName("form");
+    final QName form = new QName("http://www.w3.org/1999/xhtml", "form");
     final Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
     final String xmlLiteral = "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
 }
