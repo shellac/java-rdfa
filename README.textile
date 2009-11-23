@@ -46,3 +46,6 @@ Simpleparse has no dependencies beyond validator.nu (only in the case that the H
 h2. Form Mode
 
 There is a secret form mode (that prompted the development of this parser). In this mode you can generate basic graph patterns by including ?variables where curies are allowed, and INPUT tags generate @name variables.
+
+"Simple example":http://github.com/shellac/java-rdfa/tree/master/src/test/resources/query-tests/1.html
+(from the tests) and the "query":http://github.com/shellac/java-rdfa/tree/master/src/test/resources/query-tests/1.rq that results.
