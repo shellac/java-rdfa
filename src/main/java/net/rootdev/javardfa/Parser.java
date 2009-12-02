@@ -8,11 +8,13 @@ package net.rootdev.javardfa;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
@@ -444,8 +446,31 @@ public class Parser implements ContentHandler {
     public void skippedEntity(String arg0) throws SAXException {
     }
 
+    /** Lexically order attributes **/
+    final private Comparator<Attribute> attrComp =
+            new Comparator<Attribute>() {
+
+        public int compare(Attribute o1, Attribute o2) {
+            return getName(o1).compareTo(getName(o2));
+        }
+
+        private final String getName(Attribute a) {
+            String pre = null;
+            if (a.getName().getPrefix() != null) {
+                pre = a.getName().getPrefix();
+                if (pre.equals("xml")) pre = "_xml"; // push up order
+            }
+            if (pre == null) return a.getName().getLocalPart();
+            return pre + ":" + a.getName().getLocalPart();
+        }
+    };
+
     private Iterator fromAttributes(Attributes attributes) {
-        List toReturn = new LinkedList();
+        // If we are collecting for a literal then order the attributes
+        Collection<Attribute> toReturn = (level == -1) ?
+                new LinkedList<Attribute>() :
+                new TreeSet<Attribute>(attrComp);
+
         boolean haveLang = false;
         for (int i = 0; i < attributes.getLength(); i++) {
             String qname = attributes.getQName(i);
