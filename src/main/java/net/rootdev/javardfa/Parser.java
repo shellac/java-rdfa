@@ -19,6 +19,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
@@ -220,7 +221,9 @@ public class Parser implements ContentHandler {
                     queuedEvents = new LinkedList<XMLEvent>();
                 } else if (consts.xmlLiteral.equals(dt)) // definitely xml?
                 {
-                    xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
+                    XMLStreamWriter xsw = outputFactory.createXMLStreamWriter(literalWriter);
+                    //xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
+                    xmlWriter = new CanonicalXMLEventWriter(xsw);
                 }
 
             }
@@ -480,7 +483,9 @@ public class Parser implements ContentHandler {
         if (e.isStartElement()) {
             level++;
             if (queuedEvents != null) { // Aha, we ain't plain
-                xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
+                XMLStreamWriter xsw = outputFactory.createXMLStreamWriter(literalWriter);
+                //xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
+                xmlWriter = new CanonicalXMLEventWriter(xsw);
                 for (XMLEvent ev : queuedEvents) {
                     xmlWriter.add(ev);
                 }
