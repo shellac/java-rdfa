@@ -3,7 +3,6 @@
  * All rights reserved.
  * [See end of file]
  */
-
 package net.rootdev.javardfa;
 
 import java.util.Iterator;
@@ -26,9 +25,11 @@ import javax.xml.stream.events.XMLEvent;
  *
  * @author pldms
  */
-public class CanonicalXMLEventWriter 
+public class CanonicalXMLEventWriter
         implements XMLEventWriter {
+
     private final XMLStreamWriter swriter;
+    private StartElement last;
 
     public CanonicalXMLEventWriter(XMLStreamWriter swriter) {
         this.swriter = swriter;
@@ -56,13 +57,16 @@ public class CanonicalXMLEventWriter
                     se.getName().getLocalPart(),
                     se.getName().getNamespaceURI());
             writeAttributes(se);
+            swriter.writeCharacters(""); // Force close of start element
         } else {
-            System.err.printf("Gah! Missed one <%s>, '%s'", event.getClass(), event);
+            System.err.printf("Gah! Missed one <%s>, '%s'\n", event.getClass(), event);
         }
     }
 
     public void add(XMLEventReader reader) throws XMLStreamException {
-        while (reader.hasNext()) this.add(reader.nextEvent());
+        while (reader.hasNext()) {
+            this.add(reader.nextEvent());
+        }
     }
 
     public String getPrefix(String uri) throws XMLStreamException {
@@ -91,7 +95,7 @@ public class CanonicalXMLEventWriter
             Attribute a = (Attribute) i.next();
             atts.put(getName(a), a);
         }
-        for (Attribute a: atts.values()) {
+        for (Attribute a : atts.values()) {
             swriter.writeAttribute(
                     a.getName().getPrefix(),
                     a.getName().getNamespaceURI(),
@@ -102,12 +106,13 @@ public class CanonicalXMLEventWriter
 
     private String getName(Attribute a) {
         QName name = a.getName();
-        String toReturn = (name.getPrefix() == null) ?
-            name.getLocalPart() : name.getPrefix() + ":" + name.getLocalPart();
-        if (toReturn.startsWith("xml:")) return "_" + toReturn;
-        else return toReturn;
+        String toReturn = (name.getPrefix() == null) ? name.getLocalPart() : name.getPrefix() + ":" + name.getLocalPart();
+        if (toReturn.startsWith("xml:")) {
+            return "_" + toReturn;
+        } else {
+            return toReturn;
+        }
     }
-
 }
 
 /*

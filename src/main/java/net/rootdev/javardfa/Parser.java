@@ -513,9 +513,10 @@ public class Parser implements ContentHandler {
                 }
                 String lex = literalWriter.toString();
                 if (consts.xmlLiteral.equals(theDatatype)) {
-                        if (lex.startsWith("<fake>")) lex = lex.substring(6);
-                        else if (lex.startsWith("<fake xmlns=\"\">")) lex = lex.substring(15);
-                        if (lex.endsWith("</fake>")) lex = lex.substring(0, lex.length() - 7);
+                    // Clean up fake doc root
+                    if (lex.startsWith("<fake>"))  lex = lex.substring(6);
+                    else if (lex.startsWith("<fake xmlns=\"\">")) lex = lex.substring(15);
+                    if (lex.endsWith("</fake>")) lex = lex.substring(0, lex.length() - 7);
                 }
                 if (theDatatype == null || theDatatype.length() == 0) {
                     emitTriplesPlainLiteral(context.parentSubject,
