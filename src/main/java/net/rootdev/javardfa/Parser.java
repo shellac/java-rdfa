@@ -32,7 +32,7 @@ import org.xml.sax.SAXException;
  * @author Damian Steer <pldms@mac.com>
  */
 public class Parser implements ContentHandler {
-
+    
     private final XMLOutputFactory outputFactory;
     private final XMLEventFactory eventFactory;
     private final XMLEventReader reader;
@@ -40,6 +40,8 @@ public class Parser implements ContentHandler {
     private final Set<Setting> settings;
     private final Constants consts;
     private final Resolver resolver;
+
+    private final StartElement fakeEnvelope;
 
     public Parser(StatementSink sink) {
         this(   sink,
@@ -62,6 +64,9 @@ public class Parser implements ContentHandler {
 
         // Important, although I guess the caller doesn't get total control
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
+
+        // Woodstox doesn't like producing xml fragments, so we wrap.
+        fakeEnvelope = eventFactory.createStartElement("", null, "fake");
     }
 
     public void enable(Setting setting) {
@@ -224,6 +229,7 @@ public class Parser implements ContentHandler {
                     XMLStreamWriter xsw = outputFactory.createXMLStreamWriter(literalWriter);
                     //xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
                     xmlWriter = new CanonicalXMLEventWriter(xsw);
+                    xmlWriter.add(fakeEnvelope);
                 }
 
             }
@@ -486,6 +492,7 @@ public class Parser implements ContentHandler {
                 XMLStreamWriter xsw = outputFactory.createXMLStreamWriter(literalWriter);
                 //xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
                 xmlWriter = new CanonicalXMLEventWriter(xsw);
+                xmlWriter.add(fakeEnvelope);
                 for (XMLEvent ev : queuedEvents) {
                     xmlWriter.add(ev);
                 }
@@ -505,6 +512,11 @@ public class Parser implements ContentHandler {
                     }
                 }
                 String lex = literalWriter.toString();
+                if (consts.xmlLiteral.equals(theDatatype)) {
+                        if (lex.startsWith("<fake>")) lex = lex.substring(6);
+                        else if (lex.startsWith("<fake xmlns=\"\">")) lex = lex.substring(15);
+                        if (lex.endsWith("</fake>")) lex = lex.substring(0, lex.length() - 7);
+                }
                 if (theDatatype == null || theDatatype.length() == 0) {
                     emitTriplesPlainLiteral(context.parentSubject,
                             litProps, lex, context.language);
