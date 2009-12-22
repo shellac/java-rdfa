@@ -139,13 +139,14 @@ public class Parser implements ContentHandler {
             if (nSubj != null) {
                 newSubject = getURI(context.base, element, nSubj);
             } else {
-                // TODO if element is head or body assume about=""
-                if (element.getAttributeByName(consts.typeof) != null) {
+                // if element is head or body assume about=""
+                if (consts.head.equals(element.getName()) ||
+                        consts.body.equals(element.getName())) {
+                    newSubject = context.base;
+                } else if (element.getAttributeByName(consts.typeof) != null) {
                     newSubject = createBNode();
-                } else {
-                    if (context.parentObject != null) {
-                        newSubject = context.parentObject;
-                    }
+                } else if (context.parentObject != null) {
+                    newSubject = context.parentObject;
                 }
             }
             Attribute cObj = findAttribute(element, consts.resource, consts.href);
