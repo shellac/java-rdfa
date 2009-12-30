@@ -38,7 +38,7 @@ public class Scratch {
 
         check(testHTML, testSPARQL);*/
 
-        XMLReader parser = ParserFactory.createReaderForFormat(new NTripleSink(System.out), Format.XHTML);
+        XMLReader parser = ParserFactory.createReaderForFormat(new NTripleSink(System.out), Format.HTML);
         parser.parse(Scratch.class.getResource("/simple.html").toExternalForm());
         /*Class.forName(RDFaReader.class.getName());
         Model model = ModelFactory.createDefaultModel();
