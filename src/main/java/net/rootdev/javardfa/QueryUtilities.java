@@ -5,6 +5,8 @@
  */
 package net.rootdev.javardfa;
 
+import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -12,9 +14,32 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.QuerySolutionMap;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.sparql.syntax.Element;
+import com.hp.hpl.jena.sparql.syntax.ElementAssign;
+import com.hp.hpl.jena.sparql.syntax.ElementDataset;
+import com.hp.hpl.jena.sparql.syntax.ElementExists;
+import com.hp.hpl.jena.sparql.syntax.ElementFetch;
+import com.hp.hpl.jena.sparql.syntax.ElementFilter;
+import com.hp.hpl.jena.sparql.syntax.ElementGroup;
+import com.hp.hpl.jena.sparql.syntax.ElementNamedGraph;
+import com.hp.hpl.jena.sparql.syntax.ElementNotExists;
+import com.hp.hpl.jena.sparql.syntax.ElementOptional;
+import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
+import com.hp.hpl.jena.sparql.syntax.ElementService;
+import com.hp.hpl.jena.sparql.syntax.ElementSubQuery;
+import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
+import com.hp.hpl.jena.sparql.syntax.ElementUnion;
+import com.hp.hpl.jena.sparql.syntax.ElementVisitor;
+import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
+import com.hp.hpl.jena.sparql.syntax.ElementWalker;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import net.rootdev.javardfa.ParserFactory.Format;
 import org.slf4j.Logger;
@@ -78,9 +103,48 @@ public class QueryUtilities {
      * @return Bindings applied to the query
      */
     public static Model bind(Query query, Map<String, String> bindings) {
+        List<Triple> triples = pullTriples(query);
+        List<Triple> boundTriples = new LinkedList<Triple>();
+        Model model = ModelFactory.createDefaultModel();
+        for (Triple t: triples) {
+            Node s = bind(t.getSubject(), bindings);
+            Node p = bind(t.getPredicate(), bindings);
+            Node o = bind(t.getObject(), bindings);
+            Triple nt = Triple.create(s, p, o);
+            model.add(model.asStatement(nt));
+        }
+        return model;
+    }
+
+    /**
+     * Collect all triples from a query body
+     * @param query
+     * @return
+     */
+    private static List<Triple> pullTriples(Query query) {
+        List<Triple> triples = new LinkedList<Triple>();
+        ElementWalker walker = new ElementWalker();
+        walker.walk(query.getQueryPattern(), new TripleCollector(triples));
+        return triples;
+    }
+
+    private static Node bind(Node object, Map<String, String> bindings) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+    private static class TripleCollector extends ElementVisitorBase {
+        private final List<Triple> triples;
+
+        private TripleCollector(List<Triple> triples) {
+            this.triples = triples;
+        }
+
+        @Override
+        public void visit(ElementTriplesBlock el) {
+            triples.addAll(el.getPattern().getList());
+        }
+
+    }
 }
 
 /*
