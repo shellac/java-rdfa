@@ -54,7 +54,7 @@ public class RDFaReader implements RDFReader {
     }
 
     public void read(Model arg0, String arg1) {
-        this.runParser(arg0, null, new InputSource(arg1));
+        this.runParser(arg0, arg1, new InputSource(arg1));
     }
 
     public Object setProperty(String arg0, Object arg1) {

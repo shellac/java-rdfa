@@ -30,6 +30,7 @@ public class IRIResolver implements Resolver {
     }
 
     public String resolve(String first, String second) {
+        if (first == null) throw new RuntimeException("Base is null.");
         IRI iri = iriFactory.construct(first);
         IRI resolved = iri.resolve(second);
         return resolved.toString();
