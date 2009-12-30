@@ -5,7 +5,6 @@
  */
 package net.rootdev.javardfa;
 
-import com.hp.hpl.jena.iri.IRIFactory;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -21,6 +20,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLOutputFactory;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -106,7 +106,7 @@ public class RDFaConformance {
         XMLReader reader = XMLReaderFactory.createXMLReader();
         Parser parser = new Parser(
                 sink,
-                new com.sun.xml.stream.ZephyrWriterFactory(),
+                XMLOutputFactory.newInstance(),
                 XMLEventFactory.newInstance(),
                 new IRIResolver()
                 );
