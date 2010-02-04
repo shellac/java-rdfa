@@ -72,7 +72,7 @@ public class FileBasedTests {
     public void compare() throws XMLStreamException, IOException, ParserConfigurationException, SAXException {
         URL htmlURL = this.getClass().getResource(htmlFile);
         URL compareURL = this.getClass().getResource(compareFile);
-
+        
         if (compareFile.endsWith(".rq")) compareQuery(htmlURL, compareURL);
         else compareRDF(htmlURL, compareURL);
     }
@@ -87,9 +87,6 @@ public class FileBasedTests {
         StatementSink sink = new JenaStatementSink(m);
         XMLReader parser = ParserFactory.createReaderForFormat(sink, Format.XHTML);
         parser.parse(hf);
-
-        c.write(System.err, "TTL");
-        m.write(System.err, "TTL");
 
         assertTrue("Files match", c.isIsomorphicWith(m));
     }
