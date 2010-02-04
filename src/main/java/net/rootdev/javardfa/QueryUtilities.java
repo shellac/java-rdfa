@@ -15,24 +15,7 @@ import com.hp.hpl.jena.query.QuerySolutionMap;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Property;
-import com.hp.hpl.jena.rdf.model.Resource;
-import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementAssign;
-import com.hp.hpl.jena.sparql.syntax.ElementDataset;
-import com.hp.hpl.jena.sparql.syntax.ElementExists;
-import com.hp.hpl.jena.sparql.syntax.ElementFetch;
-import com.hp.hpl.jena.sparql.syntax.ElementFilter;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementNamedGraph;
-import com.hp.hpl.jena.sparql.syntax.ElementNotExists;
-import com.hp.hpl.jena.sparql.syntax.ElementOptional;
-import com.hp.hpl.jena.sparql.syntax.ElementPathBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementService;
-import com.hp.hpl.jena.sparql.syntax.ElementSubQuery;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
-import com.hp.hpl.jena.sparql.syntax.ElementUnion;
-import com.hp.hpl.jena.sparql.syntax.ElementVisitor;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
 import com.hp.hpl.jena.sparql.syntax.ElementWalker;
 import java.io.FileNotFoundException;
@@ -69,11 +52,8 @@ public class QueryUtilities {
         QueryCollector qc = new QueryCollector();
         XMLReader reader = ParserFactory.createReaderForFormat(qc, format);
         ((Parser) reader.getContentHandler()).enable(Setting.FormMode);
-        URL url = QueryUtilities.class.getResource(source);
-        if (url == null) throw new FileNotFoundException("Couldn't find <" + source + ">");
-        String us = url.toExternalForm();
-        if (us.matches("file:/[^/][^/].*")) us = us.replaceFirst("file:/", "file:///");
-        reader.parse(us);
+        if (source.matches("file:/[^/][^/].*")) source = source.replaceFirst("file:/", "file:///");
+        reader.parse(source);
         return qc.getQueries();
     }
 
@@ -123,8 +103,7 @@ public class QueryUtilities {
      */
     private static List<Triple> pullTriples(Query query) {
         List<Triple> triples = new LinkedList<Triple>();
-        ElementWalker walker = new ElementWalker();
-        walker.walk(query.getQueryPattern(), new TripleCollector(triples));
+        ElementWalker.walk(query.getQueryPattern(), new TripleCollector(triples));
         return triples;
     }
 

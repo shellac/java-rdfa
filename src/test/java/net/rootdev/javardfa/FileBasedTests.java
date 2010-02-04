@@ -6,28 +6,27 @@
 
 package net.rootdev.javardfa;
 
-import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.query.Query;
+import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.sparql.algebra.Algebra;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author Damian Steer <pldms@mac.com>
@@ -35,6 +34,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 @RunWith(Parameterized.class)
 public class FileBasedTests {
+
+    static final String BASE = "/query-tests/";
 
     @Parameters
     public static Collection<String[]> testFiles()
@@ -53,66 +54,36 @@ public class FileBasedTests {
         return filePairs;
     }
     private final String htmlFile;
-    private final String queryFile;
+    private final String compareFile;
     private final XMLInputFactory xmlFactory;
 
-    public FileBasedTests(String htmlFile, String queryFile) {
-        this.htmlFile = htmlFile;
-        this.queryFile = queryFile;
+    public FileBasedTests(String htmlFile, String compareFile) {
+        this.htmlFile = BASE + htmlFile;
+        this.compareFile = BASE + compareFile;
+        System.err.printf("htmlfile: %s\ncomp: %s\n", this.htmlFile, this.compareFile);
         xmlFactory = XMLInputFactory.newInstance();
     }
 
-    @Ignore
     @Test
     public void compare() throws XMLStreamException, IOException, ParserConfigurationException, SAXException {
-        InputStream htmlIn =
-                this.getClass().getClassLoader().getResourceAsStream(htmlFile);
-        //XMLEventReader reader = xmlFactory.createXMLEventReader(htmlIn);
-        XMLReader reader = XMLReaderFactory.createXMLReader();
-        StatementCollector coll = new StatementCollector();
-        Parser parser = new Parser(coll);
-        parser.enable(Setting.FormMode);
-        //parser.parse("http://example.com/" + htmlFile);
+        URL htmlURL = this.getClass().getResource(htmlFile);
+        URL compareURL = this.getClass().getResource(compareFile);
+        System.err.printf("htmlurl: %s\ncomp: %s\n", htmlURL, compareURL);
 
-        reader.setContentHandler(parser);
-        reader.parse(new InputSource(htmlIn));
+        Query query = QueryFactory.read(compareURL.toExternalForm());
+        
+        Map<String, Query> qs = QueryUtilities.makeQueries(ParserFactory.Format.XHTML,
+                htmlURL.toExternalForm());
 
-        assertTrue(htmlFile + " and " + queryFile + " are the same",
-                htmlFile.equals(queryFile));
+        assertTrue("We have a query", qs.size() != 0);
+
+        Query qFromHTML = qs.get(qs.keySet().toArray()[0]);
+
+        assertEquals("Query matches",
+                Algebra.compile(query),
+                Algebra.compile(qFromHTML));
     }
 
-    static class StatementCollector implements StatementSink {
-
-        List<Node[]> statements = new ArrayList<Node[]>();
-
-        //@Override
-        public void start() {
-        }
-
-        //@Override
-        public void end() {
-        }
-
-        //@Override
-        public void addObject(String subject, String predicate, String object) {
-            System.err.printf("<%s> <%s> <%s>\n", subject, predicate, object);
-        }
-
-        //@Override
-        public void addLiteral(String subject, String predicate, String lex, String lang, String datatype) {
-            if (lang == null && datatype == null) {
-                System.err.printf("<%s> <%s> \"%s\"\n", subject, predicate, lex);
-            } else if (lang != null) {
-                System.err.printf("<%s> <%s> \"%s\"@%s\n", subject, predicate, lex, lang);
-            } else {
-                System.err.printf("<%s> <%s> \"%s\"^^%s\n", subject, predicate, lex, datatype);
-            }
-        }
-
-        public void addPrefix(String prefix, String uri) {
-            System.err.printf("PREFIX %s: <%s>\n", prefix, uri);
-        }
-    }
 }
 
 /*
