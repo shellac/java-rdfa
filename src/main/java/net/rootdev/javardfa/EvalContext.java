@@ -63,6 +63,15 @@ class EvalContext implements NamespaceContext {
         }
     }
 
+    @Override
+    public String toString() {
+        return
+            String.format("[\n\tBase: %s\n\tPS: %s\n\tPO: %s\n\tlang: %s\n\tIncomplete: -> %s <- %s\n]",
+                base, parentSubject, parentObject, language,
+                forwardProperties.size(), backwardProperties.size()
+                );
+    }
+
     public void setNamespaceURI(String prefix, String uri) {
         if (uri.length() == 0) {
             uri = base;

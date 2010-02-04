@@ -30,7 +30,7 @@ public class ParserTest {
         Model m = ModelFactory.createDefaultModel();
         StatementSink sink = new JenaStatementSink(m);
         XMLReader parser = ParserFactory.createReaderForFormat(sink, Format.HTML);
-        parser.parse(Scratch.class.getResource("/simple.html").toExternalForm());
+        parser.parse(this.getClass().getResource("/simple.html").toExternalForm());
         Resource r = m.listSubjects().nextResource();
         assertTrue("HTML 5 base correct", r.getURI().endsWith("simple.html"));
     }

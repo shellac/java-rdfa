@@ -82,12 +82,11 @@ public class Parser implements ContentHandler {
     }
 
     EvalContext parse(EvalContext context, StartElement element) throws XMLStreamException {
-        boolean recurse = true;
         boolean skipElement = false;
         String newSubject = null;
         String currentObject = null;
-        List<String> forwardProperties = new LinkedList(context.forwardProperties);
-        List<String> backwardProperties = new LinkedList(context.backwardProperties);
+        List<String> forwardProperties = new LinkedList();
+        List<String> backwardProperties = new LinkedList();
         String currentLanguage = context.language;
         boolean langIsLang = context.langIsLang;
 
@@ -217,7 +216,6 @@ public class Parser implements ContentHandler {
                     emitTriplesDatatypeLiteral(newSubject, props, lex, dt);
                 }
             } else {
-                //recurse = false;
                 level = 1;
                 theDatatype = dt;
                 literalWriter = new StringWriter();
@@ -246,38 +244,33 @@ public class Parser implements ContentHandler {
                     context.parentSubject);
         }
 
-        if (recurse) {
-            EvalContext ec = new EvalContext(context);
+        EvalContext ec = new EvalContext(context);
 
-            if (skipElement) {
-                ec.language = currentLanguage;
-                ec.langIsLang = langIsLang;
-                ec.original = context.original;
+        if (skipElement) {
+            ec.language = currentLanguage;
+            ec.langIsLang = langIsLang;
+            ec.original = context.original;
+        } else {
+            if (newSubject != null) {
+                ec.parentSubject = newSubject;
             } else {
-                if (newSubject != null) {
-                    ec.parentSubject = newSubject;
-                } else {
-                    ec.parentSubject = context.parentSubject;
-                }
-
-                if (currentObject != null) {
-                    ec.parentObject = currentObject;
-                } else if (newSubject != null) {
-                    ec.parentObject = newSubject;
-                } else {
-                    ec.parentObject = context.parentSubject;
-                }
-
-                ec.language = currentLanguage;
-                ec.langIsLang = langIsLang;
-                ec.forwardProperties = forwardProperties;
-                ec.backwardProperties = backwardProperties;
+                ec.parentSubject = context.parentSubject;
             }
 
-            return ec;
-        }
+            if (currentObject != null) {
+                ec.parentObject = currentObject;
+            } else if (newSubject != null) {
+                ec.parentObject = newSubject;
+            } else {
+                ec.parentObject = context.parentSubject;
+            }
 
-        return null;
+            ec.language = currentLanguage;
+            ec.langIsLang = langIsLang;
+            ec.forwardProperties = forwardProperties;
+            ec.backwardProperties = backwardProperties;
+        }
+        return ec;
     }
 
     private Attribute findAttribute(StartElement element, QName... names) {

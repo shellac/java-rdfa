@@ -8,7 +8,10 @@ package net.rootdev.javardfa;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.algebra.Algebra;
+import com.hp.hpl.jena.util.FileManager;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,12 +24,14 @@ import java.util.Map;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import net.rootdev.javardfa.ParserFactory.Format;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 /**
  * @author Damian Steer <pldms@mac.com>
@@ -60,7 +65,6 @@ public class FileBasedTests {
     public FileBasedTests(String htmlFile, String compareFile) {
         this.htmlFile = BASE + htmlFile;
         this.compareFile = BASE + compareFile;
-        System.err.printf("htmlfile: %s\ncomp: %s\n", this.htmlFile, this.compareFile);
         xmlFactory = XMLInputFactory.newInstance();
     }
 
@@ -68,8 +72,29 @@ public class FileBasedTests {
     public void compare() throws XMLStreamException, IOException, ParserConfigurationException, SAXException {
         URL htmlURL = this.getClass().getResource(htmlFile);
         URL compareURL = this.getClass().getResource(compareFile);
-        System.err.printf("htmlurl: %s\ncomp: %s\n", htmlURL, compareURL);
 
+        if (compareFile.endsWith(".rq")) compareQuery(htmlURL, compareURL);
+        else compareRDF(htmlURL, compareURL);
+    }
+
+    private void compareRDF(URL htmlURL, URL compareURL) throws SAXException, IOException {
+        String cf = compareURL.toExternalForm();
+        if (cf.matches("file:/[^/][^/].*")) cf = cf.replaceFirst("file:/", "file:///");
+        String hf = htmlURL.toExternalForm();
+        if (hf.matches("file:/[^/][^/].*")) hf = hf.replaceFirst("file:/", "file:///");
+        Model c = FileManager.get().loadModel(compareURL.toExternalForm());
+        Model m = ModelFactory.createDefaultModel();
+        StatementSink sink = new JenaStatementSink(m);
+        XMLReader parser = ParserFactory.createReaderForFormat(sink, Format.XHTML);
+        parser.parse(hf);
+
+        c.write(System.err, "TTL");
+        m.write(System.err, "TTL");
+
+        assertTrue("Files match", c.isIsomorphicWith(m));
+    }
+
+    private void compareQuery(URL htmlURL, URL compareURL) throws SAXException, IOException {
         Query query = QueryFactory.read(compareURL.toExternalForm());
         
         Map<String, Query> qs = QueryUtilities.makeQueries(ParserFactory.Format.XHTML,
