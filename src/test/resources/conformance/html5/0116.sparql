@@ -1,0 +1,6 @@
+# This is a negative test case, the following triple should not be generated.
+ASK WHERE {
+<http://rdfa.digitalbazaar.com/test-suite/test-cases/html5/0116.html>
+   <http://www.w3.org/1999/xhtml/vocab#next>
+      "invalid property" .
+}
