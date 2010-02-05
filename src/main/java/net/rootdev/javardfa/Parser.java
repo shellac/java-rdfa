@@ -393,10 +393,15 @@ public class Parser implements ContentHandler {
                 this.setBase(locator.getSystemId());
             }
             // Dammit, not quite the same as XMLEventFactory
-            String prefix = (localname.equals(qname)) ? ""
+            String prefix = /*(localname.equals(qname))*/
+                    (qname.indexOf(':') == -1 ) ? ""
                     : qname.substring(0, qname.indexOf(':'));
             if (settings.contains(Setting.ManualNamespaces)) {
                 getNamespaces(arg3);
+                if (prefix.length() != 0) {
+                    arg0 = context.getNamespaceURI(prefix);
+                    localname = localname.substring(prefix.length() + 1);
+                }
             }
             StartElement e = eventFactory.createStartElement(
                     prefix, arg0, localname,
@@ -458,11 +463,14 @@ public class Parser implements ContentHandler {
             Attribute attr = eventFactory.createAttribute(
                     prefix, attributes.getURI(i),
                     attributes.getLocalName(i), attributes.getValue(i));
-            if (consts.xmllang.getLocalPart().equals(attributes.getLocalName(i)) &&
-                    consts.xmllang.getNamespaceURI().equals(attributes.getURI(i))) {
+            //if (consts.xmllang.getLocalPart().equals(attributes.getLocalName(i)) &&
+            //        consts.xmllang.getNamespaceURI().equals(attributes.getURI(i))) {
+            if (qname.equals("xml:lang")) {
                 haveLang = true;
             }
-            toReturn.add(attr);
+
+            if (!qname.equals("xmlns") && !qname.startsWith("xmlns:"))
+                toReturn.add(attr);
         }
         // Copy xml lang across if in literal
         if (level == 1 && context.language != null && !haveLang) {

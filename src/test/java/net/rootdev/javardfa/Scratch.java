@@ -31,15 +31,14 @@ public class Scratch {
     private static XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
 
     public static void main(String[] args) throws SAXException, IOException, ClassNotFoundException {
-        /*xmlFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-        String base = "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/";
-        String testHTML = base + "0103.xhtml";
+        String base = "http://rdfa.digitalbazaar.com/test-suite/test-cases/html5/";
+        String testHTML = base + "0103.html";
         String testSPARQL = base + "0103.sparql";
 
-        check(testHTML, testSPARQL);*/
+        check(testHTML, testSPARQL, Format.HTML);
 
-        XMLReader parser = ParserFactory.createReaderForFormat(new NTripleSink(System.out), Format.HTML);
-        parser.parse(Scratch.class.getResource("/simple.html").toExternalForm());
+        //XMLReader parser = ParserFactory.createReaderForFormat(new NTripleSink(System.out), Format.HTML);
+        //parser.parse(Scratch.class.getResource("/simple.html").toExternalForm());
         /*Class.forName(RDFaReader.class.getName());
         Model model = ModelFactory.createDefaultModel();
         //model.read("http://www.ivan-herman.net/foaf.html", "HTML");
@@ -48,16 +47,18 @@ public class Scratch {
         model.write(System.err, "TTL");*/
     }
 
-    private static void check(String testHTML, String testSPARQL) throws SAXException, IOException {
+    private static void check(String testHTML, String testSPARQL, Format format)
+            throws SAXException, IOException {
         Model model = ModelFactory.createDefaultModel();
         StatementSink sink = new JenaStatementSink(model);
         InputStream in = FileManager.get().open(testHTML);
-        Parser parser = new Parser(sink);
-        parser.setBase(testHTML);
-        XMLReader reader = XMLReaderFactory.createXMLReader();
-        reader.setContentHandler(parser);
-        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        reader.parse(new InputSource(in));
+
+        XMLReader reader = ParserFactory.createReaderForFormat(sink, format);
+
+        InputSource ins = new InputSource(in);
+        ins.setEncoding("utf-8");
+        ins.setSystemId(testHTML);
+        reader.parse(ins);
         Query theQuery = QueryFactory.read(testSPARQL);
         QueryExecution qe = QueryExecutionFactory.create(theQuery, model);
         if (qe.execAsk()) {

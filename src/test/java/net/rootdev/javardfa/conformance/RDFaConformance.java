@@ -102,7 +102,6 @@ public abstract class RDFaConformance {
     @Test
     public void compare() throws SAXException, IOException {
         Model model = ModelFactory.createDefaultModel();
-        StatementSink sink = new JenaStatementSink(model);
         InputStream in = FileManager.get().open(input);
         XMLReader reader = getParser(model);
         try {
