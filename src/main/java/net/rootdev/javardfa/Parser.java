@@ -515,6 +515,7 @@ public class Parser implements ContentHandler {
                     if (lex.endsWith("</fake>")) lex = lex.substring(0, lex.length() - 7);
                 }
                 if (theDatatype == null || theDatatype.length() == 0) {
+                    if (lex.matches("\\s+")) lex = ""; // No children, empty literal
                     emitTriplesPlainLiteral(context.parentSubject,
                             litProps, lex, context.language);
                 } else {

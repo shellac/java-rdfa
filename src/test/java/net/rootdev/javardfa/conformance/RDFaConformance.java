@@ -9,7 +9,6 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
-import com.hp.hpl.jena.query.QueryParseException;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -17,12 +16,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.FileManager;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLOutputFactory;
-import net.rootdev.javardfa.IRIResolver;
 import net.rootdev.javardfa.JenaStatementSink;
 import net.rootdev.javardfa.Parser;
 import net.rootdev.javardfa.StatementSink;
@@ -36,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * @author Damian Steer <pldms@mac.com>
@@ -109,9 +106,10 @@ public abstract class RDFaConformance {
         InputStream in = FileManager.get().open(input);
         XMLReader reader = getParser(model);
         try {
-            // TODO need to work out a more elegant method in ParserFactory
-            ((Parser) reader.getContentHandler()).setBase(input);
-            reader.parse(new InputSource(in));
+            InputSource ins = new InputSource(in);
+            ins.setEncoding("utf-8");
+            ins.setSystemId(input);
+            reader.parse(ins);
         } catch (NullPointerException e) {
             fail("NPE <" + test + ">");
         }

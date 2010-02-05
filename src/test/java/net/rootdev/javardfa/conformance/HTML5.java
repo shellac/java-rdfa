@@ -26,7 +26,7 @@ public class HTML5 extends RDFaConformance
     @Parameters
     public static Collection<String[]> testFiles()
             throws URISyntaxException, IOException {
-        if (true)
+        if (false)
             return Collections.EMPTY_LIST;
         else
         return RDFaConformance.
