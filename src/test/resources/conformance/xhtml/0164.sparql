@@ -1,0 +1,3 @@
+ASK WHERE {
+   <http://rdfa.digitalbazaar.com/test-suite/test-cases/xhtml1/0164.html> ?p "Test".
+}

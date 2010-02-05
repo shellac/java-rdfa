@@ -2,7 +2,7 @@
 
 [] lm:mapping
    [ lm:prefix
-       "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/" ;
+       "http://rdfa.digitalbazaar.com/test-suite/test-cases/xhtml1/" ;
      lm:altPrefix
        "file:conformance/xhtml/"
    ] ,

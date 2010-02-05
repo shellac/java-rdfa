@@ -9,6 +9,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QueryParseException;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -112,7 +113,6 @@ public abstract class RDFaConformance {
             ((Parser) reader.getContentHandler()).setBase(input);
             reader.parse(new InputSource(in));
         } catch (NullPointerException e) {
-            e.printStackTrace();
             fail("NPE <" + test + ">");
         }
         Query theQuery = QueryFactory.read(query);

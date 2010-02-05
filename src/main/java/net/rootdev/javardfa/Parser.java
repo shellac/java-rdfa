@@ -326,6 +326,8 @@ public class Parser implements ContentHandler {
             if ("xmlns".equals(prefix)) {
                 String pre = getLocal(prefix, qname);
                 String uri = attrs.getValue(i);
+                if (!settings.contains(Setting.ManualNamespaces) && pre.contains("_"))
+                    continue; // not permitted
                 context.setNamespaceURI(pre, uri);
                 sink.addPrefix(pre, uri);
             }
@@ -562,13 +564,10 @@ public class Parser implements ContentHandler {
         boolean permitReserved = consts.rel.equals(attr.getName()) ||
                 consts.rev.equals(attr.getName());
         for (String curie : curies) {
-            boolean isSpecial = (settings.contains(Setting.ManualNamespaces)) ? consts.SpecialRels.contains(curie.toLowerCase()) : consts.SpecialRels.contains(curie);
-            if (isSpecial && settings.contains(Setting.ManualNamespaces)) {
-                curie = curie.toLowerCase();
-            }
-            if (permitReserved && isSpecial) {
-                uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie);
-            } else if (!isSpecial) {
+            if (consts.SpecialRels.contains(curie.toLowerCase())) {
+                if (permitReserved)
+                    uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie.toLowerCase());
+            } else {
                 String uri = expandCURIE(element, curie);
                 if (uri != null) {
                     uris.add(uri);
@@ -579,8 +578,9 @@ public class Parser implements ContentHandler {
     }
 
     public String expandCURIE(StartElement element, String value) {
-        if (value.startsWith("_:") && element.getNamespaceURI("_") == null) {
-            return value;
+        if (value.startsWith("_:")) {
+            if (!settings.contains(Setting.ManualNamespaces)) return value;
+            if (element.getNamespaceURI("_") == null) return value;
         }
         if (settings.contains(Setting.FormMode) && // variable
                 value.startsWith("?")) {
@@ -592,6 +592,10 @@ public class Parser implements ContentHandler {
             return null;
         }
         String prefix = value.substring(0, offset - 1);
+
+        // Apparently these are not allowed to expand
+        if ("xml".equals(prefix) || "xmlns".equals(prefix)) return null;
+
         String namespaceURI = prefix.length() == 0 ? "http://www.w3.org/1999/xhtml/vocab#" : element.getNamespaceURI(prefix);
         if (namespaceURI == null) {
             return null;

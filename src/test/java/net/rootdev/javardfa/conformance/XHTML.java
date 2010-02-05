@@ -26,7 +26,7 @@ public class XHTML extends RDFaConformance
     public static Collection<String[]> testFiles()
             throws URISyntaxException, IOException {
         return RDFaConformance.
-                testFiles("http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/rdfa-xhtml1-test-manifest.rdf");
+                testFiles("http://rdfa.digitalbazaar.com/test-suite/test-cases/xhtml1/xhtml-manifest.rdf");
     }
 
     public XHTML(String test, String title,
