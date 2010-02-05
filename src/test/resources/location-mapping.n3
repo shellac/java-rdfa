@@ -4,7 +4,7 @@
    [ lm:prefix
        "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/" ;
      lm:altPrefix
-       "file:conf-data/"
+       "file:conformance/xhtml/"
    ] ,
    [ 
      lm:name "http://philip.html5.org/demos/rdfa/tests.json" ; 

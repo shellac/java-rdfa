@@ -1,7 +1,7 @@
 rm *.xhtml
 rm *.sparql
 
-MANIFEST='http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/rdfa-xhtml1-test-manifest.rdf'
+MANIFEST='http://github.com/msporny/rdfa-test-suite/raw/master/xhtml-manifest.rdf'
 
 curl -S -s -O "$MANIFEST"
 

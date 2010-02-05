@@ -3,7 +3,7 @@
  * All rights reserved.
  * [See end of file]
  */
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.conformance;
 
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLOutputFactory;
+import net.rootdev.javardfa.IRIResolver;
+import net.rootdev.javardfa.JenaStatementSink;
+import net.rootdev.javardfa.Parser;
+import net.rootdev.javardfa.StatementSink;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -37,19 +41,17 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author Damian Steer <pldms@mac.com>
  */
 @RunWith(Parameterized.class)
-public class RDFaConformance {
+public abstract class RDFaConformance {
 
     final static Logger log = LoggerFactory.getLogger(RDFaConformance.class);
-    final static String ManifestURI =
-            "http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/rdfa-xhtml1-test-manifest.rdf";
-
+    
     @Parameters
-    public static Collection<String[]> testFiles()
+    public static Collection<String[]> testFiles(String manifestURI)
             throws URISyntaxException, IOException {
 
         FileManager fm = FileManager.get();
 
-        Model manifest = fm.loadModel(ManifestURI);
+        Model manifest = fm.loadModel(manifestURI);
 
         Query manifestExtract = QueryFactory.read("manifest-extract.rq");
 
@@ -95,27 +97,22 @@ public class RDFaConformance {
         this.input = input;
         this.query = query;
         this.expected = Boolean.valueOf(expected);
-        /* If you want it to go slowwwwww */
     }
+
+    public abstract XMLReader getParser(Model model) throws SAXException;
 
     @Test
     public void compare() throws SAXException, IOException {
         Model model = ModelFactory.createDefaultModel();
         StatementSink sink = new JenaStatementSink(model);
         InputStream in = FileManager.get().open(input);
-        XMLReader reader = XMLReaderFactory.createXMLReader();
-        Parser parser = new Parser(
-                sink,
-                XMLOutputFactory.newInstance(),
-                XMLEventFactory.newInstance(),
-                new IRIResolver()
-                );
-        parser.setBase(input);
-        reader.setContentHandler(parser);
-        reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        XMLReader reader = getParser(model);
         try {
+            // TODO need to work out a more elegant method in ParserFactory
+            ((Parser) reader.getContentHandler()).setBase(input);
             reader.parse(new InputSource(in));
         } catch (NullPointerException e) {
+            e.printStackTrace();
             fail("NPE <" + test + ">");
         }
         Query theQuery = QueryFactory.read(query);

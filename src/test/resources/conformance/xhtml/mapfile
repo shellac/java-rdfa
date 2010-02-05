@@ -1,4 +1,4 @@
-rdfa-xhtml1-test-manifest.rdf http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/rdfa-xhtml1-test-manifest.rdf
+xhtml-manifest.rdf http://github.com/msporny/rdfa-test-suite/raw/master/xhtml-manifest.rdf
 0001.xhtml http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/0001.xhtml
 0002.xhtml http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/0002.xhtml
 0003.xhtml http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/0003.xhtml
