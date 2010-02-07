@@ -17,10 +17,17 @@
         <url>http://github.com/bblfish/java-rdfa/issues</url>
     </issueManagement>
     <distributionManagement>
+        <!-- only use snaphot, due to central repo limitations -->
         <repository>
-            <id>java.net-m2-repository</id>
-            <url>java-net:/maven2-repository/trunk/repository/</url>
+            <id>rootdev.repo.ssh</id>
+            <name>Rootdev maven repository, via ssh</name>
+            <url>scp://maven@www.rootdev.net/home/maven/site/snapshot-repo</url>
         </repository>
+        <snapshotRepository>
+            <id>rootdev.repo.ssh</id>
+            <name>Rootdev maven repository, via ssh</name>
+            <url>scp://maven@www.rootdev.net/home/maven/site/snapshot-repo</url>
+        </snapshotRepository>
     </distributionManagement>
     <developers>
         <developer>
@@ -230,19 +237,6 @@
             </plugin>
         </plugins>
     </reporting>
-    <distributionManagement>
-        <!-- only use snaphot, due to central repo limitations -->
-        <repository>
-            <id>rootdev.repo.ssh</id>
-            <name>Rootdev maven repository, via ssh</name>
-            <url>scp://maven@www.rootdev.net/home/maven/site/snapshot-repo</url>
-        </repository>
-        <snapshotRepository>
-            <id>rootdev.repo.ssh</id>
-            <name>Rootdev maven repository, via ssh</name>
-            <url>scp://maven@www.rootdev.net/home/maven/site/snapshot-repo</url>
-        </snapshotRepository>
-    </distributionManagement>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
