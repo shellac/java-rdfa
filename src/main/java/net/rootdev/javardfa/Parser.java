@@ -81,7 +81,8 @@ public class Parser implements ContentHandler {
         this.context = new EvalContext(base);
     }
 
-    EvalContext parse(EvalContext context, StartElement element) throws XMLStreamException {
+    EvalContext parse(EvalContext context, StartElement element)
+            throws XMLStreamException {
         boolean skipElement = false;
         String newSubject = null;
         String currentObject = null;
@@ -197,8 +198,8 @@ public class Parser implements ContentHandler {
             if (element.getAttributeByName(consts.rev) != null) {
                 backwardProperties.addAll(getURIs(context.base, element, element.getAttributeByName(consts.rev)));
             }
-            if (element.getAttributeByName(consts.rel) != null || // if predicate present
-                    element.getAttributeByName(consts.rev) != null) {
+            if (!forwardProperties.isEmpty() || !backwardProperties.isEmpty()) {
+                // if predicate present
                 currentObject = createBNode();
             }
         }
@@ -392,6 +393,7 @@ public class Parser implements ContentHandler {
             if (context == null) {
                 this.setBase(locator.getSystemId());
             }
+
             // Dammit, not quite the same as XMLEventFactory
             String prefix = /*(localname.equals(qname))*/
                     (qname.indexOf(':') == -1 ) ? ""

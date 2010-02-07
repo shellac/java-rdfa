@@ -30,7 +30,8 @@ public class HTML5 extends RDFaConformance
             return Collections.EMPTY_LIST;
         else
         return RDFaConformance.
-                testFiles("http://rdfa.digitalbazaar.com/test-suite/test-cases/html5/html5-manifest.rdf");
+                testFiles("http://rdfa.digitalbazaar.com/test-suite/test-cases/html5/html5-manifest.rdf",
+                "http://rdfa.digitalbazaar.com/test-suite/test-cases/html5/0121");
     }
 
     public HTML5(String test, String title,

@@ -16,14 +16,12 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.FileManager;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import net.rootdev.javardfa.JenaStatementSink;
-import net.rootdev.javardfa.Parser;
-import net.rootdev.javardfa.StatementSink;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -43,9 +41,10 @@ public abstract class RDFaConformance {
 
     final static Logger log = LoggerFactory.getLogger(RDFaConformance.class);
     
-    @Parameters
-    public static Collection<String[]> testFiles(String manifestURI)
+    public static Collection<String[]> testFiles(String manifestURI, String... excludes)
             throws URISyntaxException, IOException {
+
+        Set<String> toExclude = new HashSet(Arrays.asList(excludes));
 
         FileManager fm = FileManager.get();
 
@@ -75,6 +74,12 @@ public abstract class RDFaConformance {
             //boolean expected = (soln.contains("expect")) ?
             //    soln.getLiteral("expect").getBoolean() : true;
             params[5] = soln.contains("expect") ? soln.getLiteral("expect").getLexicalForm() : "true";
+            if (toExclude.contains(params[0]) ||
+                    toExclude.contains(params[3]) ||
+                    toExclude.contains(params[4]) ) {
+                log.warn("Skipping test <" + params[0] + ">");
+                continue;
+            }
             tests.add(params);
         }
 

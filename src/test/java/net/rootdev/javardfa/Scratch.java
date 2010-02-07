@@ -32,8 +32,8 @@ public class Scratch {
 
     public static void main(String[] args) throws SAXException, IOException, ClassNotFoundException {
         String base = "http://rdfa.digitalbazaar.com/test-suite/test-cases/html5/";
-        String testHTML = base + "0103.html";
-        String testSPARQL = base + "0103.sparql";
+        String testHTML = base + "0121.html";
+        String testSPARQL = base + "0121.sparql";
 
         check(testHTML, testSPARQL, Format.HTML);
 
