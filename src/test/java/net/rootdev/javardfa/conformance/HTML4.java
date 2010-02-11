@@ -31,7 +31,9 @@ public class HTML4 extends RDFaConformance
         else
         return RDFaConformance.
                 testFiles("http://rdfa.digitalbazaar.com/test-suite/test-cases/html4/html4-manifest.rdf",
-                "http://rdfa.digitalbazaar.com/test-suite/test-cases/html4/0121");
+                "http://rdfa.digitalbazaar.com/test-suite/test-cases/html4/0121",
+                "http://rdfa.digitalbazaar.com/test-suite/test-cases/html4/0113"
+                );
     }
 
     public HTML4(String test, String title,
