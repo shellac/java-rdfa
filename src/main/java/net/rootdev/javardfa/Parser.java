@@ -118,13 +118,12 @@ public class Parser implements ContentHandler {
             if (nSubj != null) {
                 newSubject = getURI(context.base, element, nSubj);
             } else {
-                if (element.getAttributeByName(consts.typeof) != null) {
-                    if (consts.body.equals(element.getName()) ||
+                if (consts.body.equals(element.getName()) ||
                             consts.head.equals(element.getName())) {
-                        newSubject = context.base;
-                    } else {
-                        newSubject = createBNode();
-                    }
+                    newSubject = context.base;
+                }
+                else if (element.getAttributeByName(consts.typeof) != null) {
+                    newSubject = createBNode();
                 } else {
                     if (context.parentObject != null) {
                         newSubject = context.parentObject;
@@ -162,10 +161,6 @@ public class Parser implements ContentHandler {
                         consts.rdfType,
                         type);
             }
-        }
-
-        if (newSubject == null) {
-            newSubject = context.parentSubject;
         }
 
         // Dodgy extension
@@ -246,11 +241,9 @@ public class Parser implements ContentHandler {
         }
 
         EvalContext ec = new EvalContext(context);
-
         if (skipElement) {
             ec.language = currentLanguage;
             ec.langIsLang = langIsLang;
-            ec.original = context.original;
         } else {
             if (newSubject != null) {
                 ec.parentSubject = newSubject;

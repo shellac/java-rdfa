@@ -31,11 +31,11 @@ public class Scratch {
     private static XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
 
     public static void main(String[] args) throws SAXException, IOException, ClassNotFoundException {
-        String base = "http://rdfa.digitalbazaar.com/test-suite/test-cases/html5/";
-        String testHTML = base + "0121.html";
-        String testSPARQL = base + "0121.sparql";
+        String base = "http://rdfa.digitalbazaar.com/test-suite/test-cases/xhtml1/";
+        String testHTML = base + "0117.xhtml";
+        String testSPARQL = base + "0117.sparql";
 
-        check(testHTML, testSPARQL, Format.HTML);
+        check(testHTML, testSPARQL, Format.XHTML);
 
         //XMLReader parser = ParserFactory.createReaderForFormat(new NTripleSink(System.out), Format.HTML);
         //parser.parse(Scratch.class.getResource("/simple.html").toExternalForm());

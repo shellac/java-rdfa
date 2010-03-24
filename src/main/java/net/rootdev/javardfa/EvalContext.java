@@ -22,7 +22,6 @@ class EvalContext implements NamespaceContext {
     List<String> forwardProperties;
     List<String> backwardProperties;
     Map<String, String> prefixToUri = new HashMap<String, String>();
-    boolean original;
     boolean langIsLang = false;
 
     protected EvalContext(String base) {
@@ -31,7 +30,6 @@ class EvalContext implements NamespaceContext {
         this.parentSubject = base;
         this.forwardProperties = new LinkedList<String>();
         this.backwardProperties = new LinkedList<String>();
-        original = true;
     }
 
     public EvalContext(EvalContext toCopy) {
@@ -43,21 +41,26 @@ class EvalContext implements NamespaceContext {
         this.forwardProperties = new LinkedList<String>(toCopy.forwardProperties);
         this.backwardProperties = new LinkedList<String>(toCopy.backwardProperties);
         this.langIsLang = toCopy.langIsLang;
-        this.original = false;
         this.parent = toCopy;
     }
 
     public void setBase(String abase) {
+        // This is very dodgy. We want to check if ps and po have been changed
+        // from their typical values (base).
+        // Base changing happens very late in the day when we're streaming, and
+        // it is very fiddly to handle
+        boolean setPS = parentSubject == base;
+        boolean setPO = parentObject == base;
+
         if (abase.contains("#")) {
             this.base = abase.substring(0, abase.indexOf("#"));
         } else {
             this.base = abase;
         }
-        // Not great, but passes tests.
-        // We want to say: if parentSubject hasn't been changed, it's base
-        if (this.original) {
-            this.parentSubject = this.base;
-        }
+
+        if (setPS) this.parentSubject = base;
+        if (setPO) this.parentObject = base;
+        
         if (parent != null) {
             parent.setBase(base);
         }
