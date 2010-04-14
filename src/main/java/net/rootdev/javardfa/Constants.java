@@ -38,9 +38,9 @@ public class Constants {
     final QName rel = new QName("rel"); // Link types and CURIES
     final QName rev = new QName("rev"); // Link type and CURIES
     final QName content = new QName("content");
-    final QName xmllang = new QName("http://www.w3.org/XML/1998/namespace", "lang", "xml");
+    final QName xmllang = new QName("xml:lang");
+    final QName xmllangNS = new QName("http://www.w3.org/XML/1998/namespace", "lang", "xml");
     final QName lang = new QName("lang");
-    final QName fakeXmlLang = new QName("xml:lang");
     final QName base = new QName("http://www.w3.org/1999/xhtml", "base");
     final QName head = new QName("http://www.w3.org/1999/xhtml", "head");
     final QName body = new QName("http://www.w3.org/1999/xhtml", "body");

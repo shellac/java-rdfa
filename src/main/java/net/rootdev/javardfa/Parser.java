@@ -89,22 +89,17 @@ public class Parser implements ContentHandler {
         List<String> forwardProperties = new LinkedList();
         List<String> backwardProperties = new LinkedList();
         String currentLanguage = context.language;
-        boolean langIsLang = context.langIsLang;
 
-        if (element.getAttributeByName(consts.xmllang) != null) {
-            currentLanguage = element.getAttributeByName(consts.xmllang).getValue();
-        }
-
-        if (settings.contains(Setting.ManualNamespaces) &&
-                element.getAttributeByName(consts.fakeXmlLang) != null &&
-                !langIsLang) {
-            currentLanguage = element.getAttributeByName(consts.fakeXmlLang).getValue();
-        }
-
-        if (settings.contains(Setting.ManualNamespaces) &&
-                element.getAttributeByName(consts.lang) != null) {
-            langIsLang = true;
-            currentLanguage = element.getAttributeByName(consts.lang).getValue();
+        // The xml / html namespace matching is a bit ropey. I wonder if the html 5
+        // parser has a setting for this?
+        if (settings.contains(Setting.ManualNamespaces)) {
+            if (element.getAttributeByName(consts.xmllang) != null) {
+                currentLanguage = element.getAttributeByName(consts.xmllang).getValue();
+            } else if (element.getAttributeByName(consts.lang) != null) {
+                currentLanguage = element.getAttributeByName(consts.lang).getValue();
+            }
+        } else if (element.getAttributeByName(consts.xmllangNS) != null) {
+            currentLanguage = element.getAttributeByName(consts.xmllangNS).getValue();
         }
 
         if (consts.base.equals(element.getName()) &&
@@ -243,7 +238,6 @@ public class Parser implements ContentHandler {
         EvalContext ec = new EvalContext(context);
         if (skipElement) {
             ec.language = currentLanguage;
-            ec.langIsLang = langIsLang;
         } else {
             if (newSubject != null) {
                 ec.parentSubject = newSubject;
@@ -260,7 +254,6 @@ public class Parser implements ContentHandler {
             }
 
             ec.language = currentLanguage;
-            ec.langIsLang = langIsLang;
             ec.forwardProperties = forwardProperties;
             ec.backwardProperties = backwardProperties;
         }
