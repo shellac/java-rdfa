@@ -198,9 +198,6 @@ public class Parser implements ContentHandler {
                     emitTriplesDatatypeLiteral(newSubject, props, lex, dt);
                 }
             } else {
-                // Begin to gather a literal
-                System.err.println(context);
-                System.err.println("..." + newSubject);
                 literalCollector.collect(newSubject, props, dt, currentLanguage);
             }
         }
@@ -258,8 +255,6 @@ public class Parser implements ContentHandler {
 
     protected void emitTriplesPlainLiteral(String subj, Collection<String> props, String lex, String language) {
         for (String prop : props) {
-            System.err.printf("s: <%s> p: <%s> lex: '%s' lang: '%s'\n",
-                    subj, prop, lex, language);
             sink.addLiteral(subj, prop, lex, language, null);
         }
     }
