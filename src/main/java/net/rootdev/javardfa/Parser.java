@@ -102,7 +102,8 @@ public class Parser implements ContentHandler {
             Attribute nSubj = findAttribute(element, consts.about, consts.src, consts.resource, consts.href);
             if (nSubj != null) {
                 newSubject = getURI(context.base, element, nSubj);
-            } else {
+            }
+            if (newSubject == null) {
                 if (consts.body.equals(element.getName()) ||
                             consts.head.equals(element.getName())) {
                     newSubject = context.base;
@@ -122,7 +123,8 @@ public class Parser implements ContentHandler {
             Attribute nSubj = findAttribute(element, consts.about, consts.src);
             if (nSubj != null) {
                 newSubject = getURI(context.base, element, nSubj);
-            } else {
+            }
+            if (newSubject == null) {
                 // if element is head or body assume about=""
                 if (consts.head.equals(element.getName()) ||
                         consts.body.equals(element.getName())) {
