@@ -49,7 +49,6 @@ public class Constants {
     final QName name = new QName("name");
     final QName form = new QName("http://www.w3.org/1999/xhtml", "form");
     final Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-    final String xmlLiteral = "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral";
 }
 
 /*

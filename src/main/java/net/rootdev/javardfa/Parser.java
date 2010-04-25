@@ -34,7 +34,7 @@ public class Parser implements ContentHandler {
     private final Set<Setting> settings;
     protected final Constants consts;
     private final Resolver resolver;
-    private final LiteralCollector2 literalCollector;
+    private final LiteralCollector literalCollector;
 
     public Parser(StatementSink sink) {
         this(   sink,
@@ -53,7 +53,7 @@ public class Parser implements ContentHandler {
         this.settings = EnumSet.noneOf(Setting.class);
         this.consts = new Constants();
         this.resolver = resolver;
-        this.literalCollector = new LiteralCollector2(this);
+        this.literalCollector = new LiteralCollector(this);
 
         // Important, although I guess the caller doesn't get total control
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
