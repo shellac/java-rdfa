@@ -5,8 +5,6 @@
  */
 package net.rootdev.javardfa;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -15,11 +13,8 @@ import java.util.List;
 import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
@@ -33,15 +28,13 @@ import org.xml.sax.SAXException;
  */
 public class Parser implements ContentHandler {
     
-    private final XMLOutputFactory outputFactory;
-    private final XMLEventFactory eventFactory;
-    private final XMLEventReader reader;
-    private final StatementSink sink;
+    protected final XMLOutputFactory outputFactory;
+    protected final XMLEventFactory eventFactory;
+    protected final StatementSink sink;
     private final Set<Setting> settings;
-    private final Constants consts;
+    protected final Constants consts;
     private final Resolver resolver;
-
-    private final StartElement fakeEnvelope;
+    private final LiteralCollector2 literalCollector;
 
     public Parser(StatementSink sink) {
         this(   sink,
@@ -57,16 +50,13 @@ public class Parser implements ContentHandler {
         this.sink = sink;
         this.outputFactory = outputFactory;
         this.eventFactory = eventFactory;
-        this.reader = null;
         this.settings = EnumSet.noneOf(Setting.class);
         this.consts = new Constants();
         this.resolver = resolver;
+        this.literalCollector = new LiteralCollector2(this);
 
         // Important, although I guess the caller doesn't get total control
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
-
-        // Woodstox doesn't like producing xml fragments, so we wrap.
-        fakeEnvelope = eventFactory.createStartElement("", null, "fake");
     }
 
     public void enable(Setting setting) {
@@ -195,7 +185,6 @@ public class Parser implements ContentHandler {
         }
 
         // Getting literal values. Complicated!
-
         if (element.getAttributeByName(consts.property) != null) {
             List<String> props = getURIs(context.base, element, element.getAttributeByName(consts.property));
             String dt = getDatatype(element);
@@ -207,21 +196,10 @@ public class Parser implements ContentHandler {
                     emitTriplesDatatypeLiteral(newSubject, props, lex, dt);
                 }
             } else {
-                level = 1;
-                theDatatype = dt;
-                literalWriter = new StringWriter();
-                litProps = props;
-                if (dt == null) // either plain or xml. defer decision
-                {
-                    queuedEvents = new LinkedList<XMLEvent>();
-                } else if (consts.xmlLiteral.equals(dt)) // definitely xml?
-                {
-                    XMLStreamWriter xsw = outputFactory.createXMLStreamWriter(literalWriter);
-                    //xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
-                    xmlWriter = new CanonicalXMLEventWriter(xsw);
-                    xmlWriter.add(fakeEnvelope);
-                }
-
+                // Begin to gather a literal
+                System.err.println(context);
+                System.err.println("..." + newSubject);
+                literalCollector.collect(newSubject, props, dt, currentLanguage);
             }
         }
 
@@ -276,19 +254,22 @@ public class Parser implements ContentHandler {
         }
     }
 
-    private void emitTriplesPlainLiteral(String subj, Collection<String> props, String lex, String language) {
+    protected void emitTriplesPlainLiteral(String subj, Collection<String> props, String lex, String language) {
         for (String prop : props) {
+            System.err.printf("s: <%s> p: <%s> lex: '%s' lang: '%s'\n",
+                    subj, prop, lex, language);
             sink.addLiteral(subj, prop, lex, language, null);
         }
     }
 
-    private void emitTriplesDatatypeLiteral(String subj, Collection<String> props, String lex, String datatype) {
+    protected void emitTriplesDatatypeLiteral(String subj, Collection<String> props, String lex, String datatype) {
         for (String prop : props) {
             sink.addLiteral(subj, prop, lex, null, datatype);
         }
     }
-    int bnodeId = 0;
 
+    int bnodeId = 0;
+    
     private String createBNode() // TODO probably broken? Can you write bnodes in rdfa directly?
     {
         return "_:node" + (bnodeId++);
@@ -338,15 +319,7 @@ public class Parser implements ContentHandler {
      * SAX methods
      */
     private Locator locator;
-    //private NSMapping mapping;
-    private EvalContext context; // = new EvalContext("BASE_NOT_SET");
-    // For literals (what fun!)
-    private List<XMLEvent> queuedEvents;
-    private int level = -1;
-    private XMLEventWriter xmlWriter;
-    private StringWriter literalWriter;
-    private String theDatatype;
-    private List<String> litProps;
+    private EvalContext context;
 
     public void setDocumentLocator(Locator arg0) {
         this.locator = arg0;
@@ -395,11 +368,10 @@ public class Parser implements ContentHandler {
                     prefix, arg0, localname,
                     fromAttributes(arg3), null, context);
 
-            if (level != -1) { // getting literal
-                handleForLiteral(e);
-                return;
-            }
-            context = parse(context, e);
+            if (literalCollector.isCollecting()) literalCollector.handleEvent(e);
+
+            // If we are gathering XML we stop parsing
+            if (!literalCollector.isCollectingXML()) context = parse(context, e);
         } catch (XMLStreamException ex) {
             throw new RuntimeException("Streaming issue", ex);
         }
@@ -408,31 +380,28 @@ public class Parser implements ContentHandler {
 
     public void endElement(String arg0, String localname, String qname) throws SAXException {
         //System.err.println("End element: " + arg0 + " " + arg1 + " " + arg2);
-        if (level != -1) { // getting literal
+        if (literalCollector.isCollecting()) {
             String prefix = (localname.equals(qname)) ? ""
                     : qname.substring(0, qname.indexOf(':'));
             XMLEvent e = eventFactory.createEndElement(prefix, arg0, localname);
-            handleForLiteral(e);
-            if (level != -1) {
-                return; // if still handling literal duck out now
-            }
+            literalCollector.handleEvent(e);
         }
-        context = context.parent;
+        // If we aren't collecting an XML literal keep parsing
+        if (!literalCollector.isCollectingXML()) context = context.parent;
     }
 
     public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
-        if (level != -1) {
+        if (literalCollector.isCollecting()) {
             XMLEvent e = eventFactory.createCharacters(String.valueOf(arg0, arg1, arg2));
-            handleForLiteral(e);
-            return;
+            literalCollector.handleEvent(e);
         }
     }
 
     public void ignorableWhitespace(char[] arg0, int arg1, int arg2) throws SAXException {
         //System.err.println("Whitespace...");
-        if (level != -1) {
+        if (literalCollector.isCollecting()) {
             XMLEvent e = eventFactory.createIgnorableSpace(String.valueOf(arg0, arg1, arg2));
-            handleForLiteral(e);
+            literalCollector.handleEvent(e);
         }
     }
 
@@ -460,82 +429,10 @@ public class Parser implements ContentHandler {
             if (!qname.equals("xmlns") && !qname.startsWith("xmlns:"))
                 toReturn.add(attr);
         }
-        // Copy xml lang across if in literal
-        if (level == 1 && context.language != null && !haveLang) {
-            toReturn.add(eventFactory.createAttribute(consts.xmllang, context.language));
-        }
+        
         return toReturn.iterator();
     }
-
-    private void handleForLiteral(XMLEvent e) {
-        try {
-            handleForLiteralEx(e);
-        } catch (XMLStreamException ex) {
-            throw new RuntimeException("Literal handling error", ex);
-        } catch (IOException ex) {
-            throw new RuntimeException("Literal handling error", ex);
-        }
-    }
-
-    private void handleForLiteralEx(XMLEvent e) throws XMLStreamException, IOException {
-        if (e.isStartElement()) {
-            level++;
-            if (queuedEvents != null) { // Aha, we ain't plain
-                XMLStreamWriter xsw = outputFactory.createXMLStreamWriter(literalWriter);
-                //xmlWriter = outputFactory.createXMLEventWriter(literalWriter);
-                xmlWriter = new CanonicalXMLEventWriter(xsw);
-                xmlWriter.add(fakeEnvelope);
-                for (XMLEvent ev : queuedEvents) {
-                    xmlWriter.add(ev);
-                }
-                queuedEvents = null;
-                theDatatype = consts.xmlLiteral;
-            }
-        }
-
-        if (e.isEndElement()) {
-            level--;
-            if (level == 0) { // Finished!
-                if (xmlWriter != null) {
-                    xmlWriter.close();
-                } else if (queuedEvents != null) {
-                    for (XMLEvent ev : queuedEvents) {
-                        literalWriter.append(ev.asCharacters().getData());
-                    }
-                }
-                String lex = literalWriter.toString();
-                if (consts.xmlLiteral.equals(theDatatype)) {
-                    // Clean up fake doc root
-                    if (lex.startsWith("<fake>"))  lex = lex.substring(6);
-                    else if (lex.startsWith("<fake xmlns=\"\">")) lex = lex.substring(15);
-                    if (lex.endsWith("</fake>")) lex = lex.substring(0, lex.length() - 7);
-                }
-                if (theDatatype == null || theDatatype.length() == 0) {
-                    emitTriplesPlainLiteral(context.parentSubject,
-                            litProps, lex, context.language);
-                } else {
-                    emitTriplesDatatypeLiteral(context.parentSubject,
-                            litProps, lex, theDatatype);
-                }
-                queuedEvents = null;
-                xmlWriter = null;
-                literalWriter = null;
-                theDatatype = null;
-                litProps = null;
-                level = -1;
-                return;
-            }
-        }
-
-        if (xmlWriter != null) {
-            xmlWriter.add(e);
-        } else if (e.isCharacters() && queuedEvents != null) {
-            queuedEvents.add(e);
-        } else if (e.isCharacters()) {
-            literalWriter.append(e.asCharacters().getData());
-        }
-    }
-
+    
     public String getURI(String base, StartElement element, Attribute attr) {
         QName attrName = attr.getName();
         if (attrName.equals(consts.href) || attrName.equals(consts.src)) // A URI

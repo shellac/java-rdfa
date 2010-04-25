@@ -29,10 +29,13 @@ public class CanonicalXMLEventWriter
         implements XMLEventWriter {
 
     private final XMLStreamWriter swriter;
-    private StartElement last;
+    private final Attribute contextLang;
+    private int level;
 
-    public CanonicalXMLEventWriter(XMLStreamWriter swriter) {
+    public CanonicalXMLEventWriter(XMLStreamWriter swriter, Attribute contextLang) {
         this.swriter = swriter;
+        this.contextLang = contextLang;
+        this.level = 0;
     }
 
     public void flush() throws XMLStreamException {
@@ -45,6 +48,7 @@ public class CanonicalXMLEventWriter
 
     public void add(XMLEvent event) throws XMLStreamException {
         if (event.isEndElement()) {
+            level--;
             swriter.writeEndElement();
         } else if (event.isCharacters()) {
             swriter.writeCharacters(event.asCharacters().getData());
@@ -52,6 +56,7 @@ public class CanonicalXMLEventWriter
             swriter.writeProcessingInstruction(((ProcessingInstruction) event).getData(),
                     ((ProcessingInstruction) event).getTarget());
         } else if (event.isStartElement()) {
+            level++;
             StartElement se = event.asStartElement();
             swriter.writeStartElement(se.getName().getPrefix(),
                     se.getName().getLocalPart(),
@@ -91,6 +96,7 @@ public class CanonicalXMLEventWriter
 
     private void writeAttributes(StartElement se) throws XMLStreamException {
         SortedMap<String, Attribute> atts = new TreeMap<String, Attribute>();
+        if (level == 2 && contextLang != null) atts.put("_xml:lang", contextLang);
         for (Iterator i = se.getAttributes(); i.hasNext();) {
             Attribute a = (Attribute) i.next();
             atts.put(getName(a), a);
@@ -106,7 +112,13 @@ public class CanonicalXMLEventWriter
 
     private String getName(Attribute a) {
         QName name = a.getName();
-        String toReturn = (name.getPrefix() == null) ? name.getLocalPart() : name.getPrefix() + ":" + name.getLocalPart();
+        String toReturn = null;
+        // TODO I think something -- probably my code -- is wrong
+        // localName is sometimes xml:lang, so I got xml:xml:lang
+        if (name.getLocalPart().contains(":")) toReturn = name.getLocalPart();
+        else toReturn = (name.getPrefix() == null) ? 
+            name.getLocalPart() :
+            name.getPrefix() + ":" + name.getLocalPart();
         if (toReturn.startsWith("xml:")) {
             return "_" + toReturn;
         } else {
