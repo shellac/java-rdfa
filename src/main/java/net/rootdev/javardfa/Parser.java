@@ -32,7 +32,6 @@ public class Parser implements ContentHandler {
     protected final XMLEventFactory eventFactory;
     protected final StatementSink sink;
     private final Set<Setting> settings;
-    protected final Constants consts;
     private final Resolver resolver;
     private final LiteralCollector literalCollector;
 
@@ -51,7 +50,6 @@ public class Parser implements ContentHandler {
         this.outputFactory = outputFactory;
         this.eventFactory = eventFactory;
         this.settings = EnumSet.noneOf(Setting.class);
-        this.consts = new Constants();
         this.resolver = resolver;
         this.literalCollector = new LiteralCollector(this);
 
@@ -83,102 +81,107 @@ public class Parser implements ContentHandler {
         // The xml / html namespace matching is a bit ropey. I wonder if the html 5
         // parser has a setting for this?
         if (settings.contains(Setting.ManualNamespaces)) {
-            if (element.getAttributeByName(consts.xmllang) != null) {
-                currentLanguage = element.getAttributeByName(consts.xmllang).getValue();
-            } else if (element.getAttributeByName(consts.lang) != null) {
-                currentLanguage = element.getAttributeByName(consts.lang).getValue();
+            if (element.getAttributeByName(Constants.xmllang) != null) {
+                currentLanguage = element.getAttributeByName(Constants.xmllang).getValue();
+            } else if (element.getAttributeByName(Constants.lang) != null) {
+                currentLanguage = element.getAttributeByName(Constants.lang).getValue();
             }
-        } else if (element.getAttributeByName(consts.xmllangNS) != null) {
-            currentLanguage = element.getAttributeByName(consts.xmllangNS).getValue();
+        } else if (element.getAttributeByName(Constants.xmllangNS) != null) {
+            currentLanguage = element.getAttributeByName(Constants.xmllangNS).getValue();
         }
 
-        if (consts.base.equals(element.getName()) &&
-                element.getAttributeByName(consts.href) != null) {
-            context.setBase(element.getAttributeByName(consts.href).getValue());
+        if (Constants.base.equals(element.getName()) &&
+                element.getAttributeByName(Constants.href) != null) {
+            context.setBase(element.getAttributeByName(Constants.href).getValue());
         }
 
-        if (element.getAttributeByName(consts.rev) == null &&
-                element.getAttributeByName(consts.rel) == null) {
-            Attribute nSubj = findAttribute(element, consts.about, consts.src, consts.resource, consts.href);
+        if (element.getAttributeByName(Constants.rev) == null &&
+                element.getAttributeByName(Constants.rel) == null) {
+            Attribute nSubj = findAttribute(element, Constants.about, Constants.src,
+                    Constants.resource, Constants.href);
             if (nSubj != null) {
                 newSubject = getURI(context.base, element, nSubj);
             }
             if (newSubject == null) {
-                if (consts.body.equals(element.getName()) ||
-                            consts.head.equals(element.getName())) {
+                if (Constants.body.equals(element.getName()) ||
+                            Constants.head.equals(element.getName())) {
                     newSubject = context.base;
                 }
-                else if (element.getAttributeByName(consts.typeof) != null) {
+                else if (element.getAttributeByName(Constants.typeof) != null) {
                     newSubject = createBNode();
                 } else {
                     if (context.parentObject != null) {
                         newSubject = context.parentObject;
                     }
-                    if (element.getAttributeByName(consts.property) == null) {
+                    if (element.getAttributeByName(Constants.property) == null) {
                         skipElement = true;
                     }
                 }
             }
         } else {
-            Attribute nSubj = findAttribute(element, consts.about, consts.src);
+            Attribute nSubj = findAttribute(element, Constants.about, Constants.src);
             if (nSubj != null) {
                 newSubject = getURI(context.base, element, nSubj);
             }
             if (newSubject == null) {
                 // if element is head or body assume about=""
-                if (consts.head.equals(element.getName()) ||
-                        consts.body.equals(element.getName())) {
+                if (Constants.head.equals(element.getName()) ||
+                        Constants.body.equals(element.getName())) {
                     newSubject = context.base;
-                } else if (element.getAttributeByName(consts.typeof) != null) {
+                } else if (element.getAttributeByName(Constants.typeof) != null) {
                     newSubject = createBNode();
                 } else if (context.parentObject != null) {
                     newSubject = context.parentObject;
                 }
             }
-            Attribute cObj = findAttribute(element, consts.resource, consts.href);
+            Attribute cObj = findAttribute(element, Constants.resource, Constants.href);
             if (cObj != null) {
                 currentObject = getURI(context.base, element, cObj);
             }
         }
 
-        if (newSubject != null && element.getAttributeByName(consts.typeof) != null) {
-            List<String> types = getURIs(context.base, element, element.getAttributeByName(consts.typeof));
+        if (newSubject != null && element.getAttributeByName(Constants.typeof) != null) {
+            List<String> types = getURIs(context.base, element, 
+                    element.getAttributeByName(Constants.typeof));
             for (String type : types) {
                 emitTriples(newSubject,
-                        consts.rdfType,
+                        Constants.rdfType,
                         type);
             }
         }
 
         // Dodgy extension
         if (settings.contains(Setting.FormMode)) {
-            if (consts.form.equals(element.getName())) {
-                emitTriples(newSubject, consts.rdfType, "http://www.w3.org/1999/xhtml/vocab/#form"); // Signal entering form
+            if (Constants.form.equals(element.getName())) {
+                emitTriples(newSubject, Constants.rdfType, "http://www.w3.org/1999/xhtml/vocab/#form"); // Signal entering form
             }
-            if (consts.input.equals(element.getName()) &&
-                    element.getAttributeByName(consts.name) != null) {
-                currentObject = "?" + element.getAttributeByName(consts.name).getValue();
+            if (Constants.input.equals(element.getName()) &&
+                    element.getAttributeByName(Constants.name) != null) {
+                currentObject = "?" + element.getAttributeByName(Constants.name).getValue();
             }
 
         }
 
         if (currentObject != null) {
-            if (element.getAttributeByName(consts.rel) != null) {
+            if (element.getAttributeByName(Constants.rel) != null) {
                 emitTriples(newSubject,
-                        getURIs(context.base, element, element.getAttributeByName(consts.rel)),
+                        getURIs(context.base, element,
+                            element.getAttributeByName(Constants.rel)),
                         currentObject);
             }
-            if (element.getAttributeByName(consts.rev) != null) {
+            if (element.getAttributeByName(Constants.rev) != null) {
                 emitTriples(currentObject,
-                        getURIs(context.base, element, element.getAttributeByName(consts.rev)),
+                        getURIs(context.base, element, element.getAttributeByName(Constants.rev)),
                         newSubject);
             }
         } else {
-            if (element.getAttributeByName(consts.rel) != null) {
-                forwardProperties.addAll(getURIs(context.base, element, element.getAttributeByName(consts.rel)));
+            if (element.getAttributeByName(Constants.rel) != null) {
+                forwardProperties.addAll(getURIs(context.base, element, 
+                        element.getAttributeByName(Constants.rel)));
             }
-            if (element.getAttributeByName(consts.rev) != null) {
-                backwardProperties.addAll(getURIs(context.base, element, element.getAttributeByName(consts.rev)));
+            if (element.getAttributeByName(Constants.rev) != null) {
+                backwardProperties.addAll(getURIs(context.base, element, 
+                        element.getAttributeByName(Constants.rev)));
             }
             if (!forwardProperties.isEmpty() || !backwardProperties.isEmpty()) {
                 // if predicate present
@@ -187,11 +190,12 @@ public class Parser implements ContentHandler {
         }
 
         // Getting literal values. Complicated!
-        if (element.getAttributeByName(consts.property) != null) {
-            List<String> props = getURIs(context.base, element, element.getAttributeByName(consts.property));
+        if (element.getAttributeByName(Constants.property) != null) {
+            List<String> props = getURIs(context.base, element, 
+                    element.getAttributeByName(Constants.property));
             String dt = getDatatype(element);
-            if (element.getAttributeByName(consts.content) != null) { // The easy bit
-                String lex = element.getAttributeByName(consts.content).getValue();
+            if (element.getAttributeByName(Constants.content) != null) { // The easy bit
+                String lex = element.getAttributeByName(Constants.content).getValue();
                 if (dt == null || dt.length() == 0) {
                     emitTriplesPlainLiteral(newSubject, props, lex, currentLanguage);
                 } else {
@@ -273,7 +277,7 @@ public class Parser implements ContentHandler {
     }
 
     private String getDatatype(StartElement element) {
-        Attribute de = element.getAttributeByName(consts.datatype);
+        Attribute de = element.getAttributeByName(Constants.datatype);
         if (de == null) {
             return null;
         }
@@ -432,16 +436,16 @@ public class Parser implements ContentHandler {
     
     public String getURI(String base, StartElement element, Attribute attr) {
         QName attrName = attr.getName();
-        if (attrName.equals(consts.href) || attrName.equals(consts.src)) // A URI
+        if (attrName.equals(Constants.href) || attrName.equals(Constants.src)) // A URI
         {
             if (attr.getValue().length() == 0) return base;
             else return resolver.resolve(base, attr.getValue());
         }
-        if (attrName.equals(consts.about) || attrName.equals(consts.resource)) // Safe CURIE or URI
+        if (attrName.equals(Constants.about) || attrName.equals(Constants.resource)) // Safe CURIE or URI
         {
             return expandSafeCURIE(base, element, attr.getValue());
         }
-        if (attrName.equals(consts.datatype)) // A CURIE
+        if (attrName.equals(Constants.datatype)) // A CURIE
         {
             return expandCURIE(element, attr.getValue());
         }
@@ -451,10 +455,10 @@ public class Parser implements ContentHandler {
     public List<String> getURIs(String base, StartElement element, Attribute attr) {
         List<String> uris = new LinkedList<String>();
         String[] curies = attr.getValue().split("\\s+");
-        boolean permitReserved = consts.rel.equals(attr.getName()) ||
-                consts.rev.equals(attr.getName());
+        boolean permitReserved = Constants.rel.equals(attr.getName()) ||
+                Constants.rev.equals(attr.getName());
         for (String curie : curies) {
-            if (consts.SpecialRels.contains(curie.toLowerCase())) {
+            if (Constants.SpecialRels.contains(curie.toLowerCase())) {
                 if (permitReserved)
                     uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie.toLowerCase());
             } else {
