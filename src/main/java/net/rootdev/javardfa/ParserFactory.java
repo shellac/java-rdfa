@@ -110,9 +110,9 @@ public class ParserFactory {
             Resolver resolver) {
         switch (format) {
             case XHTML:
-                return new Parser(sink, outputFactory, eventFactory, resolver);
+                return new Parser(sink, outputFactory, eventFactory, new URIExtractor10(resolver));
             default:
-                Parser p = new Parser(sink, outputFactory, eventFactory, resolver);
+                Parser p = new Parser(sink, outputFactory, eventFactory, new URIExtractor10(resolver));
                 p.enable(Setting.ManualNamespaces);
                 return p;
         }

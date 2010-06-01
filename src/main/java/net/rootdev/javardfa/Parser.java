@@ -32,26 +32,28 @@ public class Parser implements ContentHandler {
     protected final XMLEventFactory eventFactory;
     protected final StatementSink sink;
     private final Set<Setting> settings;
-    private final Resolver resolver;
     private final LiteralCollector literalCollector;
+    private final URIExtractor extractor;
 
     public Parser(StatementSink sink) {
         this(   sink,
                 XMLOutputFactory.newInstance(),
                 XMLEventFactory.newInstance(),
-                new IRIResolver());
+                new URIExtractor10(new IRIResolver()));
     }
 
     public Parser(StatementSink sink,
             XMLOutputFactory outputFactory,
             XMLEventFactory eventFactory,
-            Resolver resolver) {
+            URIExtractor extractor) {
         this.sink = sink;
         this.outputFactory = outputFactory;
         this.eventFactory = eventFactory;
         this.settings = EnumSet.noneOf(Setting.class);
-        this.resolver = resolver;
+        this.extractor = extractor;
         this.literalCollector = new LiteralCollector(this);
+
+        extractor.setSettings(settings);
 
         // Important, although I guess the caller doesn't get total control
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
@@ -100,7 +102,7 @@ public class Parser implements ContentHandler {
             Attribute nSubj = findAttribute(element, Constants.about, Constants.src,
                     Constants.resource, Constants.href);
             if (nSubj != null) {
-                newSubject = getURI(context.base, element, nSubj);
+                newSubject = extractor.getURI(context.base, element, nSubj);
             }
             if (newSubject == null) {
                 if (Constants.body.equals(element.getName()) ||
@@ -121,7 +123,7 @@ public class Parser implements ContentHandler {
         } else {
             Attribute nSubj = findAttribute(element, Constants.about, Constants.src);
             if (nSubj != null) {
-                newSubject = getURI(context.base, element, nSubj);
+                newSubject = extractor.getURI(context.base, element, nSubj);
             }
             if (newSubject == null) {
                 // if element is head or body assume about=""
@@ -136,12 +138,12 @@ public class Parser implements ContentHandler {
             }
             Attribute cObj = findAttribute(element, Constants.resource, Constants.href);
             if (cObj != null) {
-                currentObject = getURI(context.base, element, cObj);
+                currentObject = extractor.getURI(context.base, element, cObj);
             }
         }
 
         if (newSubject != null && element.getAttributeByName(Constants.typeof) != null) {
-            List<String> types = getURIs(context.base, element, 
+            List<String> types = extractor.getURIs(context.base, element,
                     element.getAttributeByName(Constants.typeof));
             for (String type : types) {
                 emitTriples(newSubject,
@@ -165,22 +167,22 @@ public class Parser implements ContentHandler {
         if (currentObject != null) {
             if (element.getAttributeByName(Constants.rel) != null) {
                 emitTriples(newSubject,
-                        getURIs(context.base, element,
+                        extractor.getURIs(context.base, element,
                             element.getAttributeByName(Constants.rel)),
                         currentObject);
             }
             if (element.getAttributeByName(Constants.rev) != null) {
                 emitTriples(currentObject,
-                        getURIs(context.base, element, element.getAttributeByName(Constants.rev)),
+                        extractor.getURIs(context.base, element, element.getAttributeByName(Constants.rev)),
                         newSubject);
             }
         } else {
             if (element.getAttributeByName(Constants.rel) != null) {
-                forwardProperties.addAll(getURIs(context.base, element, 
+                forwardProperties.addAll(extractor.getURIs(context.base, element,
                         element.getAttributeByName(Constants.rel)));
             }
             if (element.getAttributeByName(Constants.rev) != null) {
-                backwardProperties.addAll(getURIs(context.base, element, 
+                backwardProperties.addAll(extractor.getURIs(context.base, element,
                         element.getAttributeByName(Constants.rev)));
             }
             if (!forwardProperties.isEmpty() || !backwardProperties.isEmpty()) {
@@ -191,7 +193,7 @@ public class Parser implements ContentHandler {
 
         // Getting literal values. Complicated!
         if (element.getAttributeByName(Constants.property) != null) {
-            List<String> props = getURIs(context.base, element, 
+            List<String> props = extractor.getURIs(context.base, element,
                     element.getAttributeByName(Constants.property));
             String dt = getDatatype(element);
             if (element.getAttributeByName(Constants.content) != null) { // The easy bit
@@ -285,7 +287,7 @@ public class Parser implements ContentHandler {
         if (dt.length() == 0) {
             return dt;
         }
-        return expandCURIE(element, dt);
+        return extractor.expandCURIE(element, dt);
     }
 
     private void getNamespaces(Attributes attrs) {
@@ -432,94 +434,6 @@ public class Parser implements ContentHandler {
         }
         
         return toReturn.iterator();
-    }
-    
-    public String getURI(String base, StartElement element, Attribute attr) {
-        QName attrName = attr.getName();
-        if (attrName.equals(Constants.href) || attrName.equals(Constants.src)) // A URI
-        {
-            if (attr.getValue().length() == 0) return base;
-            else return resolver.resolve(base, attr.getValue());
-        }
-        if (attrName.equals(Constants.about) || attrName.equals(Constants.resource)) // Safe CURIE or URI
-        {
-            return expandSafeCURIE(base, element, attr.getValue());
-        }
-        if (attrName.equals(Constants.datatype)) // A CURIE
-        {
-            return expandCURIE(element, attr.getValue());
-        }
-        throw new RuntimeException("Unexpected attribute: " + attr);
-    }
-
-    public List<String> getURIs(String base, StartElement element, Attribute attr) {
-        List<String> uris = new LinkedList<String>();
-        String[] curies = attr.getValue().split("\\s+");
-        boolean permitReserved = Constants.rel.equals(attr.getName()) ||
-                Constants.rev.equals(attr.getName());
-        for (String curie : curies) {
-            if (Constants.SpecialRels.contains(curie.toLowerCase())) {
-                if (permitReserved)
-                    uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie.toLowerCase());
-            } else {
-                String uri = expandCURIE(element, curie);
-                if (uri != null) {
-                    uris.add(uri);
-                }
-            }
-        }
-        return uris;
-    }
-
-    public String expandCURIE(StartElement element, String value) {
-        if (value.startsWith("_:")) {
-            if (!settings.contains(Setting.ManualNamespaces)) return value;
-            if (element.getNamespaceURI("_") == null) return value;
-        }
-        if (settings.contains(Setting.FormMode) && // variable
-                value.startsWith("?")) {
-            return value;
-        }
-        int offset = value.indexOf(":") + 1;
-        if (offset == 0) {
-            //throw new RuntimeException("Is this a curie? \"" + value + "\"");
-            return null;
-        }
-        String prefix = value.substring(0, offset - 1);
-
-        // Apparently these are not allowed to expand
-        if ("xml".equals(prefix) || "xmlns".equals(prefix)) return null;
-
-        String namespaceURI = prefix.length() == 0 ? "http://www.w3.org/1999/xhtml/vocab#" : element.getNamespaceURI(prefix);
-        if (namespaceURI == null) {
-            return null;
-            //throw new RuntimeException("Unknown prefix: " + prefix);
-        }
-        if (offset != value.length() && value.charAt(offset) == '#') {
-            offset += 1; // ex:#bar
-        }
-        if (namespaceURI.endsWith("/") || namespaceURI.endsWith("#")) {
-            return namespaceURI + value.substring(offset);
-        } else {
-            return namespaceURI + "#" + value.substring(offset);
-        }
-    }
-
-    public String expandSafeCURIE(String base, StartElement element, String value) {
-        if (value.startsWith("[") && value.endsWith("]")) {
-            return expandCURIE(element, value.substring(1, value.length() - 1));
-        } else {
-            if (value.length() == 0) {
-                return base;
-            }
-
-            if (settings.contains(Setting.FormMode) &&
-                    value.startsWith("?")) {
-                return value;
-            }
-
-            return resolver.resolve(base, value);
-        }
     }
 }
 
