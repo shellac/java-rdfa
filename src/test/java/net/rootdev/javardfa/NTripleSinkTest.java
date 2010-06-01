@@ -71,6 +71,7 @@ public class NTripleSinkTest {
     public void testToLiteral() {
         assertEquals("Convert plain", "\"a\" ", sink.toLiteral("a", null, null));
         assertEquals("Convert lang", "\"a\"@en ", sink.toLiteral("a", "en", null));
+        assertEquals("Convert no lang", "\"a\" ", sink.toLiteral("a", "", null));
         assertEquals("Convert dt", "\"a\"^^<http://www.example.com/> ", sink.toLiteral("a", null, "http://www.example.com/"));
     }
 

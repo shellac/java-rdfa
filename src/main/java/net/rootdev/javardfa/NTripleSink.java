@@ -67,7 +67,7 @@ public class NTripleSink implements StatementSink {
     }
 
     protected final String toLiteral(String lex, String lang, String datatype) {
-        if (lang != null)
+        if (lang != null && lang.length() != 0)
             return quote(lex) + "@" + lang + " ";
         if (datatype != null)
             return quote(lex) + "^^<" + datatype + "> ";

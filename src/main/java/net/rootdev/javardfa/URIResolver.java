@@ -24,8 +24,11 @@ public class URIResolver implements Resolver {
             URI uri = new URI(first);
             return uri.resolve(second).toString();
         } catch (URISyntaxException ex) {
-            throw new RuntimeException("Problem resolving URI: " +
-                    first + " " + second, ex);
+            // TODO Is this a good idea???
+            return null;
+        } catch (IllegalArgumentException ex) {
+            // See above
+            return null;
         }
     }
 
