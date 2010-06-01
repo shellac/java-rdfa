@@ -55,8 +55,6 @@ public class ParserFactory {
         reader.setXmlPolicy(XmlViolationPolicy.ALLOW);
         reader.setXmlnsPolicy(XmlViolationPolicy.ALLOW);
         reader.setMappingLangToXmlLang(false);
-        // Stream
-        reader.setStreamabilityViolationPolicy(XmlViolationPolicy.FATAL);
         return reader;
     }
 
