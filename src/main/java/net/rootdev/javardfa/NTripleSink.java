@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
  * @author pldms
  */
 public class NTripleSink implements StatementSink {
-    private final PrintWriter out;
-    private final String[] comments;
+    protected final PrintWriter out;
+    protected final String[] comments;
 
     public NTripleSink(OutputStream os, String... comments) throws UnsupportedEncodingException {
         this(new OutputStreamWriter(os, "US-ASCII"), comments); // N-Triples is 7-bit ascii
@@ -96,11 +96,11 @@ public class NTripleSink implements StatementSink {
         return b.toString();
     }
 
-    protected final String enc(int codepoint) {
+    protected String enc(int codepoint) {
         return String.format("\\u%04x", codepoint);
     }
 
-    protected final String longenc(int codepoint) {
+    protected String longenc(int codepoint) {
         return String.format("\\U%08x", codepoint);
     }
 }

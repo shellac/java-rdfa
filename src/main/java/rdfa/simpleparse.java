@@ -10,10 +10,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
-import net.rootdev.javardfa.NTripleSink;
 import net.rootdev.javardfa.ParserFactory;
 import net.rootdev.javardfa.ParserFactory.Format;
 import net.rootdev.javardfa.StatementSink;
+import net.rootdev.javardfa.TurtleSink;
 import net.rootdev.javardfa.URIResolver;
 import net.rootdev.javardfa.Version;
 import org.xml.sax.SAXException;
@@ -47,7 +47,7 @@ public class simpleparse {
         if (getFormat) usage();
 
         for (String uri: uris) {
-            StatementSink sink = new NTripleSink(System.out);
+            StatementSink sink = new TurtleSink(System.out);
             XMLReader reader = ParserFactory.createReaderForFormat(sink, format, new URIResolver());
             reader.parse(uri);
         }
