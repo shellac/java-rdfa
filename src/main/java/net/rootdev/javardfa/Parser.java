@@ -416,18 +416,13 @@ public class Parser implements ContentHandler {
 
     private Iterator fromAttributes(Attributes attributes) {
         List toReturn = new LinkedList();
-        boolean haveLang = false;
+        
         for (int i = 0; i < attributes.getLength(); i++) {
             String qname = attributes.getQName(i);
             String prefix = qname.contains(":") ? qname.substring(0, qname.indexOf(":")) : "";
             Attribute attr = eventFactory.createAttribute(
                     prefix, attributes.getURI(i),
                     attributes.getLocalName(i), attributes.getValue(i));
-            //if (consts.xmllang.getLocalPart().equals(attributes.getLocalName(i)) &&
-            //        consts.xmllang.getNamespaceURI().equals(attributes.getURI(i))) {
-            if (qname.equals("xml:lang")) {
-                haveLang = true;
-            }
 
             if (!qname.equals("xmlns") && !qname.startsWith("xmlns:"))
                 toReturn.add(attr);
