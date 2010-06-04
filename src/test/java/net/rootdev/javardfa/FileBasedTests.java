@@ -88,7 +88,8 @@ public class FileBasedTests {
         StatementSink sink = new JenaStatementSink(m);
         XMLReader parser = ParserFactory.createReaderForFormat(sink, Format.XHTML, Setting.OnePointOne);
         parser.parse(hf);
-        assertTrue("Files match (" + htmlURL + ")", c.isIsomorphicWith(m));
+        boolean result = c.isIsomorphicWith(m);
+        assertTrue("Files match (" + htmlURL + ")", result);
     }
 
     private void compareQuery(URL htmlURL, URL compareURL) throws SAXException, IOException {

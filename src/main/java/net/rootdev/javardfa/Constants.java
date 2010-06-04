@@ -53,6 +53,7 @@ public class Constants {
     // RDFa 1.1
     final static QName vocab = new QName("vocab");
     final static QName profile = new QName("profile");
+    final static QName prefix = new QName("prefix");
 }
 
 /*

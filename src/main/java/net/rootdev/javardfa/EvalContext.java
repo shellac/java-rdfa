@@ -5,6 +5,7 @@
  */
 package net.rootdev.javardfa;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.NamespaceContext;
 
-class EvalContext implements NamespaceContext {
+public class EvalContext implements NamespaceContext {
 
     EvalContext parent;
     String base;
@@ -22,7 +23,8 @@ class EvalContext implements NamespaceContext {
     String vocab;
     List<String> forwardProperties;
     List<String> backwardProperties;
-    Map<String, String> prefixToUri = new HashMap<String, String>();
+    Map<String, String> xmlnsMap = Collections.EMPTY_MAP;
+    Map<String, String> prefixMap = Collections.EMPTY_MAP;
 
     protected EvalContext(String base) {
         super();
@@ -75,16 +77,48 @@ class EvalContext implements NamespaceContext {
                 );
     }
 
+    /**
+     * RDFa 1.1 prefix support
+     * @param prefix Prefix
+     * @param uri URI
+     */
+    public void setPrefix(String prefix, String uri) {
+        if (uri.length() == 0) {
+            uri = base;
+        }
+        if (prefixMap == Collections.EMPTY_MAP) prefixMap = new HashMap<String, String>();
+        prefixMap.put(prefix, uri);
+    }
+
+    /**
+     * RDFa 1.1 prefix support.
+     * @param prefix
+     * @return
+     */
+    public String getURIForPrefix(String prefix) {
+        if (prefixMap.containsKey(prefix)) {
+            return prefixMap.get(prefix);
+        } else if (xmlnsMap.containsKey(prefix)) {
+            return xmlnsMap.get(prefix);
+        } else if (parent != null) {
+            return parent.getURIForPrefix(prefix);
+        } else {
+            return null;
+        }
+    }
+
+    // Namespace methods
     public void setNamespaceURI(String prefix, String uri) {
         if (uri.length() == 0) {
             uri = base;
         }
-        prefixToUri.put(prefix, uri);
+        if (xmlnsMap == Collections.EMPTY_MAP) xmlnsMap = new HashMap<String, String>();
+        xmlnsMap.put(prefix, uri);
     }
 
     public String getNamespaceURI(String prefix) {
-        if (prefixToUri.containsKey(prefix)) {
-            return prefixToUri.get(prefix);
+        if (xmlnsMap.containsKey(prefix)) {
+            return xmlnsMap.get(prefix);
         } else if (parent != null) {
             return parent.getNamespaceURI(prefix);
         } else {

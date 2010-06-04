@@ -80,11 +80,16 @@ public class Parser implements ContentHandler {
         List<String> backwardProperties = new LinkedList();
         String currentLanguage = context.language;
 
-        if (settings.contains(Setting.OnePointOne) &&
-            element.getAttributeByName(Constants.vocab) != null) {
-            // BAAAAAADDDDDDD!!!!!!!
-            context.vocab =
-                element.getAttributeByName(Constants.vocab).getValue().trim();
+        if (settings.contains(Setting.OnePointOne)) {
+
+            if (element.getAttributeByName(Constants.vocab) != null) {
+                context.vocab =
+                    element.getAttributeByName(Constants.vocab).getValue().trim();
+            }
+
+            if (element.getAttributeByName(Constants.prefix) != null) {
+                parsePrefixes(element.getAttributeByName(Constants.prefix).getValue(), context);
+            }
         }
 
         // The xml / html namespace matching is a bit ropey. I wonder if the html 5
@@ -109,7 +114,7 @@ public class Parser implements ContentHandler {
             Attribute nSubj = findAttribute(element, Constants.about, Constants.src,
                     Constants.resource, Constants.href);
             if (nSubj != null) {
-                newSubject = extractor.getURI(context.base, element, nSubj);
+                newSubject = extractor.getURI(element, nSubj, context);
             }
             if (newSubject == null) {
                 if (Constants.body.equals(element.getName()) ||
@@ -130,7 +135,7 @@ public class Parser implements ContentHandler {
         } else {
             Attribute nSubj = findAttribute(element, Constants.about, Constants.src);
             if (nSubj != null) {
-                newSubject = extractor.getURI(context.base, element, nSubj);
+                newSubject = extractor.getURI(element, nSubj, context);
             }
             if (newSubject == null) {
                 // if element is head or body assume about=""
@@ -145,13 +150,13 @@ public class Parser implements ContentHandler {
             }
             Attribute cObj = findAttribute(element, Constants.resource, Constants.href);
             if (cObj != null) {
-                currentObject = extractor.getURI(context.base, element, cObj);
+                currentObject = extractor.getURI(element, cObj, context);
             }
         }
 
         if (newSubject != null && element.getAttributeByName(Constants.typeof) != null) {
-            List<String> types = extractor.getURIs(context.base, element,
-                    element.getAttributeByName(Constants.typeof));
+            List<String> types = extractor.getURIs(element,
+                    element.getAttributeByName(Constants.typeof), context);
             for (String type : types) {
                 emitTriples(newSubject,
                         Constants.rdfType,
@@ -174,23 +179,23 @@ public class Parser implements ContentHandler {
         if (currentObject != null) {
             if (element.getAttributeByName(Constants.rel) != null) {
                 emitTriples(newSubject,
-                        extractor.getURIs(context.base, element,
-                            element.getAttributeByName(Constants.rel)),
+                        extractor.getURIs(element,
+                            element.getAttributeByName(Constants.rel), context),
                         currentObject);
             }
             if (element.getAttributeByName(Constants.rev) != null) {
                 emitTriples(currentObject,
-                        extractor.getURIs(context.base, element, element.getAttributeByName(Constants.rev)),
+                        extractor.getURIs(element, element.getAttributeByName(Constants.rev), context),
                         newSubject);
             }
         } else {
             if (element.getAttributeByName(Constants.rel) != null) {
-                forwardProperties.addAll(extractor.getURIs(context.base, element,
-                        element.getAttributeByName(Constants.rel)));
+                forwardProperties.addAll(extractor.getURIs(element,
+                        element.getAttributeByName(Constants.rel), context));
             }
             if (element.getAttributeByName(Constants.rev) != null) {
-                backwardProperties.addAll(extractor.getURIs(context.base, element,
-                        element.getAttributeByName(Constants.rev)));
+                backwardProperties.addAll(extractor.getURIs(element,
+                        element.getAttributeByName(Constants.rev), context));
             }
             if (!forwardProperties.isEmpty() || !backwardProperties.isEmpty()) {
                 // if predicate present
@@ -200,8 +205,8 @@ public class Parser implements ContentHandler {
 
         // Getting literal values. Complicated!
         if (element.getAttributeByName(Constants.property) != null) {
-            List<String> props = extractor.getURIs(context.base, element,
-                    element.getAttributeByName(Constants.property));
+            List<String> props = extractor.getURIs(element,
+                    element.getAttributeByName(Constants.property), context);
             String dt = getDatatype(element);
             if (element.getAttributeByName(Constants.content) != null) { // The easy bit
                 String lex = element.getAttributeByName(Constants.content).getValue();
@@ -294,7 +299,7 @@ public class Parser implements ContentHandler {
         if (dt.length() == 0) {
             return dt;
         }
-        return extractor.expandCURIE(element, dt);
+        return extractor.expandCURIE(element, dt, context);
     }
 
     private void getNamespaces(Attributes attrs) {
@@ -436,6 +441,20 @@ public class Parser implements ContentHandler {
         }
         
         return toReturn.iterator();
+    }
+
+    // 1.1 method
+
+    private void parsePrefixes(String value, EvalContext context) {
+        String[] parts = value.split("\\s+");
+        for (int i = 0; i < parts.length; i += 2) {
+            String prefix = parts[i];
+            if (i + 1 < parts.length && prefix.endsWith(":")) {
+                String prefixFix = prefix.substring(0, prefix.length() - 1);
+                context.setPrefix(prefixFix, parts[i+1]);
+                sink.addPrefix(prefixFix, parts[i+1]);
+            }
+        }
     }
 }
 

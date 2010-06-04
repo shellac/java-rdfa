@@ -29,25 +29,28 @@ public class URIExtractor10 implements URIExtractor {
         this.settings = settings;
     }
 
-    public String getURI(String base, StartElement element, Attribute attr) {
+    public String getURI(StartElement element, Attribute attr, EvalContext context) {
         QName attrName = attr.getName();
         if (attrName.equals(Constants.href) || attrName.equals(Constants.src)) // A URI
         {
-            if (attr.getValue().length() == 0) return base;
-            else return resolver.resolve(base, attr.getValue());
+            if (attr.getValue().length() == 0) {
+                return context.base;
+            } else {
+                return resolver.resolve(context.base, attr.getValue());
+            }
         }
         if (attrName.equals(Constants.about) || attrName.equals(Constants.resource)) // Safe CURIE or URI
         {
-            return expandSafeCURIE(base, element, attr.getValue());
+            return expandSafeCURIE(element, attr.getValue(), context);
         }
         if (attrName.equals(Constants.datatype)) // A CURIE
         {
-            return expandCURIE(element, attr.getValue());
+            return expandCURIE(element, attr.getValue(), context);
         }
         throw new RuntimeException("Unexpected attribute: " + attr);
     }
 
-    public List<String> getURIs(String base, StartElement element, Attribute attr) {
+    public List<String> getURIs(StartElement element, Attribute attr, EvalContext context) {
         List<String> uris = new LinkedList<String>();
         String[] curies = attr.getValue().split("\\s+");
         boolean permitReserved = Constants.rel.equals(attr.getName()) ||
@@ -57,7 +60,7 @@ public class URIExtractor10 implements URIExtractor {
                 if (permitReserved)
                     uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie.toLowerCase());
             } else {
-                String uri = expandCURIE(element, curie);
+                String uri = expandCURIE(element, curie, context);
                 if (uri != null) {
                     uris.add(uri);
                 }
@@ -66,7 +69,7 @@ public class URIExtractor10 implements URIExtractor {
         return uris;
     }
 
-    public String expandCURIE(StartElement element, String value) {
+    public String expandCURIE(StartElement element, String value, EvalContext context) {
         if (value.startsWith("_:")) {
             if (!settings.contains(Setting.ManualNamespaces)) return value;
             if (element.getNamespaceURI("_") == null) return value;
@@ -100,12 +103,12 @@ public class URIExtractor10 implements URIExtractor {
         }
     }
 
-    public String expandSafeCURIE(String base, StartElement element, String value) {
+    public String expandSafeCURIE(StartElement element, String value, EvalContext context) {
         if (value.startsWith("[") && value.endsWith("]")) {
-            return expandCURIE(element, value.substring(1, value.length() - 1));
+            return expandCURIE(element, value.substring(1, value.length() - 1), context);
         } else {
             if (value.length() == 0) {
-                return base;
+                return context.base;
             }
 
             if (settings.contains(Setting.FormMode) &&
@@ -113,7 +116,7 @@ public class URIExtractor10 implements URIExtractor {
                 return value;
             }
 
-            return resolver.resolve(base, value);
+            return resolver.resolve(context.base, value);
         }
     }
 

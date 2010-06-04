@@ -18,12 +18,12 @@ public interface URIExtractor {
 
     void setSettings(Set<Setting> settings);
 
-    String expandCURIE(StartElement element, String value);
+    String expandCURIE(StartElement element, String value, EvalContext context);
 
-    String expandSafeCURIE(String base, StartElement element, String value);
+    String expandSafeCURIE(StartElement element, String value, EvalContext context);
 
-    String getURI(String base, StartElement element, Attribute attr);
+    String getURI(StartElement element, Attribute attr, EvalContext context);
 
-    List<String> getURIs(String base, StartElement element, Attribute attr);
+    List<String> getURIs(StartElement element, Attribute attr, EvalContext context);
 
 }
