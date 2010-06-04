@@ -83,8 +83,8 @@ public class Parser implements ContentHandler {
         if (settings.contains(Setting.OnePointOne) &&
             element.getAttributeByName(Constants.vocab) != null) {
             // BAAAAAADDDDDDD!!!!!!!
-            context.setNamespaceURI("",
-                element.getAttributeByName(Constants.vocab).getValue().trim());
+            context.vocab =
+                element.getAttributeByName(Constants.vocab).getValue().trim();
         }
 
         // The xml / html namespace matching is a bit ropey. I wonder if the html 5

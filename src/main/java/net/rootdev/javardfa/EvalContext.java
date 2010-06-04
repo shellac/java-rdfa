@@ -19,6 +19,7 @@ class EvalContext implements NamespaceContext {
     String parentSubject;
     String parentObject;
     String language;
+    String vocab;
     List<String> forwardProperties;
     List<String> backwardProperties;
     Map<String, String> prefixToUri = new HashMap<String, String>();
@@ -40,6 +41,7 @@ class EvalContext implements NamespaceContext {
         this.forwardProperties = new LinkedList<String>(toCopy.forwardProperties);
         this.backwardProperties = new LinkedList<String>(toCopy.backwardProperties);
         this.parent = toCopy;
+        this.vocab = toCopy.vocab;
     }
 
     public void setBase(String abase) {
