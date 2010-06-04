@@ -49,6 +49,10 @@ public class Constants {
     final static QName name = new QName("name");
     final static QName form = new QName("http://www.w3.org/1999/xhtml", "form");
     final static Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+    
+    // RDFa 1.1
+    final static QName vocab = new QName("vocab");
+    final static QName profile = new QName("profile");
 }
 
 /*

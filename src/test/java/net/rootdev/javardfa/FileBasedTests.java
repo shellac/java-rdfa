@@ -54,6 +54,7 @@ public class FileBasedTests {
         Collection<String[]> filePairs = new ArrayList<String[]>();
         String nextLine;
         while ((nextLine = reader.readLine()) != null) {
+            if (nextLine.startsWith("#")) continue;
             filePairs.add(nextLine.split("\\s+"));
         }
         return filePairs;
@@ -85,10 +86,9 @@ public class FileBasedTests {
         Model c = FileManager.get().loadModel(compareURL.toExternalForm());
         Model m = ModelFactory.createDefaultModel();
         StatementSink sink = new JenaStatementSink(m);
-        XMLReader parser = ParserFactory.createReaderForFormat(sink, Format.XHTML);
+        XMLReader parser = ParserFactory.createReaderForFormat(sink, Format.XHTML, Setting.OnePointOne);
         parser.parse(hf);
-
-        assertTrue("Files match", c.isIsomorphicWith(m));
+        assertTrue("Files match (" + htmlURL + ")", c.isIsomorphicWith(m));
     }
 
     private void compareQuery(URL htmlURL, URL compareURL) throws SAXException, IOException {
@@ -101,7 +101,7 @@ public class FileBasedTests {
 
         Query qFromHTML = qs.get(qs.keySet().toArray()[0]);
 
-        assertEquals("Query matches",
+        assertEquals("Query matches (" + htmlURL + ")",
                 Algebra.compile(query),
                 Algebra.compile(qFromHTML));
     }

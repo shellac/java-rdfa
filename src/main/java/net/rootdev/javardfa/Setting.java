@@ -2,5 +2,5 @@ package net.rootdev.javardfa;
 
 public enum Setting {
 
-    FormMode, ManualNamespaces
+    FormMode, ManualNamespaces, OnePointOne
 }

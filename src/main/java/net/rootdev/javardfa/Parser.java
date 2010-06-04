@@ -80,6 +80,13 @@ public class Parser implements ContentHandler {
         List<String> backwardProperties = new LinkedList();
         String currentLanguage = context.language;
 
+        if (settings.contains(Setting.OnePointOne) &&
+            element.getAttributeByName(Constants.vocab) != null) {
+            // BAAAAAADDDDDDD!!!!!!!
+            context.setNamespaceURI("",
+                element.getAttributeByName(Constants.vocab).getValue().trim());
+        }
+
         // The xml / html namespace matching is a bit ropey. I wonder if the html 5
         // parser has a setting for this?
         if (settings.contains(Setting.ManualNamespaces)) {
