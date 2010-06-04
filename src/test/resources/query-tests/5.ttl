@@ -1,0 +1,5 @@
+<http://example.com/#me> a <http://xmlns.com/foaf/0.1/Person> ;
+   <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+
+<http://example.com/res> a <http://example.com/ns#Thing> ;
+   <http://purl.org/dc/terms/title> "title" .
