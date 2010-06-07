@@ -34,24 +34,28 @@ public class Parser implements ContentHandler {
     private final Set<Setting> settings;
     private final LiteralCollector literalCollector;
     private final URIExtractor extractor;
+    private final ProfileCollector profileCollector;
 
     public Parser(StatementSink sink) {
         this(   sink,
                 XMLOutputFactory.newInstance(),
                 XMLEventFactory.newInstance(),
-                new URIExtractor10(new IRIResolver()));
+                new URIExtractor10(new IRIResolver()),
+                ProfileCollector.EMPTY_COLLECTOR);
     }
 
     public Parser(StatementSink sink,
             XMLOutputFactory outputFactory,
             XMLEventFactory eventFactory,
-            URIExtractor extractor) {
+            URIExtractor extractor,
+            ProfileCollector profileCollector) {
         this.sink = sink;
         this.outputFactory = outputFactory;
         this.eventFactory = eventFactory;
         this.settings = EnumSet.noneOf(Setting.class);
         this.extractor = extractor;
         this.literalCollector = new LiteralCollector(this);
+        this.profileCollector = profileCollector;
 
         extractor.setSettings(settings);
 
@@ -89,6 +93,12 @@ public class Parser implements ContentHandler {
 
             if (element.getAttributeByName(Constants.prefix) != null) {
                 parsePrefixes(element.getAttributeByName(Constants.prefix).getValue(), context);
+            }
+
+            if (element.getAttributeByName(Constants.profile) != null) {
+                profileCollector.getProfile(
+                        element.getAttributeByName(Constants.profile).getValue(),
+                        context);
             }
         }
 

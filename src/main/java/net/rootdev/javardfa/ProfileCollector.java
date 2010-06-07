@@ -15,7 +15,16 @@ public interface ProfileCollector {
     public final static String uri = NS + "uri";
     public final static String term = NS + "term";
     public final static String prefix = NS + "prefix";
+    public final static ProfileCollector EMPTY_COLLECTOR = new NullProfileCollector();
 
     void getProfile(String profileURI, EvalContext context);
+
+    static final class NullProfileCollector implements ProfileCollector {
+
+        public void getProfile(String profileURI, EvalContext context) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+    }
 
 }

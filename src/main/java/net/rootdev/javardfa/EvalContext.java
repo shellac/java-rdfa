@@ -133,6 +133,15 @@ public class EvalContext implements NamespaceContext {
     public Iterator getPrefixes(String uri) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    
+    // I'm not sure about this 1.1 term business. Reuse prefix map
+    public void setTerm(String term, String uri) {
+       setPrefix(term + ":", uri);
+    }
+
+    public String getURIForTerm(String term) {
+        return getURIForPrefix(term + ":");
+    }
 }
 
 /*
