@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.namespace.NamespaceContext;
 
-public class EvalContext implements NamespaceContext {
+public final class EvalContext implements NamespaceContext {
 
     EvalContext parent;
-    public String base;
+    String base;
     String parentSubject;
     String parentObject;
     String language;
-    public String vocab;
+    String vocab;
     List<String> forwardProperties;
     List<String> backwardProperties;
     Map<String, String> xmlnsMap = Collections.EMPTY_MAP;
@@ -141,6 +141,14 @@ public class EvalContext implements NamespaceContext {
 
     public String getURIForTerm(String term) {
         return getURIForPrefix(term + ":");
+    }
+
+    public String getBase() {
+        return base;
+    }
+
+    public String getVocab() {
+        return vocab;
     }
 }
 

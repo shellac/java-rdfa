@@ -38,9 +38,9 @@ public class URIExtractor10 implements URIExtractor {
         if (attrName.equals(Constants.href) || attrName.equals(Constants.src)) // A URI
         {
             if (attr.getValue().length() == 0) {
-                return context.base;
+                return context.getBase();
             } else {
-                return resolver.resolve(context.base, attr.getValue());
+                return resolver.resolve(context.getBase(), attr.getValue());
             }
         }
         if (attrName.equals(Constants.about) || attrName.equals(Constants.resource)) // Safe CURIE or URI
@@ -112,7 +112,7 @@ public class URIExtractor10 implements URIExtractor {
             return expandCURIE(element, value.substring(1, value.length() - 1), context);
         } else {
             if (value.length() == 0) {
-                return context.base;
+                return context.getBase();
             }
 
             if (settings.contains(Setting.FormMode) &&
@@ -120,8 +120,12 @@ public class URIExtractor10 implements URIExtractor {
                 return value;
             }
 
-            return resolver.resolve(context.base, value);
+            return resolver.resolve(context.getBase(), value);
         }
+    }
+
+    public String resolveURI(String uri, EvalContext context) {
+        return resolver.resolve(context.getBase(), uri);
     }
 
 }

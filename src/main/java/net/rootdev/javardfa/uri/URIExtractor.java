@@ -28,4 +28,5 @@ public interface URIExtractor {
 
     List<String> getURIs(StartElement element, Attribute attr, EvalContext context);
 
+    String resolveURI(String uri, EvalContext context);
 }

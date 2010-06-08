@@ -28,9 +28,9 @@ public class SimpleProfileCollector implements ProfileCollector {
                         Setting.OnePointOne);
             reader.parse(profileURI);
         } catch (SAXException ex) {
-
+            ex.printStackTrace();
         } catch (IOException ex) {
-
+            ex.printStackTrace();
         }
     }
 

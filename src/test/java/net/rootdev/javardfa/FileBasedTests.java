@@ -91,6 +91,7 @@ public class FileBasedTests {
         XMLReader parser = ParserFactory.createReaderForFormat(sink, Format.XHTML, Setting.OnePointOne);
         parser.parse(hf);
         boolean result = c.isIsomorphicWith(m);
+        if (!result) m.write(System.err, "TTL");
         assertTrue("Files match (" + htmlURL + ")", result);
     }
 

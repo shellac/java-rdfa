@@ -3,3 +3,6 @@
 
 <http://example.com/res> a <http://example.com/ns#Thing> ;
    <http://purl.org/dc/terms/title> "title" .
+
+<http://example.com/res2> a <http://example.com/Rabbit> ;
+    <http://xmlns.com/foaf/0.2/robotName> "ZZZ" .

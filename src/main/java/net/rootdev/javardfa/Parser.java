@@ -31,8 +31,7 @@ import org.xml.sax.SAXException;
  * @author Damian Steer <pldms@mac.com>
  */
 public class Parser implements ContentHandler {
-    
-    private final XMLOutputFactory outputFactory;
+
     private final XMLEventFactory eventFactory;
     private final StatementSink sink;
     private final Set<Setting> settings;
@@ -54,7 +53,6 @@ public class Parser implements ContentHandler {
             URIExtractor extractor,
             ProfileCollector profileCollector) {
         this.sink = sink;
-        this.outputFactory = outputFactory;
         this.eventFactory = eventFactory;
         this.settings = EnumSet.noneOf(Setting.class);
         this.extractor = extractor;
@@ -100,8 +98,11 @@ public class Parser implements ContentHandler {
             }
 
             if (element.getAttributeByName(Constants.profile) != null) {
-                profileCollector.getProfile(
+                String profileURI = extractor.resolveURI(
                         element.getAttributeByName(Constants.profile).getValue(),
+                        context);
+                profileCollector.getProfile(
+                        profileURI,
                         context);
             }
         }

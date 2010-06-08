@@ -32,14 +32,14 @@ public class SimpleProfileCollectorTest {
      */
     @Test
     public void testGetProfile() {
-        String profileURI = SimpleProfileCollectorTest.class.getResource("/profile.xhtml").toExternalForm();
+        String profileURI = SimpleProfileCollectorTest.class.getResource("/query-tests/profile.xhtml").toExternalForm();
         // Fix java stupidity -- again
         profileURI = profileURI.replaceFirst("^file:/(?!/)", "file:///");
         EvalContext context = new EvalContext("http://example.com/base");
         ProfileCollector instance = new SimpleProfileCollector();
         instance.getProfile(profileURI, context);
-        assertEquals("http://xmlns.com/foaf/0.1/", context.getURIForPrefix("foaf"));
-        assertEquals("http://example.com/rabbit", context.getURIForTerm("rabbit"));
+        assertEquals("http://xmlns.com/foaf/0.2/", context.getURIForPrefix("foaf2"));
+        assertEquals("http://example.com/Rabbit", context.getURIForTerm("Rabbit"));
     }
 
 }
