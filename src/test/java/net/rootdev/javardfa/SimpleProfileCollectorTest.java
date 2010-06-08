@@ -33,8 +33,10 @@ public class SimpleProfileCollectorTest {
     @Test
     public void testGetProfile() {
         String profileURI = SimpleProfileCollectorTest.class.getResource("/profile.xhtml").toExternalForm();
+        // Fix java stupidity -- again
+        profileURI = profileURI.replaceFirst("^file:/(?!/)", "file:///");
         EvalContext context = new EvalContext("http://example.com/base");
-        SimpleProfileCollector instance = new SimpleProfileCollector();
+        ProfileCollector instance = new SimpleProfileCollector();
         instance.getProfile(profileURI, context);
         assertEquals("http://xmlns.com/foaf/0.1/", context.getURIForPrefix("foaf"));
         assertEquals("http://example.com/rabbit", context.getURIForTerm("rabbit"));

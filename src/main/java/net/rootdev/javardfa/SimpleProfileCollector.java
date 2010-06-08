@@ -43,9 +43,7 @@ public class SimpleProfileCollector implements ProfileCollector {
             this.subjToVals = new HashMap<String, Value>();
         }
 
-        public void start() {
-            throw new UnsupportedOperationException("Not supported yet.");
-        }
+        public void start() {}
 
         public void end() {}
 
