@@ -3,7 +3,7 @@
  * All rights reserved.
  * [See end of file]
  */
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.query;
 
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
@@ -24,7 +24,10 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import net.rootdev.javardfa.Parser;
+import net.rootdev.javardfa.ParserFactory;
 import net.rootdev.javardfa.ParserFactory.Format;
+import net.rootdev.javardfa.Setting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;

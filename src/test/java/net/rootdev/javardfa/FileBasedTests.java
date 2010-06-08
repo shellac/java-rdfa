@@ -6,6 +6,8 @@
 
 package net.rootdev.javardfa;
 
+import net.rootdev.javardfa.query.QueryUtilities;
+import net.rootdev.javardfa.jena.JenaStatementSink;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;

@@ -3,19 +3,22 @@
  * All rights reserved.
  * [See end of file]
  */
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.literal;
 
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventWriter;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import net.rootdev.javardfa.Parser;
 
 /**
  *
@@ -30,12 +33,16 @@ public class LiteralCollector {
     private int level;
     private final Parser parser;
     private final StartElement fakeEnvelope;
+    private final XMLEventFactory eventFactory;
+    private final XMLOutputFactory outputFactory;
 
-    public LiteralCollector(Parser parser) {
+    public LiteralCollector(Parser parser, XMLEventFactory eventFactory, XMLOutputFactory outputFactory) {
         this.parser = parser;
         this.collectors = new Stack<Collector>();
         this.queuedEvents = null;
-        this.fakeEnvelope = parser.eventFactory.createStartElement("", null, "fake");
+        this.eventFactory = eventFactory;
+        this.outputFactory = outputFactory;
+        this.fakeEnvelope = eventFactory.createStartElement("", null, "fake");
     }
 
     public boolean isCollecting() { return !collectors.isEmpty(); }
@@ -103,9 +110,9 @@ public class LiteralCollector {
             throws XMLStreamException {
         Attribute xmlLang = (lang == null) ?
             null :
-            parser.eventFactory.createAttribute("xml:lang", lang);
+            eventFactory.createAttribute("xml:lang", lang);
         StringWriter sw = new StringWriter();
-        XMLStreamWriter out = parser.outputFactory.createXMLStreamWriter(sw);
+        XMLStreamWriter out = outputFactory.createXMLStreamWriter(sw);
         XMLEventWriter xmlWriter = new CanonicalXMLEventWriter(out, xmlLang);
         xmlWriter.add(fakeEnvelope); // Some libraries dislike xml fragements
         for (XMLEvent e: subList) {

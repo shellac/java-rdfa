@@ -4,7 +4,7 @@
  * [See end of file]
  */
 
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.output;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.regex.Pattern;
+import net.rootdev.javardfa.StatementSink;
 
 
 /**

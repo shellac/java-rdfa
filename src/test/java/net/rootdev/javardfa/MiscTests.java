@@ -5,6 +5,7 @@
 
 package net.rootdev.javardfa;
 
+import net.rootdev.javardfa.uri.URIResolver;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

@@ -25,35 +25,35 @@ public class Constants {
             "license", "meta", "next", "p3pv1", "prev",
             "collection", "role", "section", "stylesheet",
             "subsection", "start", "top", "up");
-    final static Set<String> SpecialRels = new HashSet<String>(_allowed);
+    public final static Set<String> SpecialRels = new HashSet<String>(_allowed);
     // Suggestion: switch this for object produced by factory that matches QNames
     // we can then en-slacken if needed by passing in different factory etc
-    final static QName about = new QName("about"); // safe
-    final static QName resource = new QName("resource"); // safe
-    final static QName href = new QName("href"); // URI
-    final static QName src = new QName("src"); // URI
-    final static QName property = new QName("property"); // CURIE
-    final static QName datatype = new QName("datatype"); // CURIE
-    final static QName typeof = new QName("typeof"); // CURIE
-    final static QName rel = new QName("rel"); // Link types and CURIES
-    final static QName rev = new QName("rev"); // Link type and CURIES
-    final static QName content = new QName("content");
-    final static QName xmllang = new QName("xml:lang");
-    final static QName xmllangNS = new QName("http://www.w3.org/XML/1998/namespace", "lang", "xml");
-    final static QName lang = new QName("lang");
-    final static QName base = new QName("http://www.w3.org/1999/xhtml", "base");
-    final static QName head = new QName("http://www.w3.org/1999/xhtml", "head");
-    final static QName body = new QName("http://www.w3.org/1999/xhtml", "body");
+    public final static QName about = new QName("about"); // safe
+    public final static QName resource = new QName("resource"); // safe
+    public final static QName href = new QName("href"); // URI
+    public final static QName src = new QName("src"); // URI
+    public final static QName property = new QName("property"); // CURIE
+    public final static QName datatype = new QName("datatype"); // CURIE
+    public final static QName typeof = new QName("typeof"); // CURIE
+    public final static QName rel = new QName("rel"); // Link types and CURIES
+    public final static QName rev = new QName("rev"); // Link type and CURIES
+    public final static QName content = new QName("content");
+    public final static QName xmllang = new QName("xml:lang");
+    public final static QName xmllangNS = new QName("http://www.w3.org/XML/1998/namespace", "lang", "xml");
+    public final static QName lang = new QName("lang");
+    public final static QName base = new QName("http://www.w3.org/1999/xhtml", "base");
+    public final static QName head = new QName("http://www.w3.org/1999/xhtml", "head");
+    public final static QName body = new QName("http://www.w3.org/1999/xhtml", "body");
     // Hack bits
-    final static QName input = new QName("http://www.w3.org/1999/xhtml", "input");
-    final static QName name = new QName("name");
-    final static QName form = new QName("http://www.w3.org/1999/xhtml", "form");
-    final static Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+    public final static QName input = new QName("http://www.w3.org/1999/xhtml", "input");
+    public final static QName name = new QName("name");
+    public final static QName form = new QName("http://www.w3.org/1999/xhtml", "form");
+    public final static Collection<String> rdfType = Collections.singleton("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
     
     // RDFa 1.1
-    final static QName vocab = new QName("vocab");
-    final static QName profile = new QName("profile");
-    final static QName prefix = new QName("prefix");
+    public final static QName vocab = new QName("vocab");
+    public final static QName profile = new QName("profile");
+    public final static QName prefix = new QName("prefix");
 }
 
 /*

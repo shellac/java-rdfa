@@ -16,11 +16,11 @@ import javax.xml.namespace.NamespaceContext;
 public class EvalContext implements NamespaceContext {
 
     EvalContext parent;
-    String base;
+    public String base;
     String parentSubject;
     String parentObject;
     String language;
-    String vocab;
+    public String vocab;
     List<String> forwardProperties;
     List<String> backwardProperties;
     Map<String, String> xmlnsMap = Collections.EMPTY_MAP;

@@ -3,12 +3,14 @@
  * and open the template in the editor.
  */
 
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.uri;
 
 import java.util.List;
 import java.util.Set;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
+import net.rootdev.javardfa.EvalContext;
+import net.rootdev.javardfa.Setting;
 
 /**
  *

@@ -4,7 +4,7 @@
  * [See end of file]
  */
 
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.output;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;

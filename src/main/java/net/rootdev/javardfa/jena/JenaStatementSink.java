@@ -3,7 +3,7 @@
  * All rights reserved.
  * [See end of file]
  */
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.jena;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -12,6 +12,7 @@ import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.shared.PrefixMapping.IllegalPrefixException;
 import java.util.HashMap;
 import java.util.Map;
+import net.rootdev.javardfa.StatementSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

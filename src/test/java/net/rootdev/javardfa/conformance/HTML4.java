@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
-import net.rootdev.javardfa.JenaStatementSink;
+import net.rootdev.javardfa.jena.JenaStatementSink;
 import net.rootdev.javardfa.ParserFactory;
 import net.rootdev.javardfa.ParserFactory.Format;
 import org.junit.runners.Parameterized.Parameters;

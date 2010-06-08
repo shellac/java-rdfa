@@ -5,6 +5,10 @@
  */
 package net.rootdev.javardfa;
 
+import net.rootdev.javardfa.uri.URIExtractor10;
+import net.rootdev.javardfa.uri.URIExtractor;
+import net.rootdev.javardfa.uri.IRIResolver;
+import net.rootdev.javardfa.literal.LiteralCollector;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -28,9 +32,9 @@ import org.xml.sax.SAXException;
  */
 public class Parser implements ContentHandler {
     
-    protected final XMLOutputFactory outputFactory;
-    protected final XMLEventFactory eventFactory;
-    protected final StatementSink sink;
+    private final XMLOutputFactory outputFactory;
+    private final XMLEventFactory eventFactory;
+    private final StatementSink sink;
     private final Set<Setting> settings;
     private final LiteralCollector literalCollector;
     private final URIExtractor extractor;
@@ -54,7 +58,7 @@ public class Parser implements ContentHandler {
         this.eventFactory = eventFactory;
         this.settings = EnumSet.noneOf(Setting.class);
         this.extractor = extractor;
-        this.literalCollector = new LiteralCollector(this);
+        this.literalCollector = new LiteralCollector(this, eventFactory, outputFactory);
         this.profileCollector = profileCollector;
 
         extractor.setSettings(settings);
@@ -275,19 +279,19 @@ public class Parser implements ContentHandler {
         return null;
     }
 
-    private void emitTriples(String subj, Collection<String> props, String obj) {
+    public void emitTriples(String subj, Collection<String> props, String obj) {
         for (String prop : props) {
             sink.addObject(subj, prop, obj);
         }
     }
 
-    protected void emitTriplesPlainLiteral(String subj, Collection<String> props, String lex, String language) {
+    public void emitTriplesPlainLiteral(String subj, Collection<String> props, String lex, String language) {
         for (String prop : props) {
             sink.addLiteral(subj, prop, lex, language, null);
         }
     }
 
-    protected void emitTriplesDatatypeLiteral(String subj, Collection<String> props, String lex, String datatype) {
+    public void emitTriplesDatatypeLiteral(String subj, Collection<String> props, String lex, String datatype) {
         for (String prop : props) {
             sink.addLiteral(subj, prop, lex, null, datatype);
         }

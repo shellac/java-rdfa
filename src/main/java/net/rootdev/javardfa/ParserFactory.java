@@ -5,6 +5,10 @@
  */
 package net.rootdev.javardfa;
 
+import net.rootdev.javardfa.uri.URIExtractor10;
+import net.rootdev.javardfa.uri.URIExtractor;
+import net.rootdev.javardfa.uri.URIExtractor11;
+import net.rootdev.javardfa.uri.IRIResolver;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLOutputFactory;
 import nu.validator.htmlparser.common.XmlViolationPolicy;

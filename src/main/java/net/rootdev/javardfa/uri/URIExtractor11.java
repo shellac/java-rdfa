@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.uri;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +11,10 @@ import java.util.Set;
 import javax.xml.namespace.QName;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
+import net.rootdev.javardfa.Constants;
+import net.rootdev.javardfa.EvalContext;
+import net.rootdev.javardfa.Resolver;
+import net.rootdev.javardfa.Setting;
 
 /**
  * This uses the RDFa 1.1 URI logic

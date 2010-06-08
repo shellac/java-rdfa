@@ -3,7 +3,7 @@
  * All rights reserved.
  * [See end of file]
  */
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.jena;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.RDFErrorHandler;
@@ -12,6 +12,10 @@ import com.hp.hpl.jena.rdf.model.impl.RDFReaderFImpl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import net.rootdev.javardfa.Parser;
+import net.rootdev.javardfa.ParserFactory;
+import net.rootdev.javardfa.Setting;
+import net.rootdev.javardfa.StatementSink;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;

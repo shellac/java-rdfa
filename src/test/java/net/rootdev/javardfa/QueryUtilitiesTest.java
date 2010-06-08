@@ -5,6 +5,7 @@
 
 package net.rootdev.javardfa;
 
+import net.rootdev.javardfa.query.QueryUtilities;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.sparql.algebra.Algebra;

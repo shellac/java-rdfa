@@ -3,7 +3,7 @@
  * All rights reserved.
  * [See end of file]
  */
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.literal;
 
 import java.util.Iterator;
 import java.util.SortedMap;
