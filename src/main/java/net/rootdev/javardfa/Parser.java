@@ -112,11 +112,14 @@ public class Parser implements ContentHandler {
         if (settings.contains(Setting.ManualNamespaces)) {
             if (element.getAttributeByName(Constants.xmllang) != null) {
                 currentLanguage = element.getAttributeByName(Constants.xmllang).getValue();
+                if (currentLanguage.length() == 0) currentLanguage = null;
             } else if (element.getAttributeByName(Constants.lang) != null) {
                 currentLanguage = element.getAttributeByName(Constants.lang).getValue();
+                if (currentLanguage.length() == 0) currentLanguage = null;
             }
         } else if (element.getAttributeByName(Constants.xmllangNS) != null) {
             currentLanguage = element.getAttributeByName(Constants.xmllangNS).getValue();
+            if (currentLanguage.length() == 0) currentLanguage = null;
         }
 
         if (Constants.base.equals(element.getName()) &&
