@@ -88,6 +88,7 @@ public class SesameStatementSink implements StatementSink {
       }
    }
 
+   //@Override
    public void addPrefix(String prefix, String uri) {
        try {
          handler.handleNamespace(prefix, uri);
@@ -95,6 +96,9 @@ public class SesameStatementSink implements StatementSink {
          java.util.logging.Logger.getLogger(SesameStatementSink.class.getName()).log(Level.WARNING, null, rDFHandlerException);
       }
    }
+
+    //@Override
+    public void setBase(String base) {}
 }
 
 /*

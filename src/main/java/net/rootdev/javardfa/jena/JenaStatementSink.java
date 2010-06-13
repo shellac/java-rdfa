@@ -82,6 +82,8 @@ public class JenaStatementSink implements StatementSink {
             log.warn("Bad prefix, continuing.", e);
         }
     }
+
+    public void setBase(String base) {}
 }
 
 /*

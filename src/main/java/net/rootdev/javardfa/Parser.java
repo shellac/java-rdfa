@@ -75,6 +75,7 @@ public class Parser implements ContentHandler {
 
     public void setBase(String base) {
         this.context = new EvalContext(base);
+        sink.setBase(context.getBase());
     }
 
     EvalContext parse(EvalContext context, StartElement element)
@@ -125,6 +126,7 @@ public class Parser implements ContentHandler {
         if (Constants.base.equals(element.getName()) &&
                 element.getAttributeByName(Constants.href) != null) {
             context.setBase(element.getAttributeByName(Constants.href).getValue());
+            sink.setBase(context.getBase());
         }
 
         if (element.getAttributeByName(Constants.rev) == null &&

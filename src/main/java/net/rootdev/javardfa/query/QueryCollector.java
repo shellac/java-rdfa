@@ -141,6 +141,8 @@ public class QueryCollector implements StatementSink {
     public void addPrefix(String prefix, String uri) {
         prefixMapping.put(prefix, uri);
     }
+
+    public void setBase(String base) {}
 }
 
 /*

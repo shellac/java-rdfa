@@ -104,6 +104,8 @@ public class NTripleSink implements StatementSink {
     protected String longenc(int codepoint) {
         return String.format("\\U%08x", codepoint);
     }
+
+    public void setBase(String base) {}
 }
 
 /*

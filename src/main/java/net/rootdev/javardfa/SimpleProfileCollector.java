@@ -74,6 +74,8 @@ public class SimpleProfileCollector implements ProfileCollector {
 
         public void addPrefix(String prefix, String uri) {}
 
+        public void setBase(String base) {}
+
     }
 
     static final class Value {

@@ -22,7 +22,6 @@ import org.openrdf.repository.util.RepositoryUtil;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.turtle.TurtleWriter;
 import org.openrdf.sail.SailException;
 import org.openrdf.sail.memory.MemoryStore;
 

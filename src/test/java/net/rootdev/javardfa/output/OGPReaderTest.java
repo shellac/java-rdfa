@@ -1,58 +1,47 @@
 /*
- * (c) Copyright 2009 University of Bristol
+ * (c) Copyright 2010 University of Bristol
  * All rights reserved.
  * [See end of file]
  */
 
-package net.rootdev.javardfa;
+package net.rootdev.javardfa.output;
+
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import net.rootdev.javardfa.ParserFactory.Format;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- * @author Damian Steer <pldms@mac.com>
+ *
+ * @author pldms
  */
-
-public interface StatementSink
-{
+public class OGPReaderTest {
+    
     /**
-     *
+     * Test of getOGP method, of class OGPReader.
      */
-    public void setBase(String base);
+    @Test
+    public void testGetOGP() throws Exception {
+        URL toLoad = OGPReaderTest.class.getResource("/ogp.html");
 
-    /**
-     * Begin parsing
-     */
-    public void start();
+        System.out.println("getOGP");
+        String url = "";
+        Format format = null;
+        Map<String, String> expResult = new HashMap<String, String>();
+        expResult.put("latitude", "37.416343");
+        expResult.put("longitude", "-122.153013");
+        expResult.put("street-address", "1601 S California Ave");
+        expResult.put("locality", "Palo Alto");
+        expResult.put("region", "CA");
+        expResult.put("postal-code", "94304");
+        expResult.put("country-name", "USA");
+        expResult.put("http://example.com/ex#foo", "not-ogp");
+        Map<String, String> result = OGPReader.getOGP(toLoad.toExternalForm(), Format.HTML);
+        assertEquals(expResult, result);
+    }
 
-    /**
-     * Complete parsing
-     */
-    public void end();
-
-    /**
-     * Add statement with non-literal object.
-     * Blank nodes begin with _:, variables with ?, otherwise IRI
-     * @param subject Subject of triple
-     * @param predicate Predicate
-     * @param object Object
-     */
-    public void addObject(String subject, String predicate, String object);
-
-    /**
-     * Add statement with a literal object.
-     * As above, blank nodes begin with _:, variables with ?, otherwise IRI
-     * @param subject Subject of triple
-     * @param predicate Predicate
-     * @param lex Lexical form
-     * @param lang Language (may be null)
-     * @param datatype Datatype IRI (may be null)
-     */
-    public void addLiteral(String subject, String predicate, String lex, String lang, String datatype);
-
-    /**
-     * Add a prefix mapping.
-     * @param prefix
-     * @param uri
-     */
-    public void addPrefix(String prefix, String uri);
 }
 
 /*

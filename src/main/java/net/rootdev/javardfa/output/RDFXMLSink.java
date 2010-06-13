@@ -168,6 +168,8 @@ public class RDFXMLSink implements StatementSink {
                 cp == ':' ||
                 cp == '_';
     }
+
+    public void setBase(String base) {}
 }
 
 /*
