@@ -16,8 +16,11 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.util.FileManager;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.xml.stream.XMLInputFactory;
 import net.rootdev.javardfa.ParserFactory.Format;
+import net.rootdev.javardfa.output.OGPReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -32,6 +35,14 @@ public class Scratch {
     private static XMLInputFactory xmlFactory = XMLInputFactory.newInstance();
 
     public static void main(String[] args) throws SAXException, IOException, ClassNotFoundException {
+        Map<String, String> prop = OGPReader.getOGP("http://uk.rottentomatoes.com/m/1217700-kick_ass", Format.HTML);
+
+        for (Entry<String, String> ent: prop.entrySet()) {
+            System.err.printf("[%s] => '%s'\n", ent.getKey(), ent.getValue());
+        }
+
+        if (true) return;
+
         String base = "http://rdfa.digitalbazaar.com/test-suite/test-cases/xhtml1/";
         String testHTML = base + "0121.xhtml";
         String testSPARQL = base + "0121.sparql";
