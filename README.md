@@ -18,9 +18,9 @@ Basic Use
 ---------
 
 	$ ls
-	htmlparser-1.2.0.jar	java-rdfa-0.3.jar
+	htmlparser-1.2.1.jar	java-rdfa-0.4.jar
 	
-	$ java -jar java-rdfa-0.3.jar http://examples.tobyinkster.co.uk/hcard
+	$ java -jar java-rdfa-0.4.jar http://examples.tobyinkster.co.uk/hcard
 	<http://examples.tobyinkster.co.uk/hcard> <http://xmlns.com/foaf/0.1/primaryTopic> <http://examples.tobyinkster.co.uk/hcard#jack> .
 	...
 
@@ -64,6 +64,27 @@ java-rdfa is available in the maven central repositories. Note that it does not 
 
 A sesame reader provided by Henry Story is also available.
 
+Open Graph Protocol
+-------------------
+
+A very simple OGP reader is provided. This follows what (I think) Toby Inkster did:
+
+        Map<String, String> prop =
+            OGPReader.getOGP("http://uk.rottentomatoes.com/m/1217700-kick_ass",
+                             Format.HTML);
+
+Result:
+
+        title => 'Kick-Ass'
+        http://www.facebook.com/2008/fbml#app_id => '326803741017'
+        http://www.w3.org/1999/xhtml/vocab#icon => 'http://images.rottentomatoes.com/images/icons/favicon.ico'
+        http://www.w3.org/1999/xhtml/vocab#stylesheet => 'http://images.rottentomatoes.com/files/inc_beta/generated/css/mob.css'
+        image => 'http://images.rottentomatoes.com/images/movie/custom/00/1217700.jpg'
+        site_name => 'Rotten Tomatoes'
+        type => 'movie'
+        url => 'http://www.rottentomatoes.com/m/1217700-kick_ass/'
+        http://www.facebook.com/2008/fbml#admins => '1106591'
+
 Form Mode
 ---------
 
@@ -74,6 +95,15 @@ There is a secret form mode (that prompted the development of this parser). In t
 
 Changes
 -------
+
+### 0.4 ###
+
+* (Finally) support overlapping literals. No one noticed this didn't work!
+* Added turtle-ish output. Slightly less nasty than N-Triples.
+* Bug fixes...
+* Turned OFF html 5 streaming. Such a bad idea on my part.
+* Started RDFa 1.1 support.
+* Added simple OGP reader.
 
 ### 0.3 ###
 
