@@ -58,9 +58,17 @@ public class CanonicalXMLEventWriter
         } else if (event.isStartElement()) {
             level++;
             StartElement se = event.asStartElement();
-            swriter.writeStartElement(se.getName().getPrefix(),
-                    se.getName().getLocalPart(),
-                    se.getName().getNamespaceURI());
+            QName name = se.getName();
+            if (name.getPrefix().length() == 0) {
+                String pf = swriter.getPrefix(name.getNamespaceURI());
+                //if (!(pf == null || pf.length() == 0))
+                  swriter.setDefaultNamespace(name.getNamespaceURI());
+                swriter.writeStartElement(name.getNamespaceURI(), name.getLocalPart());
+            } else {
+                swriter.writeStartElement(name.getPrefix(),
+                    name.getLocalPart(),
+                    name.getNamespaceURI());
+            }
             writeAttributes(se);
             swriter.writeCharacters(""); // Force close of start element
         } else {
@@ -102,11 +110,19 @@ public class CanonicalXMLEventWriter
             atts.put(getName(a), a);
         }
         for (Attribute a : atts.values()) {
-            swriter.writeAttribute(
-                    a.getName().getPrefix(),
-                    a.getName().getNamespaceURI(),
-                    a.getName().getLocalPart(),
+            QName name = a.getName();
+            if (name.getPrefix().length() == 0) {
+                swriter.writeAttribute(
+                    name.getNamespaceURI(),
+                    name.getLocalPart(),
                     a.getValue());
+            } else {
+                swriter.writeAttribute(
+                    name.getPrefix(),
+                    name.getNamespaceURI(),
+                    name.getLocalPart(),
+                    a.getValue());
+            }
         }
     }
 
