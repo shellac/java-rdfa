@@ -120,7 +120,8 @@ public class LiteralCollector {
         }
         xmlWriter.flush();
         String xml = sw.toString();
-        return xml.substring(6, xml.length() - 7); // remove <fake></fake>
+        // remove <fake..></fake>
+        return xml.substring(xml.indexOf('>') + 1, xml.length() - 7);
     }
 
     private String gatherText(List<XMLEvent> subList) {
