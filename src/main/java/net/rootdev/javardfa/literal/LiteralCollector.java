@@ -102,7 +102,6 @@ public class LiteralCollector {
         try {
             return gatherXMLEx(subList, lang);
         } catch (XMLStreamException ex) {
-            System.err.println("I have:" + ex.getMessage());
             throw new RuntimeException("Problem gathering XML", ex);
         }
     }
@@ -115,25 +114,13 @@ public class LiteralCollector {
         StringWriter sw = new StringWriter();
         XMLStreamWriter out = outputFactory.createXMLStreamWriter(sw);
         XMLEventWriter xmlWriter = new CanonicalXMLEventWriter(out, xmlLang);
-
-        // Find first start element, use its namespace context
-        for (XMLEvent e: subList) {
-            if (e.isStartElement()) {
-                xmlWriter.setNamespaceContext(e.asStartElement().getNamespaceContext());
-                break;
-            }
-        }
-
         xmlWriter.add(fakeEnvelope); // Some libraries dislike xml fragements
         for (XMLEvent e: subList) {
             xmlWriter.add(e);
         }
         xmlWriter.flush();
         String xml = sw.toString();
-        xml = xml.replaceFirst("^<fake.*?>", "");
-        xml = xml.replaceFirst("</fake>$","");
-        return xml;
-        //return xml.substring(6, xml.length() - 7); // remove <fake></fake>
+        return xml.substring(6, xml.length() - 7); // remove <fake></fake>
     }
 
     private String gatherText(List<XMLEvent> subList) {

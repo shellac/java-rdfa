@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import javax.xml.namespace.NamespaceContext;
 
 public final class EvalContext implements NamespaceContext {
@@ -128,12 +127,7 @@ public final class EvalContext implements NamespaceContext {
     }
 
     public String getPrefix(String uri) {
-        System.err.println("GET PREFIX");
-        for (Entry<String, String> e: xmlnsMap.entrySet()) {
-            if (e.getValue().equals(uri)) return e.getKey();
-        }
-        if (parent != null) return parent.getPrefix(uri);
-        else return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public Iterator getPrefixes(String uri) {
