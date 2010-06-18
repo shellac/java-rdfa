@@ -113,7 +113,6 @@ public class LiteralCollector {
             eventFactory.createAttribute("xml:lang", lang);
         StringWriter sw = new StringWriter();
         XMLStreamWriter out = outputFactory.createXMLStreamWriter(sw);
-        out.setDefaultNamespace("http://www.w3.org/1999/xhtml");
         XMLEventWriter xmlWriter = new CanonicalXMLEventWriter(out, xmlLang);
         xmlWriter.add(fakeEnvelope); // Some libraries dislike xml fragements
         for (XMLEvent e: subList) {
