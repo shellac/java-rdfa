@@ -1,0 +1,23 @@
+@prefix lm: <http://jena.hpl.hp.com/2004/08/location-mapping#> .
+
+[] lm:mapping
+   [ lm:prefix
+       "http://rdfa.digitalbazaar.com/test-suite/test-cases/xhtml1/" ;
+     lm:altPrefix
+       "file:conformance/xhtml/"
+   ] ,
+   [ lm:prefix
+       "http://rdfa.digitalbazaar.com/test-suite/test-cases/html5/" ;
+     lm:altPrefix
+       "file:conformance/html5/"
+   ] ,
+   [ lm:prefix
+       "http://rdfa.digitalbazaar.com/test-suite/test-cases/html4/" ;
+     lm:altPrefix
+       "file:conformance/html4/"
+   ] ,
+   [ 
+     lm:name "http://philip.html5.org/demos/rdfa/tests.json" ; 
+     lm:altName "file:tests.json"
+   ]
+.

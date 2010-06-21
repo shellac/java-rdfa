@@ -1,0 +1,51 @@
+<root>
+
+<!-- Fix annoying bug. hitting return submits form. This stops that -->
+<script type="text/javascript">
+function killEnter(e){
+e = e? e : window.event;
+var k = e.keyCode? e.keyCode : e.which? e.which : null;
+if (k == 13){
+if (e.preventDefault)
+e.preventDefault();
+return false;
+};
+return true;
+};
+if(typeof document.addEventListener!='undefined')
+document.addEventListener('keydown', killEnter, false);
+else if(typeof document.attachEvent!='undefined')
+document.attachEvent('onkeydown', killEnter);
+else{
+if(document.onkeydown!=null){
+var oldOnkeydown=document.onkeydown;
+document.onkeydown=function(e){
+oldOnkeydown(e);
+killEnter(e);
+};}
+else
+document.onkeydown=killEnter;
+}
+</script>
+
+<h2>${title}</h2>
+
+<div xmlns:foaf="http://xmlns.com/foaf/0.1/">
+    <p rel="foaf:knows" href="http://ex.com/person#x">
+       <span rel="foaf:enemy" href="http://bar.com/p#x"/>
+    </p>
+</div>
+
+<form about="#a" method="GET" action="stars" xmlns:a="http://ex.com/foo">
+<div about="[?s]" typeof="?type">
+<input type="hidden" name="st" value="action-question.ftl#a" />
+<input type="hidden" name="action" value="browse" />
+<span id="comp1">
+<input xmlns:ns="http://stars.ilrt.org/schema#" type="hidden" rel="ns:hasCreator" name="v_creator" class="complete" />
+</span>
+<input type="submit" value="Submit!" />
+</div>
+</form>
+
+
+</root>
