@@ -1,3 +1,0 @@
-ASK WHERE {
-	<http://rdfa.digitalbazaar.com/test-suite/test-cases/html4/0021.html> <http://purl.org/dc/elements/1.1/creator> "Mark Birbeck" .
-}

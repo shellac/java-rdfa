@@ -1,8 +1,0 @@
-@prefix ex: <http://example.com/ns#> .
-@prefix z: <http://example.com/#> .
-
-z:b a ex:Type .
-
-[] ex:rev z:b ;
-         ex:toAttribute "In attribute" ;
-         ex:toText "In text" .

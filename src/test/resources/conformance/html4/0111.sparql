@@ -1,5 +1,0 @@
-ASK WHERE {
- <http://rdfa.digitalbazaar.com/test-suite/test-cases/html4/0111.html> <http://www.w3.org/1999/xhtml/vocab#next> ?a .
- ?a <http://www.w3.org/1999/xhtml/vocab#next> ?b .
-  FILTER (ISBLANK(?a) && ISBLANK(?b) )
-}

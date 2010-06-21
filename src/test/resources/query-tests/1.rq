@@ -1,4 +1,0 @@
-PREFIX : <http://www.w3.org/1999/xhtml>
-PREFIX ex: <http://example.com/>
-SELECT * {
-  GRAPH ?graph { ?s ex:val ?q }}
