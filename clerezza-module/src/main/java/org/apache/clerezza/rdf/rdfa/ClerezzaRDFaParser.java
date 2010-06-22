@@ -20,29 +20,24 @@ package org.apache.clerezza.rdf.rdfa;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 
 import net.rootdev.javardfa.Parser;
-import net.rootdev.javardfa.Setting;
-import nu.validator.htmlparser.common.XmlViolationPolicy;
-import nu.validator.htmlparser.sax.HtmlParser;
 import org.apache.clerezza.rdf.core.Graph;
 import org.apache.clerezza.rdf.core.MGraph;
 import org.apache.clerezza.rdf.core.UriRef;
 import org.apache.clerezza.rdf.core.impl.SimpleMGraph;
 import org.apache.clerezza.rdf.core.serializedform.ParsingProvider;
-import org.apache.clerezza.rdf.core.serializedform.SupportedFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
  * @author Henry Story <henry.story@bblfish.net>
  */
+
 public abstract class ClerezzaRDFaParser implements ParsingProvider {
 
    private static Logger log = LoggerFactory.getLogger(ClerezzaRDFaParser.class);

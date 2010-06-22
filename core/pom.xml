@@ -53,6 +53,20 @@
 
         <plugins>
             <plugin>
+                <!-- this plugin is needed because nu.validator is not available as an OSGI module -->
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <version>2.1.0</version>
+                <configuration>
+                    <instructions>
+                        <Embed-Dependency>htmlparser,xom,jchardet;inline=true</Embed-Dependency>
+			<Export-Package>nu.validator.htmlparser.*,net.rootdev.*</Export-Package>
+                        <Embed-Transitive>true</Embed-Transitive>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
@@ -62,28 +76,63 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.5</version>
+            <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
-         <dependency>
+        <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>iri</artifactId>
             <version>0.8</version>
             <type>jar</type>
             <scope>compile</scope>
         </dependency>
-        <!--dependency>
-            <groupId>net.rootdev</groupId>
-            <artifactId>jena-java-rdfa</artifactId>
-            <version>0.5-SNAPSHOT</version>            
-            <scope>test</scope>
-        </dependency-->
+        <!-- dependency below is due to nu.validator not being available as a OSGI module -->
+        <dependency>
+            <groupId>nu.validator.htmlparser</groupId>
+            <artifactId>htmlparser</artifactId>
+            <version>1.2.1</version>
+            <scope>compile</scope>
+            <!-- was 'provided' -->
+        </dependency>
+        <dependency>
+            <groupId>xom</groupId>
+            <artifactId>xom</artifactId>
+            <version>1.0d21</version>
+            <!-- todo: later version available, but no internet connecion in train -->
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xmlParserAPIs</artifactId>
+            <version>2.6.2</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version> <!-- 2.2.1 was in previous pom, but not in my dir -->
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jchardet</groupId>
+            <artifactId>jchardet</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>
