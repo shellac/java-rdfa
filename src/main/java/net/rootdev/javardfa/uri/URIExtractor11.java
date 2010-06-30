@@ -99,14 +99,8 @@ public class URIExtractor11 implements URIExtractor {
             // Assume this is some kind of URI
             return value;
         }
-        if (offset != value.length() && value.charAt(offset) == '#') {
-            offset += 1; // ex:#bar
-        }
-        if (namespaceURI.endsWith("/") || namespaceURI.endsWith("#")) {
-            return namespaceURI + value.substring(offset);
-        } else {
-            return namespaceURI + "#" + value.substring(offset);
-        }
+        
+        return namespaceURI + value.substring(offset);
     }
 
     public String expandSafeCURIE(StartElement element, String value, EvalContext context) {

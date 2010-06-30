@@ -97,14 +97,8 @@ public class URIExtractor10 implements URIExtractor {
             return null;
             //throw new RuntimeException("Unknown prefix: " + prefix);
         }
-        if (offset != value.length() && value.charAt(offset) == '#') {
-            offset += 1; // ex:#bar
-        }
-        if (namespaceURI.endsWith("/") || namespaceURI.endsWith("#")) {
-            return namespaceURI + value.substring(offset);
-        } else {
-            return namespaceURI + "#" + value.substring(offset);
-        }
+        
+        return namespaceURI + value.substring(offset);
     }
 
     public String expandSafeCURIE(StartElement element, String value, EvalContext context) {
