@@ -5,7 +5,7 @@
     <groupId>net.rootdev</groupId>
     <artifactId>java-rdfa</artifactId>
     <packaging>jar</packaging>
-    <version>0.4</version>
+    <version>0.4.1</version>
     <name>java-rdfa</name>
     <description>
         A SAX-based java RDFa parser.
