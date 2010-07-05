@@ -5,7 +5,7 @@
     <groupId>net.rootdev</groupId>
     <artifactId>java-rdfa-htmlparser</artifactId>
     <packaging>bundle</packaging>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.4.2-RC1</version>
     <name>java-rdfa-htmlparser</name>
     <description>
         A rewrapping of the validator.nu html parser for use in OSGi containers.
@@ -16,6 +16,15 @@
         <system>GitHub</system>
         <url>http://github.com/shellac/java-rdfa/issues</url>
     </issueManagement>
+    <mailingLists>
+        <mailingList>
+	      <name>Project users</name>
+	      <post>announce@noonecares.com</post>
+	      <subscribe>users-subscribe@noonecares.com</subscribe>
+	      <unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
+	      <archive>http://noonecares.archive.org</archive>
+	    </mailingList>
+	</mailingList>
     <developers>
         <!-- Repackager -->
         <developer>
