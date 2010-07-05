@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.rootdev</groupId>
     <artifactId>java-rdfa</artifactId>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <version>0.4.1</version>
     <name>java-rdfa</name>
     <description>
@@ -128,6 +128,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>net.rootdev.javardfa</Export-Package>
+                        <Import-Package>com.hp.hpl.jena.iri,!com.hp.hpl.jena.*,!nu.*,!org.mozilla.*,*</Import-Package>
+                    </instructions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
