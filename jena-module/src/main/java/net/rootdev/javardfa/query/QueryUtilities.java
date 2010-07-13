@@ -18,9 +18,8 @@ import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.sparql.syntax.ElementTriplesBlock;
 import com.hp.hpl.jena.sparql.syntax.ElementVisitorBase;
 import com.hp.hpl.jena.sparql.syntax.ElementWalker;
-import java.io.FileNotFoundException;
+
 import java.io.IOException;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;

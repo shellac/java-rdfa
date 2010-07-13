@@ -5,17 +5,18 @@
  */
 package net.rootdev.javardfa;
 
-import net.rootdev.javardfa.uri.URIExtractor10;
-import net.rootdev.javardfa.uri.URIExtractor;
-import net.rootdev.javardfa.uri.URIExtractor11;
 import net.rootdev.javardfa.uri.IRIResolver;
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLOutputFactory;
+import net.rootdev.javardfa.uri.URIExtractor;
+import net.rootdev.javardfa.uri.URIExtractor10;
+import net.rootdev.javardfa.uri.URIExtractor11;
 import nu.validator.htmlparser.common.XmlViolationPolicy;
 import nu.validator.htmlparser.sax.HtmlParser;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import javax.xml.stream.XMLEventFactory;
+import javax.xml.stream.XMLOutputFactory;
 
 /**
  * I use these in a few places. stuck here for simplicity

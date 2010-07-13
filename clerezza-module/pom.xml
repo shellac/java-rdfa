@@ -1,18 +1,22 @@
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
+        <artifactId>org.apache.clerezza.parent</artifactId>
+        <groupId>org.apache.clerezza</groupId>
+        <version>0.2-incubating-SNAPSHOT</version>
+    </parent>
+    <!-- parent>
         <groupId>net.rootdev</groupId>
         <artifactId>java-rdfa</artifactId>
         <version>0.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
-    </parent>
+    </parent -->
     <groupId>net.rootdev</groupId>
-    <artifactId>java-rdfa-sesame</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>java-rdfa-clerezza</artifactId>
+    <packaging>bundle</packaging>
     <version>0.5-SNAPSHOT</version>
-    <name>java-rdfa-sesame</name>
+    <name>java-rdfa-clerezza</name>
     <description>
         A SAX-based java RDFa parser (sesame binding)
     </description>
@@ -46,7 +50,7 @@
             <name>Henry Story</name>
             <email>henry.story@bblfish.net</email>
             <organization>Sun Microsystems</organization>
-            <organizationUrl>http://sun.com</organizationUrl>
+            <organizationUrl>http://sun.com/</organizationUrl>
         </developer>
     </developers>
     <licenses>
@@ -95,14 +99,14 @@
                     <forkMode>once</forkMode>
                 </configuration>
             </plugin-->
-             <!-- Package source to JAR to upload to repo-->
+            <!-- Package source to JAR to upload to repo-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
-          <!-- Restrict execution of source compilation to install or deploy. -->
-          <!-- The default is package. -->
+                        <!-- Restrict execution of source compilation to install or deploy. -->
+                        <!-- The default is package. -->
                         <phase>install</phase>
                         <goals>
                             <goal>jar</goal>
@@ -110,7 +114,7 @@
                     </execution>
                 </executions>
             </plugin>
-          <!-- Package JavaDocs to JAR to upload to repo -->
+            <!-- Package JavaDocs to JAR to upload to repo -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -124,7 +128,7 @@
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
-          <!-- Restrict execution of source compilation to install -->
+                        <!-- Restrict execution of source compilation to install -->
                         <phase>install</phase>
                         <goals>
                             <goal>jar</goal>
@@ -139,67 +143,16 @@
         </plugins>
     </build>
     <repositories>
-        <repository>
-            <id>maven2-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
-            <url>http://download.java.net/maven/2/</url>
-        </repository>
-        <repository>
-            <id>maven2-releases.aduna-software.org</id>
-            <name>Sesame 2 release repository</name>
-            <url>http://repo.aduna-software.org/maven2/releases/</url>
-        </repository>
     </repositories>
     <dependencies>
+        <dependency>
+            <groupId>org.apache.clerezza</groupId>
+            <artifactId>org.apache.clerezza.rdf.core</artifactId>
+        </dependency>
         <dependency>
             <groupId>net.rootdev</groupId>
             <artifactId>java-rdfa-core</artifactId>
             <version>0.5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-rio-api</artifactId>
-            <version>2.2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-rio-turtle</artifactId>
-            <version>2.2.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-query</artifactId>
-            <version>2.2.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-repository-sail</artifactId>
-            <version>2.2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-sail-memory</artifactId>
-            <version>2.2.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openrdf.sesame</groupId>
-            <artifactId>sesame-queryparser-sparql</artifactId>
-            <version>2.2.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.hp.hpl.jena</groupId>
-            <artifactId>iri</artifactId>
-            <version>0.8</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
