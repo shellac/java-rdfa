@@ -5,7 +5,7 @@
     <groupId>net.rootdev</groupId>
     <artifactId>java-rdfa</artifactId>
     <packaging>bundle</packaging>
-    <version>0.4.2-RC1</version>
+    <version>0.4.2-RC2</version>
     <name>java-rdfa</name>
     <description>
         A SAX-based java RDFa parser.
@@ -136,7 +136,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>net.rootdev.javardfa</Export-Package>
-                        <Import-Package>com.hp.hpl.jena.iri,!com.hp.hpl.jena.*,!nu.*,!org.mozilla.*,*</Import-Package>
+                        <Import-Package>com.hp.hpl.jena.iri,!com.hp.hpl.jena.*,!org.mozilla.*,*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -183,10 +183,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>nu.validator.htmlparser</groupId>
-            <artifactId>htmlparser</artifactId>
-            <version>1.2.1</version>
-            <scope>provided</scope>
+            <groupId>net.rootdev</groupId>
+            <artifactId>java-rdfa-htmlparser</artifactId>
+            <version>0.4.2-RC2</version>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
     <distributionManagement>

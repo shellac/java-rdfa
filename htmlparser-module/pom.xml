@@ -5,7 +5,7 @@
     <groupId>net.rootdev</groupId>
     <artifactId>java-rdfa-htmlparser</artifactId>
     <packaging>bundle</packaging>
-    <version>0.4.2-RC1</version>
+    <version>0.4.2-RC2</version>
     <name>java-rdfa-htmlparser</name>
     <description>
         A rewrapping of the validator.nu html parser for use in OSGi containers.
@@ -23,8 +23,8 @@
 	      <subscribe>users-subscribe@noonecares.com</subscribe>
 	      <unsubscribe>users-unsubscribe@noonecares.com</unsubscribe>
 	      <archive>http://noonecares.archive.org</archive>
-	    </mailingList>
 	</mailingList>
+    </mailingLists>
     <developers>
         <!-- Repackager -->
         <developer>
@@ -57,7 +57,7 @@
                 <configuration>
                     <instructions>
                         <Embed-Dependency>htmlparser</Embed-Dependency>
-                        <Export-Package>nu.validator.htmlparser.sax</Export-Package>
+                        <Export-Package>nu.validator.htmlparser.*</Export-Package>
                         <Import-Package>!nu.xom.*,!org.mozilla.*,!com.ibm.*,*</Import-Package>
                     </instructions>
                 </configuration>
