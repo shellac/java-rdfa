@@ -4,14 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>net.rootdev</groupId>
-        <artifactId>java-rdfa</artifactId>
+        <artifactId>java-rdfa-parent</artifactId>
         <version>0.5-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>net.rootdev</groupId>
     <artifactId>java-rdfa-sesame</artifactId>
     <packaging>jar</packaging>
-    <version>0.5-SNAPSHOT</version>
     <name>java-rdfa-sesame</name>
     <description>
         A SAX-based java RDFa parser (sesame binding)
@@ -153,7 +150,7 @@
     <dependencies>
         <dependency>
             <groupId>net.rootdev</groupId>
-            <artifactId>java-rdfa-core</artifactId>
+            <artifactId>java-rdfa</artifactId>
             <version>0.5-SNAPSHOT</version>
         </dependency>
         <dependency>

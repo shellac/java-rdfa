@@ -3,15 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>net.rootdev</groupId>
-        <artifactId>java-rdfa</artifactId>
+        <artifactId>java-rdfa-parent</artifactId>
         <version>0.5-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>net.rootdev</groupId>
-    <artifactId>java-rdfa-core</artifactId>
+    <artifactId>java-rdfa</artifactId>
     <packaging>bundle</packaging>
-    <version>0.5-SNAPSHOT</version>
-    <name>java-rdfa-core</name>
+    <name>java-rdfa</name>
     <description>
         The core interface that users of this parser need to implement.
     </description>
@@ -125,34 +122,16 @@
             <!-- was 'provided' -->
         </dependency>
         <dependency>
-            <groupId>xom</groupId>
-            <artifactId>xom</artifactId>
-            <version>1.0d21</version>
-            <!-- todo: later version available, but no internet connecion in train -->
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xmlParserAPIs</artifactId>
-            <version>2.6.2</version>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.9.1</version> <!-- 2.2.1 was in previous pom, but not in my dir -->
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.jchardet</groupId>
-            <artifactId>jchardet</artifactId>
-            <version>1.0</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
             <groupId>com.hp.hpl.jena</groupId>
             <artifactId>arq</artifactId>
             <version>2.8.5</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.5.8</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
     <distributionManagement>

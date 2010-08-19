@@ -27,7 +27,7 @@ public class VersionTest {
      */
     @Test
     public void testGetName() {
-        assertEquals("java-rdfa-core", Version.get().getName());
+        assertEquals("java-rdfa", Version.get().getName());
     }
 
     /**
@@ -43,7 +43,7 @@ public class VersionTest {
      */
     @Test
     public void testToString() {
-        assertTrue("java-rdfa-core \\S+",Version.get().toString().matches("java-rdfa-core \\S*"));
+        assertTrue("java-rdfa \\S+",Version.get().toString().matches("java-rdfa \\S*"));
     }
 
 }

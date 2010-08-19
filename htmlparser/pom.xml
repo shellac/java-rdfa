@@ -2,10 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.rootdev</groupId>
+    <parent>
+        <groupId>net.rootdev</groupId>
+        <artifactId>java-rdfa-parent</artifactId>
+        <version>0.5-SNAPSHOT</version>
+    </parent>
     <artifactId>java-rdfa-htmlparser</artifactId>
     <packaging>bundle</packaging>
-    <version>0.5-SNAPSHOT</version>
     <name>java-rdfa-htmlparser</name>
     <description>
         A rewrapping of the validator.nu html parser for use in OSGi containers.
