@@ -5,8 +5,6 @@
  */
 package net.rootdev.javardfa;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -14,32 +12,38 @@ import static org.junit.Assert.*;
  *
  * @author pldms
  */
-public class SimpleProfileCollectorTest {
+public class VersionTest {
 
-    public SimpleProfileCollectorTest() {
-    }
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
+    /**
+     * Test of get method, of class Version.
+     */
+    @Test
+    public void testGet() {
+        assertNotNull(Version.get());
     }
 
     /**
-     * Test of getProfile method, of class SimpleProfileCollector.
+     * Test of getName method, of class Version.
      */
     @Test
-    public void testGetProfile() {
-        String profileURI = SimpleProfileCollectorTest.class.getResource("/query-tests/profile.xhtml").toExternalForm();
-        // Fix java stupidity -- again
-        profileURI = profileURI.replaceFirst("^file:/(?!/)", "file:///");
-        EvalContext context = new EvalContext("http://example.com/base");
-        ProfileCollector instance = new SimpleProfileCollector();
-        instance.getProfile(profileURI, context);
-        assertEquals("http://xmlns.com/foaf/0.2/", context.getURIForPrefix("foaf2"));
-        assertEquals("http://example.com/Rabbit", context.getURIForTerm("Rabbit"));
+    public void testGetName() {
+        assertEquals("java-rdfa-core", Version.get().getName());
+    }
+
+    /**
+     * Test of getVersion method, of class Version.
+     */
+    @Test
+    public void testGetVersion() {
+        // Gah, can't usefully test this
+    }
+
+    /**
+     * Test of toString method, of class Version.
+     */
+    @Test
+    public void testToString() {
+        assertTrue("java-rdfa-core \\S+",Version.get().toString().matches("java-rdfa-core \\S*"));
     }
 
 }

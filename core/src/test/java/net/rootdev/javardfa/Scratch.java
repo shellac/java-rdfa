@@ -5,8 +5,6 @@
 
 package net.rootdev.javardfa;
 
-import net.rootdev.javardfa.jena.JenaStatementSink;
-import net.rootdev.javardfa.*;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -24,7 +22,6 @@ import net.rootdev.javardfa.output.OGPReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *

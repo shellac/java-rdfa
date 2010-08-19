@@ -5,7 +5,6 @@
  */
 package net.rootdev.javardfa;
 
-import net.rootdev.javardfa.jena.JenaStatementSink;
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Resource;
