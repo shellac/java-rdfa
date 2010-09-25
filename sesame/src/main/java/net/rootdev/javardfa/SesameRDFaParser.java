@@ -35,36 +35,37 @@ package net.rootdev.javardfa;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.Map;
+
 import nu.validator.htmlparser.common.XmlViolationPolicy;
 import nu.validator.htmlparser.sax.HtmlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.rio.ParseErrorListener;
-import org.openrdf.rio.ParseLocationListener;
+import org.openrdf.OpenRDFException;
+import org.openrdf.model.Literal;
+import org.openrdf.model.Resource;
+import org.openrdf.model.URI;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.helpers.RDFParserBase;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- *
+ * RDFa parser for HTML5 and XHTML (see inner classes).
+ * 
  * @author Henry Story <henry.story@bblfish.net>
+ * @author Lars Heuer <heuer[at]semagia.com>
  */
-public abstract class SesameRDFaParser implements RDFParser {
+public abstract class SesameRDFaParser extends RDFParserBase {
 
    private static Logger log = LoggerFactory.getLogger(SesameRDFaParser.class);
-   ValueFactory valFact;
-   RDFHandler handler;
-   boolean verifyData = false;
+
    private XMLReader xmlReader;
-   boolean stopAtFirstError = true;
-   private boolean preserveBNodeIds = false;
 
    public static class HTMLRDFaParser extends SesameRDFaParser {
 
@@ -102,39 +103,6 @@ public abstract class SesameRDFaParser implements RDFParser {
       }
    }
 
-   public void setValueFactory(ValueFactory valueFactory) {
-      this.valFact = valueFactory;
-   }
-
-   public void setRDFHandler(RDFHandler handler) {
-      this.handler = handler;
-   }
-
-   public void setParseErrorListener(ParseErrorListener el) {
-      throw new UnsupportedOperationException("Not supported yet.");
-   }
-
-   public void setParseLocationListener(ParseLocationListener ll) {
-      throw new UnsupportedOperationException("Not supported yet.");
-   }
-
-   public void setVerifyData(boolean verifyData) {
-      log.warn("not implemented setVerifyData(...) in " + this.getClass().getCanonicalName());
-
-   }
-
-   public void setPreserveBNodeIDs(boolean preserveBNodeIDs) {
-      log.warn("not implemented setPreserveBNodeIDs(...) in " + this.getClass().getCanonicalName());
-   }
-
-   public void setStopAtFirstError(boolean stopAtFirstError) {
-      log.warn("not implemented setStopAtFirstError(...) in " + this.getClass().getCanonicalName());
-   }
-
-   public void setDatatypeHandling(DatatypeHandling datatypeHandling) {
-      log.warn("not impemented setDatatypeHandling(...) yet in " + this.getClass().getCanonicalName());
-   }
-
    public void setReader(XMLReader reader) {
       this.xmlReader = reader;
    }
@@ -155,7 +123,7 @@ public abstract class SesameRDFaParser implements RDFParser {
    }
 
    private void parse(InputSource in, String baseURI) throws IOException {
-      Parser parser = new Parser(new SesameStatementSink(valFact, handler));
+      Parser parser = new Parser(new SesameStatementSink());
       parser.setBase(baseURI);
       initParser(parser);
       try {
@@ -166,4 +134,72 @@ public abstract class SesameRDFaParser implements RDFParser {
          throw new RuntimeException("SAX Error when parsing", ex);
       }
    }
+
+
+   private class SesameStatementSink implements StatementSink {
+
+       private Map<String, Resource> bnodeLookup;
+
+
+       //@Override
+       public void start() {
+          bnodeLookup = new HashMap<String, Resource>();
+       }
+
+       //@Override
+       public void end() {
+          bnodeLookup = null;
+       }
+
+       //@Override
+       public void addObject(String subject, String predicate, String object) {
+          try {
+             Resource s = getResource(subject);
+             Resource o = getResource(object);
+             rdfHandler.handleStatement(createStatement(s, createURI(predicate), o));
+          } catch (OpenRDFException ex) {
+              log.warn("Unexpected exception", ex);
+          }
+       }
+
+       @Override
+       public void addLiteral(String subject, String predicate, String lex, String lang, String datatype) {
+          try {
+             Resource s = getResource(subject);
+             URI p = createURI(predicate);
+             Literal o = createLiteral(lex, lang, datatype != null ? createURI(datatype) : null);
+             rdfHandler.handleStatement(createStatement(s, p, o));
+          } catch (OpenRDFException ex) {
+              log.warn("Unexpected exception", ex);
+          }
+       }
+
+       private Resource getResource(String res) throws RDFParseException {
+          if (res.startsWith("_:")) {
+             if (bnodeLookup.containsKey(res)) {
+                return bnodeLookup.get(res);
+             }
+             Resource bnode = createBNode();
+             bnodeLookup.put(res, bnode);
+             return bnode;
+          } else {
+             return createURI(res);
+          }
+       }
+
+       @Override
+       public void addPrefix(String prefix, String uri) {
+           try {
+             rdfHandler.handleNamespace(prefix, uri);
+          } catch (RDFHandlerException ex) {
+              log.warn("Unexpected exception", ex);
+          }
+       }
+
+       @Override
+       public void setBase(String base) {
+           // TODO Auto-generated method stub
+       }
+
+    }
 }
