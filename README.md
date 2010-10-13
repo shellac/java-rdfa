@@ -53,7 +53,7 @@ To use the parser directly, without the assistance of an RDF toolkit (a bold cho
 
 java-rdfa can be used from jena. Simply invoke:
 
-	Class.forName("net.rootdev.javardfa.RDFaReader");
+	Class.forName("net.rootdev.javardfa.jena.RDFaReader");
 
 Which will hook the two readers in to jena, then you will be able to:
 
