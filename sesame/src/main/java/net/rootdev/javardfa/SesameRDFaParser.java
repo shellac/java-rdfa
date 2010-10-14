@@ -115,6 +115,7 @@ public abstract class SesameRDFaParser extends RDFParserBase {
         /* (non-Javadoc)
          * @see org.openrdf.rio.RDFParser#getRDFFormat()
          */
+        @Override
         public RDFFormat getRDFFormat() {
             return RDFaXHtmlParserFactory.rdfa_xhtml_Format;
         }
