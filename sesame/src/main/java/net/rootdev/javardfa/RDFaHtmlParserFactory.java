@@ -36,11 +36,13 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.RDFParserFactory;
 import java.nio.charset.Charset;
+import org.kohsuke.MetaInfServices;
 
 /**
- * 
+ *
  * @author hjs
  */
+@MetaInfServices
 public class RDFaHtmlParserFactory implements RDFParserFactory {
 
     public static final RDFFormat rdfa_html_Format;
