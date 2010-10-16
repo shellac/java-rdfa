@@ -40,6 +40,7 @@ import java.util.Map;
 
 import nu.validator.htmlparser.common.XmlViolationPolicy;
 import nu.validator.htmlparser.sax.HtmlParser;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.openrdf.OpenRDFException;
@@ -64,8 +65,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public abstract class SesameRDFaParser extends RDFParserBase {
 
     private static final Logger LOG = LoggerFactory.getLogger(SesameRDFaParser.class);
-
-    private XMLReader xmlReader;
 
     public static class HTMLRDFaParser extends SesameRDFaParser {
 
@@ -122,30 +121,23 @@ public abstract class SesameRDFaParser extends RDFParserBase {
     }
 
     /**
-     * 
+     * Returns the XMLReader.
      *
-     * @param reader
+     * @return The XMLReader instance to parse a RDFa source.
      */
-    public void setReader(XMLReader reader) {
-        this.xmlReader = reader;
-    }
+    protected abstract XMLReader getReader() throws SAXException;
 
     /**
+     * Initializes the parser.
      * 
-     *
-     * @return
-     * @throws SAXException
-     */
-    protected XMLReader getReader() throws SAXException {
-        return xmlReader;
-    }
-
-    /**
+     * This method can be used to configure the parser.
      * 
+     * Does nothing by default.
      *
-     * @param parser
+     * @param parser The parser.
      */
     protected void initParser(Parser parser) {
+        // noop.
     }
 
     /* (non-Javadoc)
@@ -167,11 +159,11 @@ public abstract class SesameRDFaParser extends RDFParserBase {
     }
 
     /**
-     * 
+     * Parses the provided input source.
      *
-     * @param in
-     * @param baseURI
-     * @throws IOException
+     * @param in The input source.
+     * @param baseURI The base URI.
+     * @throws IOException In case of an error.
      */
     private void parse(InputSource in, String baseURI) throws IOException {
         Parser parser = new Parser(new SesameStatementSink());
@@ -188,11 +180,14 @@ public abstract class SesameRDFaParser extends RDFParserBase {
     }
 
     /**
-     * 
-     * 
+     * Implementation of the {@link StatementSink} which delegates
+     * events to the {@link RDFParserBase#getRDFHandler()}.
      */
     private class SesameStatementSink implements StatementSink {
 
+        /**
+         * Cache for blank nodes.
+         */
         private Map<String, Resource> bnodeLookup;
 
         /* (non-Javadoc)
@@ -246,11 +241,14 @@ public abstract class SesameRDFaParser extends RDFParserBase {
         }
 
         /**
+         * Creates a resource from the provided string.
          * 
+         * If the string represents a blank node, either an existing blank
+         * node is returned or a blank node is created and cached.
          *
-         * @param res
-         * @return
-         * @throws RDFParseException
+         * @param res A string representing a blank node or an IRI.
+         * @return An IRI.
+         * @throws RDFParseException In case of an error.
          */
         private Resource getResource(String res) throws RDFParseException {
             if (res.startsWith("_:")) {
