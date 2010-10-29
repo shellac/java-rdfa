@@ -71,7 +71,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>rdfa.simpleparse</mainClass>
+                            <mainClass>rdfa.parse</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

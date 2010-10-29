@@ -7,6 +7,7 @@
 package rdfa;
 
 import java.io.IOException;
+import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +26,10 @@ import org.xml.sax.XMLReader;
  * @author pldms
  */
 public class simpleparse {
+
+    static {
+        Authenticator.setDefault(new SimpleAuthenticator());
+    }
 
     public static void main(String... args) throws ClassNotFoundException, MalformedURLException, IOException, SAXException {
         if (args.length == 0) usage();
