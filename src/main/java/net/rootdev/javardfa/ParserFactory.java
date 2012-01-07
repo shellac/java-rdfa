@@ -47,6 +47,9 @@ public class ParserFactory {
     public static XMLReader createNonvalidatingReader() throws SAXException {
         XMLReader reader = XMLReaderFactory.createXMLReader();
         reader.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+        try {
+            reader.setFeature("http://www.xml.org/sax/features/validation", false);
+        } catch (Exception e) {} // continue whether this is recognised
         return reader;
     }
 
