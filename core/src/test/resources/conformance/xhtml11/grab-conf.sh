@@ -1,8 +1,8 @@
 # CURRENTLY these tests aren't retrievable, so this doesn't work
 # get directly from git.
 
-echo "Not working yet"
-exit 1
+#echo "Not working yet"
+#exit 1
 
 rm *.xhtml
 rm *.sparql

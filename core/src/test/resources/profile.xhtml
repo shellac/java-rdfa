@@ -1,15 +1,2160 @@
-<html>
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+<head>
+   <title>Test 0001</title>
+</head>
+<body>
+   <p>This photo was taken by <span class="author" about="photo1.jpg" property="dc:creator">Mark Birbeck</span>.</p>
+</body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	<head>
+		<title>Test 0002</title>
+	</head>
+	<body>
+		<div class="container">
+	  	<div about="photo1.jpg">
+	      This photo was taken by <meta property="dc:creator">Mark Birbeck</meta>.
+	  	</div>
+		</div>
+	</body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	<head>
+		<title>Test 0003</title>
+	</head>
+	<body>
+	  <div about="photo1.jpg">
+	    <span class="attribution-line">
+	      This photo was taken by
+	      <meta property="dc:creator">Mark Birbeck</meta>
+	    </span>.
+	  </div>
+	</body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	<head>
+		<title>Test 0004</title>
+	</head>
+	<body>
+		<span xml:base="http://internet-apps.blogspot.com/">
+  		<link about="" rel="dc:creator" href="http://www.blogger.com/profile/1109404" />
+  		<meta property="dc:title" content="Internet Applications" />
+		</span>
+	</body>
+      xmlns:cc="http://creativecommons.org/ns#"
+	<head>
+		<title>Test 0005</title>
+	</head>
+	<body>
+		<p>This document is licensed under a
+			<a	xmlns:cclicenses="http://creativecommons.org/licenses/"
+ 				rel="cc:license"
+ 				href="[cclicenses:by/nc-nd/2.5/]">Creative Commons License</a>.
+		</p>		
+	</body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	<head>
+		<title>Test 0006</title>
+	</head>
+	<body>
+		<p>
+			This photo was taken by
+			<a 	about="photo1.jpg" rel="dc:creator" rev="foaf:img"
+   				href="http://www.blogger.com/profile/1109404">Mark Birbeck</a>.
+		</p>	
+	</body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	<head>
+		<title>Test 0007</title>
+	</head>
+	<body>
+		<p>This photo was taken by
+			<a 	about="photo1.jpg" property="dc:title"
+   				content="Portrait of Mark" rel="dc:creator"
+      			rev="foaf:img" href="http://www.blogger.com/profile/1109404">Mark Birbeck</a>.
+		</p>	
+	</body>
+  xmlns:cc="http://creativecommons.org/ns#"
+	<head>
+		<title>Test 0008</title>
+	</head>
+  <body>
+  	<p>This document is licensed under a
+  		<a 	about="" rel="cc:license"
+    		href="http://creativecommons.org/licenses/by-nc-nd/2.5/">
+       		Creative Commons
+  		</a>.
+  	</p>	
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+	<head>
+		<title>Test 0009</title>
+    	<link about="http://example.org/people#Person1"
+          	  rev="foaf:knows" href="http://example.org/people#Person2" />
+
+  </head>
+  <body>
+  	<p></p>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0010</title>
+	  	<link about="http://example.org/people#Person1"
+          rel="foaf:knows" rev="foaf:knows" href="http://example.org/people#Person2" />
+  </head>
+  <body>
+  	<p></p>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	<head>
+		<title>Test 0011</title>
+	</head>
+  <body>
+  	<div about="">
+      Author: <span property="dc:creator">Albert Einstein</span>
+      <h2 property="dc:title" datatype="rdf:XMLLiteral">E = mc<sup>2</sup>: The Most Urgent Problem of Our Time</h2>
+	</div>
+  </body>
+      xmlns:ex="http://example.org/"
+  <head about="">
+	<title>Test 0012</title>
+  	<meta about="http://example.org/node" property="ex:property" xml:lang="fr" content="chat" />
+  </head>
+  <body>
+  	<p></p>
+  </body>
+      xmlns:ex="http://example.org/"
+  <head about="" xml:lang="fr">
+  	<title xml:lang="en">Test 0013</title>
+  	<meta about="http://example.org/node" property="ex:property" content="chat" />
+  </head>
+  <body>
+  	<p></p>
+  </body>
+      xmlns:ex="http://example.org/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+	<head>
+		<title>Test 0014</title>
+	</head>
+  <body>
+  	<p>
+  		<span	about="http://example.org/foo"
+        		property="ex:bar" content="10" datatype="xsd:integer">ten</span>
+	</p>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0015</title>
+	<link rel="dc:source" href="urn:isbn:0140449132" />
+    <meta property="dc:creator" content="Fyodor Dostoevsky" />
+  </head>
+  <body>
+  	<p></p>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0016</title>
+    <link about="[_:a]" rel="dc:source" href="urn:isbn:0140449132" />
+    <meta about="[_:a]" property="dc:creator" content="Fyodor Dostoevsky" />
+  </head>
+  <body>
+    <blockquote about="[_:a]">
+    <p>
+      Rodion Romanovitch! My dear friend! If you go on in this way
+      you will go mad, I am positive! Drink, pray, if only a few drops!
+    </p>
+    </blockquote>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+	<title>Test 0017</title>   
+  </head>
+  <body>
+  	 <p>
+          <span about="[_:a]" property="foaf:name">Manu Sporny</span>
+           <span about="[_:a]" rel="foaf:knows"
+resource="[_:b]">knows</span>
+           <span about="[_:b]" property="foaf:name">Ralph Swick</span>.
+        </p>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0018</title>
+  </head>
+  <body>
+  	<p>
+	  This photo was taken by
+	  <a about="photo1.jpg" rel="dc:creator"
+		 href="http://www.blogger.com/profile/1109404">Mark Birbeck</a>.
+	</p>	 
+  </body>
+
+
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+	<title>Test 0019</title>
+  </head>
+  <body>
+    <div about="mailto:manu.sporny@digitalbazaar.com"
+      rel="foaf:knows" href="mailto:michael.hausenblas@joanneum.at"></div>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0020</title>
+  </head>
+  <body>
+    <div about="photo1.jpg">
+      <span class="attribution-line">this photo was taken by
+        <span property="dc:creator">Mark Birbeck</span>
+      </span>
+    </div>
+  </body>
+
+
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+<head>
+	<title>Test 0021</title>
+</head>
+<body>
+    <div>
+      <span class="attribution-line">this photo was taken by
+        <span property="dc:creator">Mark Birbeck</span>
+      </span>
+    </div>
+</body>
+
+
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0022</title>
+  </head>
+  <body>
+    <div id="photo1">
+        This photo was taken by <meta property="dc:creator">Mark Birbeck</meta>.
+    </div>
+  </body>
+
+
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0023</title>
+  </head>
+  <body>
+    <div id="photo1">
+      	This photo was taken by
+        <span property="dc:creator">Mark Birbeck</span> 
+    </div>
+  </body>
+
+
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0024</title>
+  </head>  
+  <body>
+    <div about="photo1.jpg">
+      <div id="photo1">
+        this photo was taken by <span property="dc:creator">Mark Birbeck</span>
+      </div>
+    </div>
+  </body>
+
+
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+	<title>Test 0025</title>
+  </head>
+  <body>
+  	<p>
+    	This paper was written by
+    	<span rel="dc:creator" resource="#me">
+      		<span property="foaf:name">Ben Adida</span>.
+    	</span>
+	</p>
+  </body>
+
+
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0026</title>
+  </head>
+  <body>
+  	<p>
+		<span 	about="http://internet-apps.blogspot.com/"
+	      		property="dc:creator" content="Mark Birbeck" />
+	</p>	
+  </body>
+
+
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+   <title>Test 0027</title>
+  </head>
+  <body>
+  	<p>
+    	<span 	about="http://internet-apps.blogspot.com/"
+       			property="dc:creator" content="Mark Birbeck">Mark B.
+		</span>
+	</p>	
+  </body>
+
+
+  xmlns:ex="http://example.org/"
+  <head>
+	<title>Test 0028</title>
+  </head>
+  <body>
+  	<p>
+    	<span 	about="http://example.org/node"
+	  			property="ex:property" xml:lang="fr" datatype="">chat
+		</span>
+	</p>	
+  </body>
+
+
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  <head>
+   <title>Test 0029</title>
+  </head>
+  <body>
+  	<p>
+    	<span 	about="http://example.org/foo"
+	      		property="dc:creator" datatype="xsd:string"><b>M</b>ark <b>B</b>irbeck</span>.
+	</p>	  
+  </body>
+
+
+      xmlns:cc="http://creativecommons.org/ns#"
+	<head>
+		<title>Test 0030</title>
+	</head>
+  <body>
+  	<p>This document is licensed under a
+  		<a 	rel="cc:license"
+    		href="http://creativecommons.org/licenses/by-nc-nd/2.5/">
+       		Creative Commons License
+  		</a>.
+  	</p>	
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0031</title>
+  </head>
+  <body>
+  	<p about="#wtw">
+  	  The book <b>Weaving the Web</b> (hardcover) has the ISBN
+  	  <span rel="dc:identifier" resource="urn:ISBN:0752820907">0752820907</span>.
+  	</p>	
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	<head>
+		<title>Test 0032</title>
+	</head>
+  <body>
+  	<p about="#wtw">
+  	  The book <b>Weaving the Web</b> (hardcover) has the ISBN
+  	  <a rel="dc:identifier" resource="urn:ISBN:0752820907" 
+  	  href="http://www.amazon.com/Weaving-Web-Tim-Berners-Lee/dp/0752820907">0752820907</a>.
+  	</p>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+	<title>Test 0033</title>
+  </head>
+  <body>
+  	<p>
+    	This paper was written by
+    	<span rel="dc:creator">
+      		<span property="foaf:name">Ben Adida</span>.
+    	</span>
+	</p>
+  </body>
+
+
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0034</title>    
+  </head>
+  <body>
+  	<div about="http://sw-app.org/mic.xhtml#i" rel="foaf:img">
+  	  <img 	src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		alt="A photo depicting Michael" />
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0035</title>    
+  </head>
+  <body>
+  	<div>
+      <img 	about="http://sw-app.org/mic.xhtml#i"
+  	   		rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		href="http://sw-app.org/img/mic_2006_03.jpg" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0036</title>    
+  </head>
+  <body>
+  	<div>
+      <img 	about="http://sw-app.org/mic.xhtml#i"
+  	   		rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		resource="http://sw-app.org/img/mic_2006_03.jpg" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0037</title>    
+  </head>
+  <body>
+  	<div>
+      <img 	about="http://sw-app.org/mic.xhtml#i"
+  	   		rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		href="http://sw-app.org/img/mic_2006_03.jpg"
+  	   		resource="http://sw-app.org/mic.xhtml#photo" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0038</title>    
+  </head>
+  <body>
+  	<div about="http://sw-app.org/mic.xhtml#i" rev="foaf:depicts">
+  	  <img 	src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		alt="A photo depicting Michael" />
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0039</title>    
+  </head>
+  <body>
+  	<div>
+      <img 	about="http://sw-app.org/mic.xhtml#i"
+  	   		rev="foaf:depicts"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		href="http://sw-app.org/img/mic_2006_03.jpg" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0040</title>    
+  </head>
+  <body>
+  	<div>
+     <img src="http://sw-app.org/img/mic_2007_01.jpg"
+           rev="alternate"
+           resource="http://sw-app.org/img/mic_2006_03.jpg"
+           alt="A photo depicting Michael" />	
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0041</title>    
+  </head>
+  <body>
+  	<div>
+      <img 	about="http://sw-app.org/mic.xhtml#i"
+  	   		rev="foaf:depicts"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		href="http://sw-app.org/img/mic_2006_03.jpg"
+  	   		resource="http://sw-app.org/mic.xhtml#photo" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0042</title>    
+  </head>
+  <body>
+  	<div>
+  	  <img 	rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		alt="A photo depicting Michael" />
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0043</title>    
+  </head>
+  <body>
+  	<div>
+      <img 	rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		href="http://sw-app.org/img/mic_2006_03.jpg" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0044</title>    
+  </head>
+  <body>
+  	<div>
+      <img 	rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		resource="http://sw-app.org/img/mic_2006_03.jpg" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0045</title>    
+  </head>
+  <body>
+  	<div>
+      <img 	rel="foaf:img"
+  	   		src="http://sw-app.org/img/mic_2007_01.jpg" 
+  	   		href="http://sw-app.org/img/mic_2006_03.jpg"
+  	   		resource="http://sw-app.org/mic.xhtml#photo" 
+  	   		alt="A photo depicting Michael" />  	
+  	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0046</title>    
+  </head>
+  <body>
+  	<div rel="foaf:maker" typeof="foaf:Document">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0047</title>    
+  </head>
+  <body>
+  	<div rel="foaf:maker" typeof="foaf:Document" resource="http://www.example.org/#me">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0048</title>    
+  </head>
+  <body>
+  	<div about="http://www.example.org/#me" rel="foaf:knows" typeof="foaf:Person">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0049</title>    
+  </head>
+  <body>
+  	<div about="http://www.example.org/#me" typeof="foaf:Person">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0050</title>    
+  </head>
+  <body>
+  	<div typeof="foaf:Person">
+	    <p property="foaf:name">John Doe</p>
+   	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0051</title>    
+  </head>
+  <body>
+  	<p about="" typeof="foaf:Document" property="foaf:topic">John Doe</p>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0052</title>    
+  </head>
+  <body>
+  	<p typeof="foaf:Person" resource="http://www.example.org/#me">
+	    John Doe
+   	</p>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0053</title>    
+  </head>
+  <body>
+  	<p typeof="foaf:Person" resource="http://www.example.org/#me">
+	    <span property="foaf:name">John Doe</span>
+   	</p>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+		<title>Test 0054</title>    
+  </head>
+  <body>
+  	<p>
+		This document was authored and published by  		
+		<span about="" property="dc:creator dc:publisher">Fabien Gandon</span>.
+  	</p>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+		<title>Test 0055</title>    
+  </head>
+  <body>
+  	<p>
+		This document was authored and published by
+		<a about="" rel="dc:creator dc:publisher" href="http://www-sop.inria.fr/acacia/fabien/">Fabien Gandon</a>.
+	</p>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+    <title>Test 0056</title>
+  </head>
+  <body>
+    <div about="http://www.example.org/#ben" typeof="foaf:Person" rel="foaf:knows">
+      <p about="http://www.example.org/#mark" property="foaf:name">Mark Birbeck</p>
+    </div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+    <title>Test 0057</title>
+  </head>
+  <body>
+    <div about="http://www.example.org/#ben" rel="foaf:knows">
+      <p about="http://www.example.org/#mark" property="foaf:name">Mark Birbeck</p>
+      <p about="http://www.example.org/#ivan" property="foaf:name">Ivan Herman</p>
+    </div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+    <title>Test 0058</title>
+  </head>
+  <body>
+    <div about="http://www.example.org/#ben" rel="foaf:knows">
+      <p typeof="foaf:Person" property="foaf:name">Mark Birbeck</p>
+      <p typeof="foaf:Person" property="foaf:name">Ivan Herman</p>
+    </div>
+  </body>
+ 	  xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+    <title>Test 0059</title>
+  </head>
+  <body>
+    <p>This document was authored and published by:</p>
+    <ul rel="dc:creator dc:publisher">
+      <li about="http://www.example.org/#manu" property="foaf:name">Manu Sporny</li>
+      <li about="http://www.example.org/#fabien" property="foaf:name">Fabien Gandon</li>
+    </ul>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+    <title>Test 0060</title>
+  </head>
+  <body>
+    <div about="http://www.example.org/#matsumoto-kimiko"
+         typeof="foaf:Person">
+      <p property="foaf:name">松本 后子</p>
+    </div>
+  </body>
+   <head>
+      <title>Test 0061</title>
+      <link rel="next" href="$TCPATH/0062.xhtml" />
+   </head>
+   <body>
+      <p>This is the first chapter in a series of chapters.</p>
+   </body>
+   <head>
+      <title>Test 0062</title>
+      <link rev="prev" href="$TCPATH/0063.xhtml" />
+   </head>
+   <body>
+      <p>This is unit test #62. The next unit test is #63.</p>
+   </body>
+   <head>
+      <title>Test 0063</title>
+      <link rel=":next" href="$TCPATH/0064.xhtml" />
+   </head>
+   <body>
+      <p>This is the 63<sup>rd</sup> test. The next test is #64.</p>
+   </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+    <title>Test 0064</title>
+  </head>
+  <body>
+    <p about="[_:michael]">Michael knows
+      <a rel="foaf:knows" href="http://digitalbazaar.com/people/manu">Manu</a>.
+    </p>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+    <title>Test 0065</title>
+  </head>
+    <body>
+    <div about="[_:manu]">
+      Manu Sporny can be reached via
+      <a rel="foaf:mbox" href="mailto:manu.sporny@digitalbazaar.com">email</a>.
+      <span rel="foaf:knows" resource="[_:michael]">He knows Michael.</span>
+    </div>
+
+    <div about="[_:michael]">
+      Michael can be reached via
+      <a rel="foaf:mbox" href="mailto:michael.hausenblas@joanneum.at">email</a>.
+    </div>
+  </body>
+
+
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+   <head typeof="foaf:Document">
+      <title>Test 0066</title>
+   </head>
+   <body>
+      <p>This is test #66.</p>
+   </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+   <head>
+      <title property="foaf:topic">Test 0067</title>
+   </head>
+   <body>
+      <p>This is test #67.</p>
+   </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+   <head>
+      <title>Test 0068</title>
+   </head>
+   <body>
+      <p about="0067.xhtml">
+         The previous test was
+         <span property="dc:title">Test 0067</span>.
+      </p>
+   </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+   <head>
+      <title>Test 0069</title>
+   </head>
+   <body>
+      <p>The next test will be
+         <a about="" rel="next" href="0070.xhtml">Test 0070</a>.
+      </p>
+   </body>
+   <head>
+      <title>Test 0070</title>
+   </head>
+   <body>
+      <p>The previous test was
+         <span about="" rel="prev" resource="0069.xhtml">Test 0069</span>.
+      </p>
+   </body>
+      xmlns:cc="http://creativecommons.org/ns#"
+   <head>
+      <title>Test 0071</title>
+   </head>
+   <body>
+      <p>This page is under a Creative Commons
+         <a rel="cc:license"
+            href="http://creativecommons.org/licenses/by-nd/3.0/">
+          Attribution-No Derivatives 3.0 license</a>.
+      </p>
+   </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+   <head>
+      <base href="http://www.example.org/"></base>
+      <title>Test 0072</title>
+   </head>
+   <body>
+      <p about="faq">
+         Learn more by reading the example.org
+         <span property="dc:title">Example FAQ</span>.
+      </p>
+   </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+   <head>
+      <base href="http://www.example.org/"></base>
+      <title>Test 0073</title>
+   </head>
+   <body>
+      <p>
+        This article was written by
+      	<span rel="dc:creator" resource="jane">Jane</span>.
+      </p>
+   </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+   <head>
+      <base href="http://www.example.org/"></base>
+      <title>Test 0074</title>
+   </head>
+   <body>
+     <p>
+     	This article was written by
+      	<a rel="dc:creator" href="jane">Jane</a>.
+	 </p>
+   </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+   <head>
+      <base href="http://www.example.org/"></base>
+      <title>Test 0075</title>
+   </head>
+   <body>
+   	<p>
+    	This page is under a Creative Commons
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/3.0/">Attribution-No Derivatives 3.0 license</a>.
+    </p>
+   </body>
+   <head>
+      <title>Test 0076</title>
+   </head>
+   <body>
+      <p>
+         <a rel="alternate" href="http://example.org/alternate">alternate</a>
+         <a rel="appendix" href="http://example.org/appendix">appendix</a>
+         <a rel="bookmark" href="http://example.org/bookmark">bookmark</a>
+         <a rel="cite" href="http://example.org/cite">cite</a>
+         <a rel="chapter" href="http://example.org/chapter">chapter</a>
+         <a rel="contents" href="http://example.org/contents">contents</a>
+         <a rel="copyright" href="http://example.org/copyright">copyright</a>
+         <a rel="glossary" href="http://example.org/glossary">glossary</a>
+         <a rel="help" href="http://example.org/help">help</a>
+         <a rel="icon" href="http://example.org/icon">icon</a>
+         <a rel="index" href="http://example.org/index">index</a>
+         <a rel="last" href="http://example.org/last">last</a>
+         <a rel="license" href="http://example.org/license">license</a>
+         <a rel="meta" href="http://example.org/meta">meta</a>
+         <a rel="next" href="http://example.org/next">next</a>
+         <a rel="p3pv1" href="http://example.org/p3pv1">p3pv1</a>
+         <a rel="prev" href="http://example.org/prev">prev</a>
+         <a rel="role" href="http://example.org/role">role</a>
+         <a rel="section" href="http://example.org/section">section</a>
+         <a rel="subsection" href="http://example.org/subsection">subsection</a>
+         <a rel="start" href="http://example.org/start">start</a>
+		 <a rel="stylesheet" href="http://example.org/stylesheet">stylesheet</a>
+         <a rel="up" href="http://example.org/up">up</a>
+      </p>
+   </body>
+   <head>
+      <title>Test 0077</title>
+   </head>
+   <body>
+       <p>
+         <span about="http://example.org/alternate" rev="alternate"
+               href="0077.xhtml">alternate</span>
+         <span about="http://example.org/appendix" rev="appendix"
+               href="0077.xhtml">appendix</span>
+         <span about="http://example.org/bookmark" rev="bookmark"
+               href="0077.xhtml">bookmark</span>
+         <span about="http://example.org/cite" rev="cite"
+               href="0077.xhtml">cite</span>
+         <span about="http://example.org/chapter" rev="chapter"
+               href="0077.xhtml">chapter</span>
+         <span about="http://example.org/contents" rev="contents"
+               href="0077.xhtml">contents</span>
+         <span about="http://example.org/copyright" rev="copyright"
+               href="0077.xhtml">copyright</span>
+         <span about="http://example.org/glossary" rev="glossary"
+               href="0077.xhtml">glossary</span>
+         <span about="http://example.org/help" rev="help"
+               href="0077.xhtml">help</span>
+         <span about="http://example.org/icon" rev="icon"
+               href="0077.xhtml">icon</span>
+         <span about="http://example.org/index" rev="index"
+               href="0077.xhtml">index</span>
+         <span about="http://example.org/first" rev="first"
+               href="0077.xhtml">first</span>
+         <span about="http://example.org/last" rev="last"
+               href="0077.xhtml">last</span>
+         <span about="http://example.org/license" rev="license"
+               href="0077.xhtml">license</span>
+         <span about="http://example.org/meta" rev="meta"
+               href="0077.xhtml">meta</span>
+         <span about="http://example.org/next" rev="next"
+               href="0077.xhtml">next</span>
+         <span about="http://example.org/p3pv1" rev="p3pv1"
+               href="0077.xhtml">p3pv1</span>
+         <span about="http://example.org/prev" rev="prev"
+               href="0077.xhtml">prev</span>
+         <span about="http://example.org/role" rev="role"
+               href="0077.xhtml">role</span>
+         <span about="http://example.org/section" rev="section"
+               href="0077.xhtml">section</span>
+         <span about="http://example.org/subsection" rev="subsection"
+               href="0077.xhtml">subsection</span>
+         <span about="http://example.org/start" rev="start"
+               href="0077.xhtml">start</span>
+		<span about="http://example.org/stylesheet" rev="stylesheet"
+               href="0077.xhtml">stylesheet</span>			   
+         <span about="http://example.org/up" rev="up"
+               href="0077.xhtml">up</span>
+      </p>
+   </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0078</title>    
+  </head>
+  <body>    
+	<div about ="http://www.example.org/#somebody" rel="foaf:knows">
+	    <p property="foaf:name">Ivan Herman</p>
+		<p rel="foaf:mailbox" resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+		<p typeof="foaf:Person" property="foaf:name">Mark Birbeck</p>
+	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0079</title>    
+  </head>
+  <body>    
+	<div about ="http://www.example.org/#somebody" rel="foaf:knows">
+	    <p resource="http://www.ivan-herman.org/Ivan_Herman">Ivan Herman</p>
+	    <p href="http://www.w3.org/People/Berners-Lee/card#i">Tim Berners Lee</p>
+	    <p resource="http://danbri.org/foaf.rdf#danbri" href="http://www.leobard.net/rdf/foaf.xml#me">Dan Brickley</p>
+	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0080</title>    
+  </head>
+  <body>
+	<div about ="http://www.example.org/#somebody" rel="foaf:knows">
+	    <p about="http://danbri.org/foaf.rdf#danbri" resource="http://www.leobard.net/rdf/foaf.xml#me">Dan Brickley</p>
+	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0081</title>    
+  </head>
+  <body>
+	<div about ="http://www.example.org/#somebody" rev="foaf:knows">
+	    <p property="foaf:name">Ivan Herman</p>
+		<p rel="foaf:mailbox" resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+		<p typeof="foaf:Person" property="foaf:name">Mark Birbeck</p>
+	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0082</title>    
+  </head>
+  <body>
+	<div about ="http://www.example.org/#somebody" rev="foaf:knows" rel="foaf:knows">
+	    <p property="foaf:name">Ivan Herman</p>
+		<p rel="foaf:mailbox" resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+		<p typeof="foaf:Person" property="foaf:name">Mark Birbeck</p>
+	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0083</title>    
+  </head>
+  <body>
+	<div about="http://www.example.org/#somebody" rel="foaf:knows">
+	    <p property="foaf:name">Ivan Herman</p>
+		<p rel="foaf:mailbox" resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+		<p about="http://danbri.org/foaf.rdf#danbri" typeof="foaf:Person" property="foaf:name">Dan Brickley</p>
+	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0084</title>    
+  </head>
+  <body>
+	<div about ="http://www.example.org/#somebody" rev="foaf:knows" rel="foaf:knows">
+	    <div>
+		    <p property="foaf:name">Ivan Herman</p>
+			<p rel="foaf:mailbox" resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+			<p about="http://danbri.org/foaf.rdf#danbri" typeof="foaf:Person" property="foaf:name">Dan Brickley</p>
+			
+		</div>
+	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0085</title>    
+  </head>
+  <body>
+	<div about ="http://www.example.org/#somebody" rel="foaf:knows">
+	   <div rel="foaf:knows">
+		    <p resource="http://www.ivan-herman.org/Ivan_Herman">Ivan Herman</p>
+		    <p href="http://www.w3.org/People/Berners-Lee/card#i">Tim Berners Lee</p>
+		    <p resource="http://danbri.org/foaf.rdf#danbri" href="http://www.leobard.net/rdf/foaf.xml#me">Dan Brickley</p>
+	   </div>
+	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0086</title>    
+  </head>
+  <body>
+	<div about="http://www.example.org/#somebody" rel="foobar">
+		<p resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+	</div>
+  </body>
+   <head>
+      <title>Test 0087</title>
+   </head>
+   <body>
+      <p>
+         <a rel=":alternate" href="http://example.org/alternate">alternate</a>
+         <a rel=":appendix" href="http://example.org/appendix">appendix</a>
+         <a rel=":bookmark" href="http://example.org/bookmark">bookmark</a>
+         <a rel=":cite" href="http://example.org/cite">cite</a>
+         <a rel=":chapter" href="http://example.org/chapter">chapter</a>
+         <a rel=":contents" href="http://example.org/contents">contents</a>
+         <a rel=":copyright" href="http://example.org/copyright">copyright</a>
+         <a rel=":glossary" href="http://example.org/glossary">glossary</a>
+         <a rel=":help" href="http://example.org/help">help</a>
+         <a rel=":icon" href="http://example.org/icon">icon</a>
+         <a rel=":index" href="http://example.org/index">index</a>
+         <a rel=":first" href="http://example.org/first">first</a>
+         <a rel=":last" href="http://example.org/last">last</a>
+         <a rel=":license" href="http://example.org/license">license</a>
+         <a rel=":meta" href="http://example.org/meta">meta</a>
+         <a rel=":next" href="http://example.org/next">next</a>
+         <a rel=":p3pv1" href="http://example.org/p3pv1">p3pv1</a>
+         <a rel=":prev" href="http://example.org/prev">prev</a>
+         <a rel=":role" href="http://example.org/role">role</a>
+         <a rel=":section" href="http://example.org/section">section</a>
+         <a rel=":subsection" href="http://example.org/subsection">subsection</a>
+         <a rel=":start" href="http://example.org/start">start</a>
+         <a rel=":stylesheet" href="http://example.org/stylesheet">stylesheet</a>
+         <a rel=":up" href="http://example.org/up">up</a>
+      </p>
+   </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+		<title>Test 0088</title>    
+  </head>
+  <body>
+	<div about ="http://www.example.org/#somebody" rel="foaf:knows">
+	    <p about="[_:]" property="foaf:name">Dan Brickley</p>
+	    <p about="[_:]" typeof="foaf:Person">Dan Brickley again:-)</p>
+	</div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+ <head profile="http://www.w3.org/1999/xhtml/vocab">
+      <title>Test 0089</title>
+   </head>
+   <body>
+      <div>
+      	<img src="http://example.org/example.png" typeof="foaf:Image" alt="example image" />
+      </div>
+   </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+ <head profile="http://www.w3.org/1999/xhtml/vocab">
+      <title>Test 0090</title>
+   </head>
+   <body>
+      <div>
+      	<img	src="http://example.org/example.png"  
+				rel="license"
+           		href="http://creativecommons.org/licenses/by-nc-sa/2.0/"
+				alt="example image" />
+      </div>
+   </body>
+ <head profile="http://www.w3.org/1999/xhtml/vocab">
+      <title>Test 0091</title>
+   </head>
+   <body>
+      <p about="[_:human]">
+         A human is
+         <span property=":definition">a bi-pedal primate</span>.
+         They are quite possibly one of the most
+         <span property=":note">confused animal</span>s residing in the 
+		 <span property=":foo">Milky Way</span>.
+      </p>
+   </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  <head profile="http://www.w3.org/1999/xhtml/vocab">
+	<title>Test 0092</title>
+  </head>
+  <body>
+  	<div about="">
+      Author: <span property="dc:creator">Albert Einstein</span>
+      <h2 property="dc:title" datatype="rdf:XMLLiteral">E = mc<sup>2</sup>: The Most Urgent Problem of Our Time</h2>
+	</div>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	  xmlns:ex="http://www.example.org/"
+  <head profile="http://www.w3.org/1999/xhtml/vocab">
+	<title>Test 0093</title>
+  </head>
+  <body>
+  	<div about="">
+      Author: <span property="dc:creator">Albert Einstein</span>
+      <h2 property="dc:title" datatype="ex:XMLLiteral">E = mc<sup>2</sup>: The Most Urgent Problem of Our Time</h2>
+	</div>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	  xmlns:bla="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  <head profile="http://www.w3.org/1999/xhtml/vocab">
+	<title>Test 0094</title>
+  </head>
+  <body>    
+  	<div about="">
+      Author: <span property="dc:creator">Albert Einstein</span>
+      <h2 property="dc:title" datatype="bla:XMLLiteral">E = mc<sup>2</sup>: The Most Urgent Problem of Our Time</h2>
+	</div>
+  </body>
+	  xmlns:example="http://www.example.org/"
+	  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+   <head profile="http://www.w3.org/1999/xhtml/vocab">
+      <title>Test 0095</title>
+   </head>
+   <body>
+		<div about="#A" rel="foaf:knows">
+		     <span rel="foaf:knows">somebody</span>
+		</div> 
+	</body>
+	  xmlns:example="http://www.example.org/"
+	  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+   <head profile="http://www.w3.org/1999/xhtml/vocab">
+      <title>Test 0096</title>
+   </head>
+   <body>
+		<div about="#A" rel="foaf:knows">
+		  <div rel="foaf:knows">
+			<div rel="foaf:knows">
+			  <span>Ivan Herman</span>
+			</div>
+		  </div>
+		</div>
+	</body>
+	  xmlns:example="http://www.example.org/"
+	  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+   <head profile="http://www.w3.org/1999/xhtml/vocab">
+      <title>Test 0097</title>
+   </head>
+   <body>
+		<div rel="foaf:knows">
+		  <div rel="foaf:knows">
+			<div rel="foaf:knows">
+			  <span property="foaf:name">Ivan Herman</span>
+			</div>
+		  </div>
+		</div>
+	</body>
+	  xmlns:example="http://www.example.org/"
+	  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+   <head profile="http://www.w3.org/1999/xhtml/vocab">
+      <title>Test 0098</title>
+   </head>
+   <body>
+		<div about="#A" rel="foaf:knows">
+			<span property="foaf:name">Ivan Herman</span>
+		</div>
+	</body>
+	  xmlns:example="http://www.example.org/"
+   <head profile="http://www.w3.org/1999/xhtml/vocab">
+      <title>Test 0099</title>
+   </head>
+   <body>
+		<p about="http://www.cwi.nl/~steven/" property="example:likes">
+    We put thirty spokes together and call it a wheel;
+    But it is on the space where there is nothing that the usefulness of the wheel depends.
+    We turn clay to make a vessel;
+    But it is on the space where there is nothing that the usefulness of the vessel depends.
+    We pierce doors and windows to make a house;
+    And it is on these spaces where there is nothing that the usefulness of the house depends.
+    Therefore just as we take advantage of what is, we should recognize the usefulness of what is not.
+
+    Lao Tzu: Tao Te Ching</p>
+	</body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	  xmlns:ex="http://example.org/rdf/"
+	  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	  xmlns:svg="http://www.w3.org/2000/svg"
+	<head profile="http://www.w3.org/1999/xhtml/vocab http://www.w3.org/2005/10/profile">
+		<title>Test 0100</title>
+	</head>
+  <body>
+  	<div about="http://www.example.org">
+      <h2 property="ex:example" datatype="rdf:XMLLiteral">Some text here in <strong>bold</strong> and an svg rectangle: <svg:svg><svg:rect svg:width="200" svg:height="100"/></svg:svg></h2>
+	</div>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	  xmlns:ex="http://example.org/rdf/"
+	  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	  xmlns:svg="http://www.w3.org/2000/svg"
+	<head profile="http://www.w3.org/1999/xhtml/vocab http://www.w3.org/2005/10/profile">
+		<title>Test 0101</title>
+	</head>
+  <body>
+  	<div about="http://www.example.org">
+      <h2 property="ex:example" datatype="rdf:XMLLiteral" xml:lang="fr">Du texte ici en <strong>gras</strong> et un rectangle en svg: <svg:svg><svg:rect svg:width="200" svg:height="100"/></svg:svg></h2>
+	</div>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	  xmlns:ex="http://example.org/rdf/"
+	  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	  xmlns:svg="http://www.w3.org/2000/svg"
+	<head profile="http://www.w3.org/1999/xhtml/vocab http://www.w3.org/2005/10/profile">
+		<title>Test 0102</title>
+	</head>
+  <body>
+  	<div about="http://www.example.org">
+      <h2 property="ex:example" datatype="rdf:XMLLiteral" xml:lang="fr">Du texte ici en <strong>gras</strong> et un rectangle en svg: <svg:svg xml:lang="hu"><svg:rect svg:width="200" svg:height="100"/></svg:svg></h2>
+	</div>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+	  xmlns:ex="http://example.org/rdf/"
+	  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	<head profile="http://www.w3.org/1999/xhtml/vocab http://www.w3.org/2005/10/profile">
+		<title>Test 0103</title>
+	</head>
+  <body>
+  	<div about="http://www.example.org">
+      <h2 property="ex:example" datatype="rdf:XMLLiteral">Some text here in <strong>bold</strong> and an svg rectangle: <svg xmlns="http://www.w3.org/2000/svg"><rect width="200" height="100"/></svg></h2>
+	</div>
+  </body>
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+      xmlns:example="http://www.example.org/"
+  <head profile="http://www.w3.org/1999/xhtml/vocab">
+	<title>Test 0104</title>
+  </head>
+  <body>
+  	<p>
+    	The word "interfenestration" has 
+    	<span about="#interfenestration" rel="example:size">
+            <span property="rdf:value">17</span>
+            <span property="example:unit">character</span>s.
+    	</span>
+	</p>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0105</title>
+  </head>
+  <body>
+  	  <div about="" rel="dc:creator">
+         <a rel="myfoobarrel" href="ben.html">Ben</a> created this page.
+      </div>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+	<title>Test 0106</title>
+  </head>
+  <body>
+  	  <div about="" rel="dc:creator">
+         <a rel="" href="manu.html">Manu</a> created this page.
+      </div>
+  </body>
+      xmlns:ex="http://example.org/"
+  <head>
+	<title>Test 0107</title>
+  </head>
+  <body>
+  	  <div rel="next"></div>
+  </body>
+      xmlns:ex="http://example.org/"
+  <head>
+	<title>Test 0108</title>
+  </head>
+  <body>
+    <p about="http://example.org/node" property="ex:property"
+       datatype="" xml:lang="el">ελληνικό
+άσπρο   διάστημα
+</p>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xml:base="http://example.org/invalid/"
+   <head>
+      <title>Test 0109</title>
+   </head>
+   <body>
+   	  <!-- This a NOT a valid XHTML document (due to @xml:base) -->
+      <div xml:base="http://example.org/invalid/">
+         <p about="">This is <span property="dc:title">Test 0109</span>.</p>
+      </div>
+   </body>
+  <head>
+        <title>Test 0110</title>
+  </head>
+  <body>
+    <div rel="next">
+      <div rel="next" />
+    </div>
+  </body>
+  <head>
+    <title>Test 0111</title>
+  </head>
+  <body>
+    <div rel="next">
+      <div rel="next">
+        <div rel="next" />
+      </div>
+    </div>
+  </body>
+      xmlns:ex="http://example.org/"
+  <head>
+	<title>Test 0112</title>
+  </head>
+  <body>
+  	  <p>
+      <span about="http://example.org/node" property="ex:property"
+            datatype="">not an XML Literal,
+whitespace     preserved
+</span>
+    </p>
+  </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <head>
+    <title>Test 0113</title>
+  </head>
+  <body>
+    <span about="#a" property="dc:title"></span>
+    <span about="#b" property="dc:title" />
+  </body>
+      xmlns:cc="http://creativecommons.org/ns#"
+  <head>
+    <title>Test 0114</title>
+  </head>
+  <body>
+    <div>
+      <a rel="next" href="0115.xhtml">Test Case 0115</a>
+      <a rel="up" href="../../index.html">Test Cases</a>
+      <a rel="cc:attributionURL" href="../../../">W3C/Digital Bazaar</a>
+    </div>
+  </body>
+         xmlns:ex="http://www.example.com/"
+   <head>
+     <title>Test 0115</title>
+   </head>
+   <body>
+      <p>Description: XML entities in the RDFa content</p>
+      <p>
+        <span property="ex:entity1">&gt;</span>
+        <span property="ex:entity2">Ben &amp; Co.</span>
+        <span property="ex:entity3">&#x40;</span>
+        <span property="ex:entity4">&#64;</span>
+      </p>
+   </body>
+   <head>
+     <title>Test 0116</title>
+   </head>
+   <body>
+      <div property="next">invalid property</div>
+   </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+   <head>
+      <base href="http://www.example.org/tc117.xhtml#fragment"></base>
+      <title property="dc:title">Test 0117</title>
+   </head>
+   <body>
+      <p>
+		<span property="dc:contributor">Mark Birbeck</span>
+         added this triple test.
+      </p>
+   </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+   <head>
+      <title>Test 0118</title>
+   </head>
+   <body>
+      <p>
+         Check to see if parsers get confused when "" is
+         interpreted as NULL in some chaining cases.
+         <a href="http://example.org/ben.html"><span
+            about="" property="dc:creator">Ben</span></a>
+      </p>
+   </body>
+
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:example="http://example.org/"
+   <head>
+      <title>Test 0119</title>
+   </head>
+   <body>
+      <div>
+         <p about="[example:]">
+            The
+            <span property="dc:title">Example Website</span>
+            is used in many W3C tutorials.
+         </p>
+      </div>
+   </body>
+
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:example="http://example.org/"
+   <head>
+      <title>Test 0120</title>
+   </head>
+   <body>
+      <p about="[:]">
+	         The
+	         <span property="dc:title">The XHTML Vocabulary Document</span>
+	         is the default prefix for XHTML+RDFa 1.0.
+	      </p>
+   </body>
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+   <head>
+      <title>Test 0121</title>
+   </head>
+   <body>
+    <div>
+	<p about="http://example.org/">
+		<span about="[]" property="dc:title">Test Case 0121</span>
+		checks to make sure RDFa processors resolve the empty CURIE correctly.
+		<p resource="[]">
+			<span property="dc:contributor">Shane McCarron</span>
+			contributed to this test.
+		</p>
+	</p>
+	</div>
+   </body>
+
+
+
+
+   <head>
+      <title>Test 0122</title>
+   </head>
+   <body>
+    <p about="http://example.org/section1.html">
+         This section is contained below <span rel="up" resource="[]">the main site</span>.
+      </p>
+   </body>
+
+
+
+
+      xmlns:target="http://www.example.org#"
+      xmlns:test="http://www.example.org/lower#"
+      xmlns:TEST="http://www.example.org/upper#"
+      xmlns:TeSt="http://www.example.org/mixed#"
+  <head>
+    <title>Test 0123</title>
+  </head>
+  <body>
+        <div about="[target:sub]">
+                <p rel="test:one" resource="[target:lower]">lower case</p>
+                <p rel="TEST:two" resource="[target:UPPER]">UPPER CASE</p>
+                <p rel="TeSt:three" resource="[target:MiXeD]">Mixed Case</p>
+        </div>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+<head>
+	<title>Test 0124</title>
+	<base href="http://www.example.org/me" />
+</head>
+<body>
+	<div about="#shane" typeof="foaf:Person">
+		<h2 property="foaf:name" datatype=""><span property="foaf:firstName">Shane</span><span property="foaf:surname">McCarron</span></h2>
+	</div>
+</body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+<head>
+	<title>Test 0125</title>
+	<base href="http://www.example.org/me" />
+</head>
+<body>
+      <div id="mark" about="#mark" typeof="foaf:Person">
+        <h2 property="foaf:name"><span 
+property="foaf:firstName">Mark</span> <span 
+property="foaf:surname">Birbeck</span></h2>
+      </div>
+ </body>
+   xmlns:dct="http://purl.org/dc/terms/"
+   xmlns:sioc="http://rdfs.org/sioc/ns#"
+   xmlns:foaf="http://xmlns.com/foaf/0.1/"
     <head>
+      <title>Test 0126</title>
     </head>
     <body>
-        <h1>RDFa Profile Document</h1>
-        <dl about="_:a">
-            <dt property="http://www.w3.org/ns/rdfa#term">Rabbit</dt>
-            <dd property="http://www.w3.org/ns/rdfa#uri">http://example.com/Rabbit</dd>
-        </dl>
-        <dl about="_:b">
-            <dt property="http://www.w3.org/ns/rdfa#prefix">foaf2</dt>
-            <dd property="http://www.w3.org/ns/rdfa#uri">http://xmlns.com/foaf/0.2/</dd>
-        </dl>
+      <div about="http://www.example.org/#article" typeof="foaf:Document sioc:Post">
+        <h1 property="dct:title">My article</h1>
+      </div>
     </body>
-</html>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<div xmlns:ex="http://example.org/">
+  <p property="ex:test1">Test 1 <p property="ex:test2" />Test 2 <!-- (this trailing slash is a parse error in HTML5) --> </div>
+
+<head>
+  <meta charset="utf-8"/>
+  <title>Test</title>
+</head>
+<body>
+<div xmlns:ex="http://example.org/">
+  <p property="ex:test1">Test 1 <p property="ex:test2">Test 2</p>
+  </p> <!-- (this tag is a parse error in HTML5) -->
+</div>
+
+</body>
+<head>
+  <meta charset="utf-8"/>
+  <title>Test</title>
+</head>
+<body>
+<script>var test = '<p xmlns:ex="http://example.org/" property="ex:test">Test</p>'</script>
+
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<link rel="next&#x20;prev&#x09;first&#x0a;last&#x0c;section&#x0d;subsection" href="http://example.org/test.css" />
+<p>Test
+<head>
+  <title>Test</title>
+  <link rel="next&#x20;prev&#x09;first&#x0a;last&#x0d;subsection" href="http://example.org/test.css" />
+</head>
+<body>
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<link rel="next&#x0b;prev" href="http://example.org/test.css" />
+<p>Test
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<link rel="NEXT" href="http://example.org/test.css" />
+<p>Test
+<head>
+  <title>Test</title>
+  <link rel="NEXT" href="http://example.org/test.css" />
+</head>
+<body>
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p XMLNS:EX="http://example.org/" property="ex:test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p XMLNS:EX="http://example.org/" property="EX:test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:0="http://example.org/" property="0:test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:="http://example.org/" property=":test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:_="http://example.org/" property="_:test">Test</p>
+<head>
+  <title>Test</title>
+</head>
+<body>
+<p xmlns:_="http://example.org/" property="_:test">Test</p>
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:xml="http://www.w3.org/XML/1998/namespace" property="xml:test">Test</p>
+<head>
+  <title>Test</title>
+</head>
+<body>
+<p xmlns:xml="http://www.w3.org/XML/1998/namespace" property="xml:test">Test</p>
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:xml="http://example.org/" property="xml:test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:xmlns="http://www.w3.org/2000/xmlns/" property="xmlns:test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:xmlns="http://example.org/" property="xmlns:test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:xmlzzz="http://example.org/" property="xmlzzz:test">Test</p>
+<head>
+  <title>Test</title>
+</head>
+<body>
+<p xmlns:xmlzzz="http://example.org/" property="xmlzzz:test">Test</p>
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:ex="" property="ex:http://example.com/test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:ex="http://example.org/"><span xmlns:ex="" property="ex:http://example.com/test">Test</span></p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:ex="http://www.w3.org/XML/1998/namespace" property="ex:test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:ex="http://www.w3.org/2000/xmlns/" property="ex:test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:ex="http://example.org/1/" xmlns:ex:two="http://example.org/2/" property="ex:two:three:test">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:testŀ="http://example.org/">
+  <span xmlns:test="http://example.org/error/" property="testŀ:test">Test</span>
+</p>
+
+<head>
+  <title>Test</title>
+</head>
+<body>
+<p>
+   This test contains an invalid character per the XML 4th edition rules.
+</p>
+<p xmlns:testŀ="http://example.org/">
+  <span xmlns:test="http://example.org/error/" property="testŀ:test">Test</span>
+</p>
+
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:testÁ="http://example.org/1/">
+  <span xmlns:testá="http://example.org/2/">
+    <span property="testÁ:one">Test</span>
+    <span property="testá:two">Test</span>
+  </span>
+</p>
+
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:testᾈ="http://example.org/1/">
+  <span xmlns:testᾀ="http://example.org/2/">
+    <span property="testᾈ:one">Test</span>
+    <span property="testᾀ:two">Test</span>
+  </span>
+</p>
+
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p property="rdf:test">Test</p>
+<head>
+  <title>Test</title>
+</head>
+<body>
+<p property="rdf:test">Test</p>
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p property="xml:test">Test</p>
+<head>
+  <title>Test</title>
+</head>
+<body>
+<p property="xml:test">Test</p>
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p property="xmlns:test">Test</p>
+<head>
+  <title>Test</title>
+</head>
+<body>
+<p property="xmlns:test">Test</p>
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p property="dc:test">Test</p>
+<p property="foaf:test">Test</p>
+<p property="owl:test">Test</p>
+<p property="rdfs:test">Test</p>
+<p property="xv:test">Test</p>
+<p property="xsd:test">Test</p>
+
+<head>
+  <title>Test</title>
+</head>
+<body>
+<p property="dc:test">Test</p>
+<p property="foaf:test">Test</p>
+<p property="owl:test">Test</p>
+<p property="rdf:test">Test</p>
+<p property="rdfs:test">Test</p>
+<p property="xv:test">Test</p>
+<p property="xsd:test">Test</p>
+
+</body>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:ex="http://example.org/" property="ex:test" xml:lang="aa">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:ex="http://example.org/" property="ex:test" lang="aa">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p lang="aa"><span lang="bb"><span xmlns:ex="http://example.org/" property="ex:test" lang="cc">Test</span></span></p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:ex="http://example.org/" property="ex:test" lang="aa" xml:lang="bb">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xmlns:ex="http://example.org/" property="ex:test" xml:lang="aa" lang="bb" lang="cc" xml:lang="dd">Test</p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p lang="aa"><span xmlns:ex="http://example.org/" property="ex:test" xml:lang="bb">Test</span></p>
+<head>
+  <meta charset="utf-8">
+  <title>Test</title>
+<body>
+<p xml:lang="aa"><span xmlns:ex="http://example.org/" property="ex:test" lang="bb">Test</span></p>
+      xmlns:ex="http://example.org/terms#"
+<head> 
+   <title>Test 0172</title> 
+   <base href="http://example.org/"/> 
+</head> 
+<body xml:lang="en"> 
+   <p property="ex:prop" datatype="">A <strong>plain literal</strong> with a lang tag.</p> 
+</body>
+      xmlns:ex="http://example.org/terms#"
+<head> 
+   <title>Test 0173</title> 
+   <base href="http://example.org/"/> 
+</head> 
+<body xml:lang="en"> 
+   <p property="ex:prop" xml:lang="">Just a plain literal.</p> 
+</body>
+      xmlns:v="http://www.w3.org/2006/vcard/ns#"
+<head> 
+   <title>Test 0174</title> 
+</head> 
+<body> 
+   <p>
+      This test ensures that single-character prefixes are allowed. 
+      My name is:
+      <span about="http://example.org/jd" property="v:fn">John Doe</span> 
+   </p>
+</body>
+
+  <head>
+    <title>Test 0175</title>
+  </head>
+  <body>
+    <p about="_:gregg">Gregg knows
+      <a rel="http://xmlns.com/foaf/0.1/knows" href="http://digitalbazaar.com/people/manu">Manu</a>.
+    </p>
+  </body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+    <title>Test 0176</title>
+  </head>
+    <body>
+    <div about="_:manu">
+      Manu can be reached via
+      <a rel="http://xmlns.com/foaf/0.1/mbox" href="mailto:manu.sporny@digitalbazaar.com">email</a>.
+      <span rel="http://xmlns.com/foaf/0.1/knows" resource="_:gregg">He knows Gregg.</span>
+      <span rev="http://xmlns.com/foaf/0.1/knows" resource="_:gregg">Who knows Manu.</span>
+    </div>
+
+    <div about="_:gregg">
+      Gregg can be reached via
+      <a rel="http://xmlns.com/foaf/0.1/mbox" href="mailto:gregg@kellogg-assoc.com">email</a>.
+    </div>
+  </body>
+
+
+  <head>
+    <title>Test 0177</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body>
+    <div about ="#me" prefix="foaf: http://xmlns.com/foaf/0.1/" >
+        <p property="foaf:name">Ivan Herman</p>
+    </div>
+  </body>
+  <head>
+    <title>Test 0178</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body>
+    <div about ="#this" prefix="foaf: http://xmlns.com/foaf/0.1/ dc: http://purl.org/dc/terms/" typeof="dc:Agent">
+        <p property="foaf:name">A particular agent</p>
+    </div>
+  </body>
+  <head>
+    <title>Test 0179</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body>
+    <!-- prefix has a higher priority than xmlns -->
+  <div about ="#me" xmlns:foaf="http://www.example.com/wrong/foaf/uri" prefix="foaf: http://xmlns.com/foaf/0.1/" >
+      <p property="foaf:name">Ivan Herman</p>
+  </div>
+  </body>
+  <head>
+    <title>Test 0180</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body>
+  <div about ="#me" prefix=": http://xmlns.com/foaf/0.1/" >
+      <p property=":name">Ivan Herman</p>
+  </div>
+  </body>
+  <head>
+    <title>Test 0181</title>
+  </head>
+  <body>
+  <div about ="http://www.example.org/software">
+      <p rel=":license" resource="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">Ivan Herman</p>
+  </div>
+  </body>
+  <head>
+    <title>Test 0182</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body>
+    <div prefix="foaf: http://example.org/wrong/foaf/uri/ dc: http://purl.org/dc/terms/" >
+      <div about ="#this" typeof="dc:Agent" prefix="foaf: http://xmlns.com/foaf/0.1/" >
+        <p property="foaf:name">A particular agent</p>
+      </div>
+    </div>
+  </body>
+<head>
+  <title>Test 0183</title>
+  <base href="http://example.org/"/>
+</head>
+<body>
+  <div prefix="foaf: http://example.org/wrong/foaf/uri/ dc: http://purl.org/dc/terms/" >
+    <div about ="#this" typeof="dc:Agent" xmlns:foaf="http://xmlns.com/foaf/0.1/" >
+      <p property="foaf:name">A particular agent</p>
+    </div>
+  </div>
+</body>
+  <head>
+    <title>Test 0184</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body profile="$TCPATH/../profiles/foaf">
+  <div about ="#me">
+    <p>
+      <span property="name">Ivan Herman</span>
+    <span rel="weblog" resource="http://www.ivan-herman.name">has a blog</span>
+    </p>
+  </div>
+  </body>
+  <head>
+    <title>Test 0185</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body profile="$TCPATH/../profiles/basic">
+    <div about ="#this" typeof="dc:Agent">
+      <p property="foaf:name">A particular agent</p>
+    </div>
+  </body>
+<head>
+  <title>Test 0186</title>
+  <base href="http://example.org/"/>
+</head>
+<body>
+  <div about ="#me" vocab="http://xmlns.com/foaf/0.1/" >
+    <p property="name">Ivan Herman</p>
+  </div>
+</body>
+  <head>
+    <title>Test 0187</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body>
+    <div vocab="http://example.org/wrong/foaf/uri/">
+      <div about ="#me" vocab="http://xmlns.com/foaf/0.1/" >
+        <p property="name">Ivan Herman</p>
+      </div>
+    </div>
+  </body>
+  <head>
+    <title>Test 0188</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body>
+    <div vocab="http://xmlns.com/foaf/0.1/">
+      <div about ="#me">
+        <p property="name">Ivan Herman</p>
+      </div>
+    </div>
+  </body>
+  <head>
+    <title>Test 0189</title>
+  </head>
+  <body>
+    <div about ="http://www.example.org/software">
+      <p rel="license" resource="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">Ivan Herman</p>
+    </div>
+  </body>
+  <head>
+    <title>Test 0190</title>
+  </head>
+  <body>
+    <div about ="http://www.example.org/software">
+      <p rel="liCeNse" resource="http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231">Ivan Herman</p>
+    </div>
+  </body>
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+<head>
+	<title>Test 0191</title>    
+</head>
+<body>
+<div about="http://www.example.org/#somebody" rel="foobar">
+	<p resource="mailto:ivan@w3.org">mailto:ivan@w3.org</p>
+</div>
+</body>
+   <head>
+     <title>Test 0192</title>
+   </head>
+   <body>
+      <div property="next">valid property</div>
+   </body>
+  <head>
+    <title>Test 0193</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body profile="$TCPATH/0193.profile.html">
+    <div about ="#this" typeof="Person">
+      <p property="name">A particular person</p>
+    </div>
+  </body>
+<head>
+  <title>Test 0194</title>
+  <base href="http://example.org/"/>
+</head>
+<body profile="$TCPATH/0194.profile.html $TCPATH/../profiles/basic">
+  <div about ="#this" typeof="dc:Agent">
+    <p property="foaf:name">A particular agent</p>
+  </div>
+</body>
+xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  <head>
+    <title>Test 0195</title>
+    <base href="http://example.org/"/>
+  </head>
+  <body profile="http://no-such/profile">
+  <div about ="#me">
+    <p>
+      <span property="foaf:name">Gregg Kellogg</span>
+    </p>
+  </div>
+  </body>
+  xmlns:ex="http://example.org/rdf/"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+<head profile="http://www.w3.org/1999/xhtml/vocab http://www.w3.org/2005/10/profile">
+	<title>Test 0196</title>
+</head>
+<body>
+	<div about="http://www.example.org">
+    <p property="ex:xmllit" datatype="rdf:XMLLiteral">This is an XMLLiteral</p>
+    <p property="ex:plainlit">This is a <em>plain</em> literal</p>
+</div>
+</body>
+  xmlns:dc="http://purl.org/dc/terms/"
+<head>
+	<title>Test 0197</title>
+	<base href="http://www.example.org/me" />
+</head>
+<body>
+  <p about="" typeof="class/Person" property="pred/name">Gregg Kellogg</p>
+  <p property="dc:language" datatype="pred/lang">Ruby</p>
+  <p rel="pred/rel" resource="http://kellogg-assoc.com/">Kellogg Associates</p>
+  <p rev="pred/rev" resource="http://github.org/gkellogg/rdf_context">Ruby Gem</p>
+</body>
+      xmlns:foaf="http://xmlns.com/foaf/0.1/"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+<head>
+	<title>Test 0198</title>
+	<base href="http://www.example.org/me" />
+</head>
+<body>
+      <div id="mark" about="#mark" typeof="foaf:Person">
+        <h2 property="foaf:name" datatype="rdf:XMLLiteral"><span 
+property="foaf:firstName">Mark</span> <span 
+property="foaf:surname">Birbeck</span></h2>
+      </div>
+ </body>
+  <head>
+    <title>Test 0199</title>
+    <base href="http://www.example.org/me" />
+  </head>
+  <body profile="$TCPATH/0199.profile.html">
+    <div about="#me" typeof="foaf:Person">
+      <h2 property="foaf:name" datatype="rdf:XMLLiteral"><span property="foaf:firstName">Gregg</span> <span property="foaf:surname">Kellogg</span></h2>
+    </div>
+  </body>
+  <head>
+    <title>Test 0200</title>
+  </head>
+  <body profile="$TCPATH/0200.profile.html">
+    <div typeof="Event">
+      <h2 property="title">Last Call</h2>
+      <a rel="factor" href="http://www.w3.org/TR/rdfa-core/">RDFa Core 1.1</a>
+      was published by <span rel="agent"><span typeof="Agent" about="http://www.w3.org/2010/02/rdfa/">RDFa Working Group</span></span>.
+      on <span property="time" content="2010-10-26">26 October 2010</span>.
+    </div>
+  </body>
+  xmlns:cal="http://www.w3.org/2002/12/cal/icaltzd#" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+<head>
+   <title>Test 1001</title>    
+</head>
+   <body>
+   <p about="#event1" typeof="cal:Vevent">
+       <b property="cal:summary">Weekend off in Iona</b>: 
+       <span property="cal:dtstart" content="2006-10-21" datatype="xsd:date">Oct 21st</span>
+       to <span property="cal:dtend" content="2006-10-23"  datatype="xsd:date">Oct 23rd</span>.
+       See <a rel="cal:url" href="http://freetime.example.org/">FreeTime.Example.org</a> for
+       info on <span property="cal:location">Iona, UK</span>.
+   </p>
+</body>
+    prefix="xsd: http://www.w3.org/2001/XMLSchema# dcterms:http://purl.org/dc/terms/ media: http://purl.org/media# audio:http://purl.org/media/audio#"
+<head>
+   <title>Design Test 9001</title>
+</head>
+<body>
+   <p about="http://www.blogtalkradio.com/716radio/2007/06/12/rancid#podcast"
+      typeof="audio:Recording">
+      An 
+      <a rel="media:download" 
+         href="http://www.blogtalkradio.com/716radio/2007/06/12/rancid.mp3">
+         audio interview
+      </a> with  
+      <span property="dcterms:contributor">Tim Armstrong</span>
+      of Rancid and The Transplants was released on 
+      <span property="dcterms:published" content="2007-01-11" 
+            datatype="xsd:date">January 11th 2007</span> 
+      on 716Radio. 
+   </p>
+</body>
+   prefix="xsd: http://www.w3.org/2001/XMLSchema#; dcterms:http://purl.org/dc/terms/; media: http://purl.org/media# ; audio: http://purl.org/media/audio#;"
+<head>
+   <title>Design Test 9002</title>
+</head>
+<body>
+   <p about="http://www.blogtalkradio.com/716radio/2007/06/12/rancid#podcast"
+      typeof="audio:Recording">
+      An 
+      <a rel="media:download" 
+         href="http://www.blogtalkradio.com/716radio/2007/06/12/rancid.mp3">
+         audio interview
+      </a> with  
+      <span property="dcterms:contributor">Tim Armstrong</span>
+      of Rancid and The Transplants was released on 
+      <span property="dcterms:published" content="2007-01-11" 
+            datatype="xsd:date">January 11th 2007</span> 
+      on 716Radio. 
+   </p>
+</body>
+   prefix="xsd=http://www.w3.org/2001/XMLSchema# dcterms = http://purl.org/dc/terms/ media=http://purl.org/media# audio = http://purl.org/media/audio#"
+<head>
+   <title>Design Test 9003</title>
+</head>
+<body>
+   <p about="http://www.blogtalkradio.com/716radio/2007/06/12/rancid#podcast"
+      typeof="audio:Recording">
+      An 
+      <a rel="media:download" 
+         href="http://www.blogtalkradio.com/716radio/2007/06/12/rancid.mp3">
+         audio interview
+      </a> with  
+      <span property="dcterms:contributor">Tim Armstrong</span>
+      of Rancid and The Transplants was released on 
+      <span property="dcterms:published" content="2007-01-11" 
+            datatype="xsd:date">January 11th 2007</span> 
+      on 716Radio. 
+   </p>
+</body>
+      prefix="xsd http://www.w3.org/2001/XMLSchema# dcterms http://purl.org/dc/terms/ media   http://purl.org/media#   audio http://purl.org/media/audio#"
+<head>
+   <title>Design Test 9004</title>
+</head>
+<body>
+   <p about="http://www.blogtalkradio.com/716radio/2007/06/12/rancid#podcast"
+      typeof="audio:Recording">
+      An 
+      <a rel="media:download" 
+         href="http://www.blogtalkradio.com/716radio/2007/06/12/rancid.mp3">
+         audio interview
+      </a> with  
+      <span property="dcterms:contributor">Tim Armstrong</span>
+      of Rancid and The Transplants was released on 
+      <span property="dcterms:published" content="2007-01-11" 
+            datatype="xsd:date">January 11th 2007</span> 
+      on 716Radio. 
+   </p>
+</body>
+<head>
+   <title>Design Test 9005</title>
+</head>
+<body>
+   <p>The prefix attribute can be placed on any element. This test case
+      was written by 
+      <span prefix="dcterms=http://purl.org/dc/elements/1.1/"
+            property="dcterms:creator">Manu Sporny</span>.
+   </p>
+</body>
+<head>
+   <title>Design Test 9006</title>
+</head>
+<body>
+   <p>The prefix attribute is designed to be be used in any non-XML 
+      family language. This test created by 
+      <span prefix="dcterms=http://purl.org/dc/elements/1.1/"
+            property="dcterms:creator">Manu Sporny</span>.
+   </p>
+</body>
+
+<head>
+   <title>Design Test 9007</title>
+</head>
+<body profile="http://microformats.org/profiles/hcard">
+   <p>The @profile attribute can be used to load prefix declarations and
+      token mappings from an external resource. This test was suggested
+      by <span typeof="vcard" property="fn">Shane McCarron</span> and 
+      <span typeof="vcard" property="fn">Mark Birbeck</span>.
+   </p>
+</body>

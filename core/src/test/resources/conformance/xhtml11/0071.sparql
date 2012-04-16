@@ -1,3 +1,0 @@
-ASK WHERE {
-	<http://rdfa.digitalbazaar.com/test-suite/test-cases/xhtml11/0071.html> <http://creativecommons.org/ns#license> <http://creativecommons.org/licenses/by-nd/3.0/> .
-}

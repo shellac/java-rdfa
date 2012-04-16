@@ -1,4 +1,0 @@
-ASK WHERE {
-	<http://rdfa.digitalbazaar.com/test-suite/test-cases/xhtml11/0113.html#a> <http://purl.org/dc/elements/1.1/title> "" .
-	<http://rdfa.digitalbazaar.com/test-suite/test-cases/xhtml11/0113.html#b> <http://purl.org/dc/elements/1.1/title> "" .
-}
