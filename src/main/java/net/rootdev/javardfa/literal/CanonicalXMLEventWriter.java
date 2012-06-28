@@ -8,6 +8,7 @@ package net.rootdev.javardfa.literal;
 import java.util.Iterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -58,9 +59,21 @@ public class CanonicalXMLEventWriter
         } else if (event.isStartElement()) {
             level++;
             StartElement se = event.asStartElement();
-            swriter.writeStartElement(se.getName().getPrefix(),
+            if (se.getName().getNamespaceURI() == null ||
+                    se.getName().getNamespaceURI().length() == 0)
+                swriter.writeStartElement(se.getName().getLocalPart());
+            else if (se.getName().getPrefix().length() == 0) {
+                swriter.setDefaultNamespace(se.getName().getNamespaceURI());
+                swriter.writeStartElement(
+                    se.getName().getNamespaceURI(),
+                    se.getName().getLocalPart());
+            }
+            else {
+                //swriter.setPrefix(se.getName().getPrefix(), se.getName().getNamespaceURI());
+                swriter.writeStartElement(se.getName().getPrefix(),
                     se.getName().getLocalPart(),
                     se.getName().getNamespaceURI());
+            }
             writeAttributes(se);
             swriter.writeCharacters(""); // Force close of start element
         } else {
@@ -102,7 +115,14 @@ public class CanonicalXMLEventWriter
             atts.put(getName(a), a);
         }
         for (Attribute a : atts.values()) {
-            swriter.writeAttribute(
+            if (a.getName().getNamespaceURI() == null ||
+                    a.getName().getNamespaceURI().length() == 0)
+                swriter.writeAttribute(a.getName().getLocalPart(), a.getValue());
+            else if (a.getName().getPrefix().length() == 0)
+                swriter.writeAttribute(a.getName().getNamespaceURI(),
+                        a.getName().getLocalPart(), a.getValue());
+            else
+                swriter.writeAttribute(
                     a.getName().getPrefix(),
                     a.getName().getNamespaceURI(),
                     a.getName().getLocalPart(),

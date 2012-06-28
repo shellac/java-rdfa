@@ -123,7 +123,7 @@ public class LiteralCollector {
         String xml = sw.toString();
         int start = xml.indexOf('>') + 1;
         int end = xml.lastIndexOf('<');
-        return xml; //xml.substring(start, end); // remove <fake ...></fake>
+        return xml.substring(start, end); // remove <fake ...></fake>
     }
 
     private String gatherText(List<XMLEvent> subList) {
