@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+import javax.xml.XMLConstants;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
@@ -42,7 +43,7 @@ public class LiteralCollector {
         this.queuedEvents = null;
         this.eventFactory = eventFactory;
         this.outputFactory = outputFactory;
-        this.fakeEnvelope = eventFactory.createStartElement("", null, "fake");
+        this.fakeEnvelope = eventFactory.createStartElement(XMLConstants.DEFAULT_NS_PREFIX, XMLConstants.NULL_NS_URI, "fake");
     }
 
     public boolean isCollecting() { return !collectors.isEmpty(); }
@@ -120,7 +121,9 @@ public class LiteralCollector {
         }
         xmlWriter.flush();
         String xml = sw.toString();
-        return xml.substring(6, xml.length() - 7); // remove <fake></fake>
+        int start = xml.indexOf('>') + 1;
+        int end = xml.lastIndexOf('<');
+        return xml; //xml.substring(start, end); // remove <fake ...></fake>
     }
 
     private String gatherText(List<XMLEvent> subList) {

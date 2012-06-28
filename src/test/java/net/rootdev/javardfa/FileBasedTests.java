@@ -6,8 +6,6 @@
 
 package net.rootdev.javardfa;
 
-import net.rootdev.javardfa.query.QueryUtilities;
-import net.rootdev.javardfa.jena.JenaStatementSink;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -27,8 +25,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import net.rootdev.javardfa.ParserFactory.Format;
+import net.rootdev.javardfa.jena.JenaStatementSink;
+import net.rootdev.javardfa.query.QueryUtilities;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;

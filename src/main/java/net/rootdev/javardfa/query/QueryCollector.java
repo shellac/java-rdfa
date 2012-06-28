@@ -5,29 +5,23 @@
  */
 package net.rootdev.javardfa.query;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
 import com.hp.hpl.jena.datatypes.TypeMapper;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.rdf.model.AnonId;
+import com.hp.hpl.jena.sparql.core.BasicPattern;
 import com.hp.hpl.jena.sparql.core.Var;
 import com.hp.hpl.jena.sparql.syntax.Element;
 import com.hp.hpl.jena.sparql.syntax.ElementGroup;
 import com.hp.hpl.jena.sparql.syntax.ElementNamedGraph;
-import com.hp.hpl.jena.sparql.syntax.TemplateGroup;
+import com.hp.hpl.jena.sparql.syntax.Template;
 import com.hp.hpl.jena.vocabulary.RDF;
+import java.util.*;
 import java.util.Map.Entry;
 import net.rootdev.javardfa.StatementSink;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class QueryCollector implements StatementSink {
 
@@ -126,10 +120,7 @@ public class QueryCollector implements StatementSink {
         query.setQueryPattern(pattern);
         query.addProjectVars(Collections.singleton("s"));
         //query.setQuerySelectType();
-        TemplateGroup templ = new TemplateGroup();
-        for (Triple triple : triples) {
-            templ.addTriple(triple);
-        }
+        Template templ = new Template(BasicPattern.wrap(triples));
         query.setQuerySelectType();
         query.setQueryResultStar(true);
         query.setConstructTemplate(templ);
