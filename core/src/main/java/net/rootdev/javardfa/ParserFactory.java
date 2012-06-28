@@ -74,7 +74,7 @@ public class ParserFactory {
      */
     public static XMLReader createReaderForFormat(StatementSink sink,
             Format format, Setting... settings) throws SAXException {
-        return createReaderForFormat(sink, format, new IRIResolver(), settings);
+        return createReaderForFormat(sink, format, new IRIResolver(), null, settings);
     }
 
     /**
@@ -84,18 +84,22 @@ public class ParserFactory {
      * @param sink
      * @param format
      * @param resolver
+     * @param profileCollector May be null for automatic creation
      * @return
      * @throws SAXException
      */
     public static XMLReader createReaderForFormat(StatementSink sink,
-            Format format, Resolver resolver, Setting... settings) throws SAXException {
+            Format format, Resolver resolver, ProfileCollector profileCollector, 
+            Setting... settings) throws SAXException {
         XMLReader reader = getReader(format);
         boolean is11 = false;
         for (Setting setting: settings) if (setting == Setting.OnePointOne) is11 = true;
         URIExtractor extractor = (is11) ?
             new URIExtractor11(resolver) : new URIExtractor10(resolver);
-        ProfileCollector profileCollector = (is11) ?
-            new SimpleProfileCollector() : ProfileCollector.EMPTY_COLLECTOR ;
+        if (profileCollector == null ) {
+        	profileCollector = (is11) ?
+        			new SimpleProfileCollector() : ProfileCollector.EMPTY_COLLECTOR ;
+        }
         Parser parser = getParser(format, sink, extractor, profileCollector);
         for (Setting setting: settings) parser.enable(setting);
         reader.setContentHandler(parser);

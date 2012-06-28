@@ -22,6 +22,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
+import net.rootdev.javardfa.SimpleProfileCollector;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
@@ -43,7 +46,11 @@ public abstract class RDFaConformance {
     
     public static Collection<String[]> testFiles(String manifestURI, String... excludes)
             throws URISyntaxException, IOException {
-
+    	
+    	// Just for 1.1
+    	SimpleProfileCollector.addLocationMap("http://www.w3.org/1999/xhtml/vocab", 
+    			"src/test/resources/profile-cache/vocab");
+    	
         Set<String> toExclude = new HashSet(Arrays.asList(excludes));
 
         FileManager fm = FileManager.get();

@@ -7,7 +7,12 @@ package net.rootdev.javardfa;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import net.rootdev.javardfa.uri.IRIResolver;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
@@ -16,19 +21,41 @@ import org.xml.sax.XMLReader;
  * @author pldms
  */
 public class SimpleProfileCollector implements ProfileCollector {
+	
+	private static final Map<String, String> locationMapper =
+		new ConcurrentHashMap<String, String>();
+	
+	public static void addLocationMap(String remote, String local) {
+		locationMapper.put(remote, local);
+	}
 
+	private final HashSet<String> visited;
+	
+	public SimpleProfileCollector() {
+		this.visited = new HashSet<String>();
+	}
+	
     public void getProfile(String profileURI, EvalContext context) {
+    	if (visited.contains(profileURI)) return;
+    	visited.add(profileURI);
+    	String locURI = profileURI;
+    	for (String remote: locationMapper.keySet()) {
+    		if (!profileURI.startsWith(remote)) continue;
+    		locURI = profileURI.replace(remote,
+    				locationMapper.get(remote));
+    		break;
+    	}
+    	    	
         try {
-            XMLReader reader =
-                    ParserFactory.createReaderForFormat(
-                        new SimpleCollector(context),
-                        ParserFactory.Format.XHTML,
-                        Setting.OnePointOne);
-            reader.parse(profileURI);
+        	XMLReader reader = ParserFactory.createReaderForFormat(new SimpleCollector(context), 
+        			ParserFactory.Format.XHTML, new IRIResolver(), this, Setting.OnePointOne);
+            reader.parse(locURI);
         } catch (SAXException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
+        	System.err.printf("SAX Issue with <{}>", profileURI);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            //ex.printStackTrace();
+        	System.err.printf("IO Issue with <{}>", profileURI);
         }
     }
 

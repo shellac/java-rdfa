@@ -53,7 +53,7 @@ public class simpleparse {
 
         for (String uri: uris) {
             StatementSink sink = new TurtleSink(System.out);
-            XMLReader reader = ParserFactory.createReaderForFormat(sink, format, new URIResolver());
+            XMLReader reader = ParserFactory.createReaderForFormat(sink, format, new URIResolver(), null);
             reader.parse(uri);
         }
     }
