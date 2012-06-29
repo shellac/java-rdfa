@@ -4,12 +4,18 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.rootdev</groupId>
     <artifactId>java-rdfa-htmlparser</artifactId>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <version>0.4.2-RC2</version>
     <name>java-rdfa-htmlparser</name>
     <description>
         A rewrapping of the validator.nu html parser for use in OSGi containers.
     </description>
+    <parent>
+        <groupId>net.rootdev</groupId>
+        <artifactId>java-rdfa</artifactId>
+        <version>0.4.2-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
     <inceptionYear>2010</inceptionYear>
     <url>http://about.validator.nu/htmlparser/</url>
     <issueManagement>

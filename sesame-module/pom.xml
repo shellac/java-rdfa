@@ -4,12 +4,18 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.rootdev</groupId>
     <artifactId>sesame-java-rdfa</artifactId>
-    <packaging>jar</packaging>
-    <version>0.4.2-RC2</version>
+    <packaging>pom</packaging>
+    <version>0.4.2-SNAPSHOT</version>
     <name>sesame-java-rdfa</name>
     <description>
         A SAX-based java RDFa parser (sesame binding)
     </description>
+    <parent>
+        <groupId>net.rootdev</groupId>
+        <artifactId>java-rdfa</artifactId>
+        <version>0.4.2-RC2</version>
+        <relativePath>../</relativePath>
+    </parent>
     <inceptionYear>2009</inceptionYear>
     <url>http://sommer.dev.java.net/sesame-java-rdfa/</url>
     <issueManagement>
@@ -230,8 +236,10 @@
                 <configuration>
                     <linksource>true</linksource>
                     <links>
-                        <link>http://java.sun.com/javase/6/docs/api/</link>
-                        <link>http://jena.sourceforge.net/javadoc/</link>
+                        <link>http://docs.oracle.com/javase/6/docs/api/</link>
+                        <link>http://jena.apache.org/documentation/javadoc/jena/</link>
+                        <link>http://jena.apache.org/documentation/javadoc/arq/</link>
+                        <link>http://www.openrdf.org/doc/sesame2/api/</link>
                     </links>
                 </configuration>
             </plugin>
