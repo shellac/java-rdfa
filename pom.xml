@@ -14,7 +14,7 @@
         <groupId>net.rootdev</groupId>
         <artifactId>java-rdfa-parent</artifactId>
         <version>0.4.2-SNAPSHOT</version>
-        <relativePath>./java-rdfa-parent</relativePath>
+        <relativePath>java-rdfa-parent</relativePath>
     </parent>   
     <inceptionYear>2009</inceptionYear>
     <url>http://rootdev.net/maven/projects/java-rdfa/</url>
