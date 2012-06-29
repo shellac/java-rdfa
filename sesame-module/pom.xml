@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.rootdev</groupId>
     <artifactId>sesame-java-rdfa</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <version>0.4.2-SNAPSHOT</version>
     <name>sesame-java-rdfa</name>
     <description>
@@ -12,8 +12,8 @@
     </description>
     <parent>
         <groupId>net.rootdev</groupId>
-        <artifactId>java-rdfa</artifactId>
-        <version>0.4.2-RC2</version>
+        <artifactId>java-rdfa-parent</artifactId>
+        <version>0.4.2-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <inceptionYear>2009</inceptionYear>
@@ -154,7 +154,7 @@
         <dependency>
             <groupId>net.rootdev</groupId>
             <artifactId>java-rdfa</artifactId>
-            <version>0.4.2-RC2</version>
+            <version>0.4.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.openrdf.sesame</groupId>

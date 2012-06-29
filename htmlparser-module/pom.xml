@@ -5,7 +5,7 @@
     <groupId>net.rootdev</groupId>
     <artifactId>java-rdfa-htmlparser</artifactId>
     <packaging>jar</packaging>
-    <version>0.4.2-RC2</version>
+    <version>0.4.2-SNAPSHOT</version>
     <name>java-rdfa-htmlparser</name>
     <description>
         A rewrapping of the validator.nu html parser for use in OSGi containers.
@@ -14,7 +14,7 @@
         <groupId>net.rootdev</groupId>
         <artifactId>java-rdfa</artifactId>
         <version>0.4.2-SNAPSHOT</version>
-        <relativePath>../</relativePath>
+        <relativePath>../java-rdfa-parent</relativePath>
     </parent>
     <inceptionYear>2010</inceptionYear>
     <url>http://about.validator.nu/htmlparser/</url>

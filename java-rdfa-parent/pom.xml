@@ -3,19 +3,18 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.rootdev</groupId>
-    <artifactId>java-rdfa</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>java-rdfa-parent</artifactId>
+    <packaging>pom</packaging>
     <version>0.4.2-SNAPSHOT</version>
-    <name>java-rdfa</name>
+    <name>java-rdfa-parent</name>
     <description>
         A SAX-based java RDFa parser.
     </description>
-    <parent>
-        <groupId>net.rootdev</groupId>
-        <artifactId>java-rdfa-parent</artifactId>
-        <version>0.4.2-SNAPSHOT</version>
-        <relativePath>./java-rdfa-parent</relativePath>
-    </parent>   
+    <modules>
+        <module>htmlparser-module</module>
+        <module>sesame-module</module>
+        <module>../</module>
+    </modules>
     <inceptionYear>2009</inceptionYear>
     <url>http://rootdev.net/maven/projects/java-rdfa/</url>
     <issueManagement>
@@ -158,52 +157,6 @@
         </plugins>
     </build>
     <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>
-            <version>2.7.1</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-iri</artifactId>
-            <version>0.9.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-arq</artifactId>
-            <version>2.9.1</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.5.6</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.6</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.rootdev</groupId>
-            <artifactId>java-rdfa-htmlparser</artifactId>
-            <version>0.4.2-RC2</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
     </dependencies>
     <distributionManagement>
         <repository>
