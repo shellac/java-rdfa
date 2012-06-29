@@ -1,11 +1,10 @@
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.rootdev</groupId>
     <artifactId>java-rdfa</artifactId>
     <packaging>jar</packaging>
-    <version>0.4.2-SNAPSHOT</version>
+    <version>0.4.2</version>
     <name>java-rdfa</name>
     <description>
         A SAX-based java RDFa parser.
@@ -13,7 +12,7 @@
     <parent>
         <groupId>net.rootdev</groupId>
         <artifactId>java-rdfa-parent</artifactId>
-        <version>0.4.2-SNAPSHOT</version>
+        <version>0.4.2</version>
         <relativePath>java-rdfa-parent</relativePath>
     </parent>   
     <inceptionYear>2009</inceptionYear>
