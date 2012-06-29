@@ -41,15 +41,6 @@
         <url>https://github.com/shellac/java-rdfa/tree</url>
     </scm>
     <build>
-        <filters>
-            <filter>src/main/resources/library.properties</filter>
-        </filters>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
