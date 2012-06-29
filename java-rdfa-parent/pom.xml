@@ -4,7 +4,7 @@
     <groupId>net.rootdev</groupId>
     <artifactId>java-rdfa-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.4.2</version>
+    <version>0.4.3-SNAPSHOT</version>
     <name>java-rdfa-parent</name>
     <description>
         A SAX-based java RDFa parser.
