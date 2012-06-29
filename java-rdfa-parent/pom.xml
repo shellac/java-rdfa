@@ -124,8 +124,10 @@
                 <configuration>
                     <linksource>true</linksource>
                     <links>
-                        <link>http://java.sun.com/javase/6/docs/api/</link>
-                        <link>http://jena.sourceforge.net/javadoc/</link>
+                        <link>http://docs.oracle.com/javase/6/docs/api/</link>
+                        <link>http://jena.apache.org/documentation/javadoc/jena/</link>
+                        <link>http://jena.apache.org/documentation/javadoc/arq/</link>
+                        <link>http://www.openrdf.org/doc/sesame2/api/</link>
                     </links>
                 </configuration>
                 <executions>
