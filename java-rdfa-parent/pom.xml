@@ -11,8 +11,8 @@
         A SAX-based java RDFa parser.
     </description>
     <modules>
-        <module>htmlparser-module</module>
-        <module>sesame-module</module>
+        <module>../htmlparser-module</module>
+        <module>../sesame-module</module>
         <module>../</module>
     </modules>
     <inceptionYear>2009</inceptionYear>
