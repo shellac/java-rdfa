@@ -122,7 +122,12 @@ public class Parser implements ContentHandler {
             currentLanguage = element.getAttributeByName(Constants.xmllangNS).getValue();
             if (currentLanguage.length() == 0) currentLanguage = null;
         }
-
+        
+        if (element.getAttributeByName(Constants.xmlbaseNS) != null) {
+            context.setBase(element.getAttributeByName(Constants.xmlbaseNS).getValue());
+            sink.setBase(context.getBase());
+        }
+        
         if (Constants.base.equals(element.getName()) &&
                 element.getAttributeByName(Constants.href) != null) {
             context.setBase(element.getAttributeByName(Constants.href).getValue());
@@ -137,6 +142,7 @@ public class Parser implements ContentHandler {
                 newSubject = extractor.getURI(element, nSubj, context);
             }
             if (newSubject == null) {
+                newSubject = context.base; // REMOVE
                 if (Constants.body.equals(element.getName()) ||
                             Constants.head.equals(element.getName())) {
                     newSubject = context.base;
@@ -158,6 +164,7 @@ public class Parser implements ContentHandler {
                 newSubject = extractor.getURI(element, nSubj, context);
             }
             if (newSubject == null) {
+                newSubject = context.base; // REMOVE
                 // if element is head or body assume about=""
                 if (Constants.head.equals(element.getName()) ||
                         Constants.body.equals(element.getName())) {

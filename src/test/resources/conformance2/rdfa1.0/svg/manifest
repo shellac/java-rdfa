@@ -1,0 +1,64 @@
+@prefix dc: <http://purl.org/dc/terms/> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix test: <http://www.w3.org/2006/03/test-description#> .
+@prefix rdfatest: <http://rdfa.info/vocabs/rdfa-test#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<0201> a test:TestCase;
+  test:classification test:required;
+  dc:title """Expressing an attribute using @property""";
+  test:purpose """Tests @property to establish the predicate; literal object is in the content of the element.""";
+  test:informationResourceInput <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0201.svg>;
+  test:informationResourceResults <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0201.sparql>;
+  test:expectedResults true.
+
+<0202> a test:TestCase;
+  test:classification test:required;
+  dc:title """Tests to ensure @xml:base used in SVG""";
+  test:purpose """Tests to make sure that @xml:base is used in SVG+RDFa, XML+RDFa.""";
+  test:specificationReference """http://www.w3.org/QA/2008/12/rdfa_and_svg_tiny_and_the_rdfa.html""";
+  test:informationResourceInput <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0202.svg>;
+  test:informationResourceResults <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0202.sparql>;
+  test:expectedResults true.
+
+<0203> a test:TestCase;
+  test:classification test:required;
+  dc:title """Tests to ensure @xml:base, XML+RDFa used in non-root elements in SVG""";
+  test:purpose """Tests to make sure that @xml:base is used in non-root elements in SVG+RDFa, XML+RDFa.""";
+  test:specificationReference """http://www.w3.org/QA/2008/12/rdfa_and_svg_tiny_and_the_rdfa.html""";
+  test:informationResourceInput <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0203.svg>;
+  test:informationResourceResults <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0203.sparql>;
+  test:expectedResults true.
+
+<0291> a test:TestCase;
+  test:classification test:required;
+  dc:title """@href as subject overridden by @about""";
+  test:purpose """When @property, @datatype, @href and @about are present but @rel and @rev are not, @about is used as subject.""";
+  test:specificationReference """RDFa Core 1.1, section 7.5 step 5.2""";
+  test:informationResourceInput <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0291.svg>;
+  test:informationResourceResults <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0291.sparql>;
+  test:expectedResults true.
+
+<0294> a test:TestCase;
+  test:classification test:required;
+  dc:title """Ensure initial context is not used for RDFa 1.0""";
+  test:purpose """RDFa 1.1 defines an initial context containing prefixes and terms. RDFa 1.0 must not define such prefixes and terms.""";
+  test:specificationReference """RDFa Syntax 1.0, section 6.3.1.3""";
+  test:informationResourceInput <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0294.svg>;
+  test:informationResourceResults <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0294.sparql>;
+  test:expectedResults false.
+
+<0304> a test:TestCase;
+  test:classification test:required;
+  dc:title """Embedded chunks of RDF/XML""";
+  test:purpose """Tests that embedded RDF/XML is added to the same graph.""";
+  test:specificationReference """
+    http://www.w3.org/TR/SVGTiny12/metadata.html#Introduction
+    says 'an RDF processor should combine them into the same graph'
+  """;
+  test:informationResourceInput <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0304.svg>;
+  test:informationResourceResults <http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0304.sparql>;
+  test:expectedResults true.
