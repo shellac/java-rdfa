@@ -15,22 +15,19 @@ import org.xml.sax.XMLReader;
  *
  * @author pldms
  */
-public class XML10 extends RDFaConformance
+public class SVG10 extends RDFaConformance
 {
     @Parameters
     public static Collection<String[]> testFiles()
             throws URISyntaxException, IOException {
         return RDFaConformance.
-                testFiles("http://rdfa.info/test-suite/rdfa1.0/xml/manifest",
-                    // Exclude: test uses html base outside html. Badly migrated, I guess.
-                    "http://rdfa.info/test-suite/rdfa1.0/xml/0210",
-                    // Exclude: test namespaces are wrong. xhtml isn't mentioned, dc inclusion is dubious.
-                    "http://rdfa.info/test-suite/rdfa1.0/xml/0212"
-                    
+                testFiles("http://rdfa.info/test-suite/rdfa1.0/svg/manifest",
+                // Not an RDFa test!
+                "http://rdfa.info/test-suite/rdfa1.0/svg/0304"
                 );
     }
 
-    public XML10(String test, String title,
+    public SVG10(String test, String title,
             String purpose, String input, String query, String expected) {
         super(test, title, purpose, input, query, expected);
     }
