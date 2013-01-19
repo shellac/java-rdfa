@@ -123,7 +123,8 @@ public class Parser implements ContentHandler {
             if (currentLanguage.length() == 0) currentLanguage = null;
         }
         
-        if (element.getAttributeByName(Constants.xmlbaseNS) != null) {
+        // Respect xml:base outside xhtml
+        if (element.getAttributeByName(Constants.xmlbaseNS) != null && !"http://www.w3.org/1999/xhtml".equals(element.getName().getNamespaceURI())) {
             context.setBase(element.getAttributeByName(Constants.xmlbaseNS).getValue());
             sink.setBase(context.getBase());
         }
@@ -294,19 +295,19 @@ public class Parser implements ContentHandler {
 
     public void emitTriples(String subj, Collection<String> props, String obj) {
         for (String prop : props) {
-            sink.addObject(subj, prop, obj);
+            if (!prop.startsWith("_")) sink.addObject(subj, prop, obj);
         }
     }
 
     public void emitTriplesPlainLiteral(String subj, Collection<String> props, String lex, String language) {
         for (String prop : props) {
-            sink.addLiteral(subj, prop, lex, language, null);
+            if (!prop.startsWith("_")) sink.addLiteral(subj, prop, lex, language, null);
         }
     }
 
     public void emitTriplesDatatypeLiteral(String subj, Collection<String> props, String lex, String datatype) {
         for (String prop : props) {
-            sink.addLiteral(subj, prop, lex, null, datatype);
+            if (!prop.startsWith("_")) sink.addLiteral(subj, prop, lex, null, datatype);
         }
     }
 
