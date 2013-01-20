@@ -1,0 +1,15 @@
+prefix dc:      <http://purl.org/dc/terms/>
+prefix test:    <http://www.w3.org/2006/03/test-description#>
+prefix mf: 		<http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#>
+prefix rdfs: 	<http://www.w3.org/2000/01/rdf-schema#>
+prefix qt: 		<http://www.w3.org/2001/sw/DataAccess/tests/test-query#>
+
+select ?test ?title ?purpose ?input ?query ?expect
+{
+    ?test a mf:QueryEvaluationTest ;
+        mf:name ?title ;
+        rdfs:comment ?purpose ;
+        mf:action [ qt:data ?input ; qt:query ?query ]
+        OPTIONAL { ?test mf:result ?expect }
+        .
+} order by ?test

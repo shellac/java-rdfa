@@ -18,6 +18,8 @@ import org.xml.sax.XMLReader;
 public class SimpleProfileCollector implements ProfileCollector {
 
     public void getProfile(String profileURI, EvalContext context) {
+        System.err.println("!! GET PROFILE?? " + profileURI);
+        if (true) return;
         try {
             XMLReader reader =
                     ParserFactory.createReaderForFormat(

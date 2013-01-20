@@ -27,6 +27,7 @@ import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.openjena.riot.RIOT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
@@ -41,16 +42,18 @@ public abstract class RDFaConformance {
 
     final static Logger log = LoggerFactory.getLogger(RDFaConformance.class);
     
-    public static Collection<String[]> testFiles(String manifestURI, String... excludes)
+    static { RIOT.init(); }
+    
+    public static Collection<String[]> testFiles(String manifestURI, String extractQuery, String... excludes)
             throws URISyntaxException, IOException {
-
+        
         Set<String> toExclude = new HashSet(Arrays.asList(excludes));
 
         FileManager fm = FileManager.get();
 
         Model manifest = fm.loadModel(manifestURI, "TTL");
 
-        Query manifestExtract = QueryFactory.read("conformance2/manifest-extract.rq");
+        Query manifestExtract = QueryFactory.read(extractQuery);
 
         Collection<String[]> tests = new ArrayList<String[]>();
 

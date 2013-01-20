@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.openjena.riot.RIOT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,10 +30,12 @@ public class Cacher {
     final static String CACHED = "//////CACHED/////";
     
     public static void main(String... args) {
+        RIOT.init();
         Cacher c = new Cacher("src/test/resources/", false);
         c.cacheManifest("http://rdfa.info/test-suite/rdfa1.0/svg/manifest");
         c.cacheManifest("http://rdfa.info/test-suite/rdfa1.0/xhtml/manifest");
         c.cacheManifest("http://rdfa.info/test-suite/rdfa1.0/xml/manifest");
+        c.cacheManifest("http://rdfa.info/test-suite/rdfa1.1/xml/manifest");
     }
     
     private final LocationMapper lm;

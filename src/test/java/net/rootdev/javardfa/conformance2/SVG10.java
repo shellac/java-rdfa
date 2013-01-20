@@ -22,6 +22,7 @@ public class SVG10 extends RDFaConformance
             throws URISyntaxException, IOException {
         return RDFaConformance.
                 testFiles("http://rdfa.info/test-suite/rdfa1.0/svg/manifest",
+                "conformance2/manifest-extract.rq",
                 // Not an RDFa test!
                 "http://rdfa.info/test-suite/rdfa1.0/svg/0304"
                 );
