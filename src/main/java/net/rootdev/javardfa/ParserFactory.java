@@ -96,11 +96,10 @@ public class ParserFactory {
         for (Setting setting: settings) if (setting == Setting.OnePointOne) is11 = true;
         URIExtractor extractor = (is11) ?
             new URIExtractor11(resolver) : new URIExtractor10(resolver);
-        ProfileCollector profileCollector = (is11) ?
-            new SimpleProfileCollector() : ProfileCollector.EMPTY_COLLECTOR ;
-        Parser parser = getParser(format, sink, extractor, profileCollector);
+        Parser parser = getParser(format, sink, extractor);
         for (Setting setting: settings) parser.enable(setting);
         reader.setContentHandler(parser);
+        reader.setErrorHandler(parser);
         return reader;
     }
 
@@ -114,19 +113,19 @@ public class ParserFactory {
     }
 
     private static Parser getParser(Format format, StatementSink sink,
-            URIExtractor extractor, ProfileCollector profileCollector) {
+            URIExtractor extractor) {
         return getParser(format, sink, XMLOutputFactory.newInstance(), 
-                XMLEventFactory.newInstance(), extractor, profileCollector);
+                XMLEventFactory.newInstance(), extractor);
     }
 
     private static Parser getParser(Format format, StatementSink sink,
             XMLOutputFactory outputFactory, XMLEventFactory eventFactory,
-            URIExtractor extractor, ProfileCollector profileCollector) {
+            URIExtractor extractor) {
         switch (format) {
             case XHTML:
-                return new Parser(sink, outputFactory, eventFactory, extractor, profileCollector);
+                return new Parser(sink, outputFactory, eventFactory, extractor);
             default:
-                Parser p = new Parser(sink, outputFactory, eventFactory, extractor, profileCollector);
+                Parser p = new Parser(sink, outputFactory, eventFactory, extractor);
                 p.enable(Setting.ManualNamespaces);
                 return p;
         }

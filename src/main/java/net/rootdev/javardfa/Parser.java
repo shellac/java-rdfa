@@ -24,40 +24,38 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * @author Damian Steer <pldms@mac.com>
  */
-public class Parser implements ContentHandler {
+public class Parser implements ContentHandler, ErrorHandler {
 
     private final XMLEventFactory eventFactory;
     private final StatementSink sink;
     private final Set<Setting> settings;
     private final LiteralCollector literalCollector;
     private final URIExtractor extractor;
-    private final ProfileCollector profileCollector;
 
     public Parser(StatementSink sink) {
         this(   sink,
                 XMLOutputFactory.newInstance(),
                 XMLEventFactory.newInstance(),
-                new URIExtractor10(new IRIResolver()),
-                ProfileCollector.EMPTY_COLLECTOR);
+                new URIExtractor10(new IRIResolver()));
     }
 
     public Parser(StatementSink sink,
             XMLOutputFactory outputFactory,
             XMLEventFactory eventFactory,
-            URIExtractor extractor,
-            ProfileCollector profileCollector) {
+            URIExtractor extractor) {
         this.sink = sink;
         this.eventFactory = eventFactory;
         this.settings = EnumSet.noneOf(Setting.class);
         this.extractor = extractor;
         this.literalCollector = new LiteralCollector(this, eventFactory, outputFactory);
-        this.profileCollector = profileCollector;
 
         extractor.setSettings(settings);
 
@@ -96,15 +94,6 @@ public class Parser implements ContentHandler {
 
             if (element.getAttributeByName(Constants.prefix) != null) {
                 parsePrefixes(element.getAttributeByName(Constants.prefix).getValue(), context);
-            }
-
-            if (element.getAttributeByName(Constants.profile) != null) {
-                String profileURI = extractor.resolveURI(
-                        element.getAttributeByName(Constants.profile).getValue(),
-                        context);
-                profileCollector.getProfile(
-                        profileURI,
-                        context);
             }
         }
 
@@ -483,6 +472,20 @@ public class Parser implements ContentHandler {
                 sink.addPrefix(prefixFix, parts[i+1]);
             }
         }
+    }
+    
+    // SAX error handling
+    
+    public void warning(SAXParseException exception) throws SAXException {
+        System.err.printf("Warning: %s", exception.getLocalizedMessage());
+    }
+
+    public void error(SAXParseException exception) throws SAXException {
+        System.err.printf("Error: %s", exception.getLocalizedMessage());
+    }
+
+    public void fatalError(SAXParseException exception) throws SAXException {
+        System.err.printf("Fatal error: %s", exception.getLocalizedMessage());
     }
 }
 

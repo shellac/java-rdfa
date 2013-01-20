@@ -9,6 +9,7 @@ import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
 import com.hp.hpl.jena.query.QueryFactory;
+import com.hp.hpl.jena.query.QueryParseException;
 import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -41,12 +42,14 @@ import org.xml.sax.XMLReader;
 public abstract class RDFaConformance {
 
     final static Logger log = LoggerFactory.getLogger(RDFaConformance.class);
-    
-    static { RIOT.init(); }
-    
+
+    static {
+        RIOT.init();
+    }
+
     public static Collection<String[]> testFiles(String manifestURI, String extractQuery, String... excludes)
             throws URISyntaxException, IOException {
-        
+
         Set<String> toExclude = new HashSet(Arrays.asList(excludes));
 
         FileManager fm = FileManager.get();
@@ -77,9 +80,9 @@ public abstract class RDFaConformance {
             //boolean expected = (soln.contains("expect")) ?
             //    soln.getLiteral("expect").getBoolean() : true;
             params[5] = soln.contains("expect") ? soln.getLiteral("expect").getLexicalForm() : "true";
-            if (toExclude.contains(params[0]) ||
-                    toExclude.contains(params[3]) ||
-                    toExclude.contains(params[4]) ) {
+            if (toExclude.contains(params[0])
+                    || toExclude.contains(params[3])
+                    || toExclude.contains(params[4])) {
                 log.warn("Skipping test <" + params[0] + ">");
                 continue;
             }
@@ -108,32 +111,43 @@ public abstract class RDFaConformance {
     public abstract XMLReader getParser(Model model) throws SAXException;
 
     @Test
-    public void compare() throws SAXException, IOException {
-        Model model = ModelFactory.createDefaultModel();
-        InputStream in = FileManager.get().open(input);
-        XMLReader reader = getParser(model);
+    public void compare() throws Throwable {
         try {
+            Model model = ModelFactory.createDefaultModel();
+            InputStream in = FileManager.get().open(input);
+            XMLReader reader = getParser(model);
             InputSource ins = new InputSource(in);
             ins.setEncoding("utf-8");
             ins.setSystemId(input);
             reader.parse(ins);
-        } catch (NullPointerException e) {
-            fail("NPE <" + test + ">");
-        }
-        Query theQuery = QueryFactory.read(query);
-        QueryExecution qe = QueryExecutionFactory.create(theQuery, model);
-        boolean result = qe.execAsk();
-        if (result != expected) {
-            System.err.println("------ " + test + " ------");
-            model.write(System.err, "TTL");
-            System.err.println("------ Query ------");
-            System.err.println(theQuery);
-            System.err.println("-----------------------");
-        }
-        if (expected) {
-            assertTrue(title + " <" + test + ">", result);
-        } else {
-            assertFalse(title + " <" + test + ">", result);
+
+            Query theQuery = QueryFactory.read(query);
+            QueryExecution qe = QueryExecutionFactory.create(theQuery, model);
+            boolean result = qe.execAsk();
+            if (result != expected) {
+                System.err.println("------ " + test + " ------");
+                model.write(System.err, "TTL");
+                System.err.println("------ Query ------");
+                System.err.println(theQuery);
+                System.err.println("-----------------------");
+            }
+            if (expected) {
+                assertTrue(title + " <" + test + ">", result);
+            } else {
+                assertFalse(title + " <" + test + ">", result);
+            }
+        } catch (Throwable e) {
+            // Make error reporting more informative by noting test that failed
+            
+            // These are fine, of course
+            if (e instanceof AssertionError) throw e;
+            
+            // Note source of issue and throw
+            String message = String.format("<%s>: %s %s", test, e.getClass().getName(), e.getLocalizedMessage());
+            Exception newEx = new Exception(message, e);
+            newEx.setStackTrace(e.getStackTrace()); // very dodgy!
+            
+            throw newEx;
         }
     }
 }
