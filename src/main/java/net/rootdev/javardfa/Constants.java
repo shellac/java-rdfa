@@ -8,8 +8,10 @@ package net.rootdev.javardfa;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.xml.namespace.QName;
 
@@ -26,6 +28,7 @@ public class Constants {
             "collection", "role", "section", "stylesheet",
             "subsection", "start", "top", "up");
     public final static Set<String> SpecialRels = new HashSet<String>(_allowed);
+    public final static String xhtmlNS = "http://www.w3.org/1999/xhtml";
     // Suggestion: switch this for object produced by factory that matches QNames
     // we can then en-slacken if needed by passing in different factory etc
     public final static QName about = new QName("about"); // safe
@@ -56,6 +59,45 @@ public class Constants {
     public final static QName vocab = new QName("vocab");
     public final static QName profile = new QName("profile");
     public final static QName prefix = new QName("prefix");
+    
+    private static Map<String, String> newMap(String... keyVals) {
+        Map<String, String> map = new HashMap<String, String>();
+        for (int i = 0; i < keyVals.length; i += 2) {
+            map.put(keyVals[i], keyVals[i + 1]);
+        }
+        return map;
+    }
+    
+    public final static Map<String, String> CORE_DEFAULT_PREFIXES =
+            newMap(
+ "xhv"     , "http://www.w3.org/1999/xhtml/vocab#"         ,
+ "xml"     , "http://www.w3.org/XML/1998/namespace"        ,
+ "rdf"     , "http://www.w3.org/1999/02/22-rdf-syntax-ns#" ,
+ "cc"      , "http://creativecommons.org/ns#"              ,
+ "foaf"    , "http://xmlns.com/foaf/0.1/"                  ,
+ "rdfs"    , "http://www.w3.org/2000/01/rdf-schema#"       ,
+ "gr"      , "http://purl.org/goodrelations/v1#"           ,
+ "skosxl"  , "http://www.w3.org/2008/05/skos-xl#"          ,
+ "dc"      , "http://purl.org/dc/terms/"                   ,
+ "vcard"   , "http://www.w3.org/2006/vcard/ns#"            ,
+ "rif"     , "http://www.w3.org/2007/rif#"                 ,
+ "owl"     , "http://www.w3.org/2002/07/owl#"              ,
+ "dcterms" , "http://purl.org/dc/terms/"                   ,
+ "void"    , "http://rdfs.org/ns/void#"                    ,
+ "v"       , "http://rdf.data-vocabulary.org/#"            ,
+ "xsd"     , "http://www.w3.org/2001/XMLSchema#"           ,
+ "wdrs"    , "http://www.w3.org/2007/05/powder-s#"         ,
+ "ma"      , "http://www.w3.org/ns/ma-ont#"                ,
+ "schema"  , "http://schema.org/"                          ,
+ "rdfa"    , "http://www.w3.org/ns/rdfa#"                  ,
+ "wdr"     , "http://www.w3.org/2007/05/powder#"           ,
+ "ctag"    , "http://commontag.org/ns#"                    ,
+ "rev"     , "http://purl.org/stuff/rev#"                  ,
+ "ical"    , "http://www.w3.org/2002/12/cal/icaltzd#"      ,
+ "skos"    , "http://www.w3.org/2004/02/skos/core#"        ,
+ "og"      , "http://ogp.me/ns#"                           ,
+ "sioc"    , "http://rdfs.org/sioc/ns#"                    ,
+ "grddl"   , "http://www.w3.org/2003/g/data-view#"         );
 }
 
 /*

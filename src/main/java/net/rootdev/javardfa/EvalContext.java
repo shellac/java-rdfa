@@ -25,6 +25,8 @@ public final class EvalContext implements NamespaceContext {
     List<String> backwardProperties;
     Map<String, String> xmlnsMap = Collections.EMPTY_MAP;
     Map<String, String> prefixMap = Collections.EMPTY_MAP;
+    Map<String, String> termMap = Collections.EMPTY_MAP;
+    Map<String, List<String>> listMap = Collections.EMPTY_MAP;
 
     protected EvalContext(String base) {
         super();
@@ -89,7 +91,17 @@ public final class EvalContext implements NamespaceContext {
         if (prefixMap == Collections.EMPTY_MAP) prefixMap = new HashMap<String, String>();
         prefixMap.put(prefix, uri);
     }
-
+    
+    /**
+     * RDFa 1.1 prefix support
+     * @param prefix Prefix
+     * @param uri URI
+     */
+    public void setPrefixes(Map<String, String> prefixes) {
+        if (prefixMap == Collections.EMPTY_MAP) prefixMap = new HashMap<String, String>();
+        prefixMap.putAll(prefixes);
+    }
+    
     /**
      * RDFa 1.1 prefix support.
      * @param prefix
@@ -109,29 +121,23 @@ public final class EvalContext implements NamespaceContext {
 
     // Namespace methods
     public void setNamespaceURI(String prefix, String uri) {
-        if (uri.length() == 0) {
+        /*if (uri.length() == 0) {
             uri = base;
         }
         if (xmlnsMap == Collections.EMPTY_MAP) xmlnsMap = new HashMap<String, String>();
-        xmlnsMap.put(prefix, uri);
+        xmlnsMap.put(prefix, uri);*/
+        setPrefix(prefix, uri);
     }
 
     public String getNamespaceURI(String prefix) {
-        if (xmlnsMap.containsKey(prefix)) {
+        /*if (xmlnsMap.containsKey(prefix)) {
             return xmlnsMap.get(prefix);
         } else if (parent != null) {
             return parent.getNamespaceURI(prefix);
         } else {
             return null;
-        }
-    }
-
-    public String getPrefix(String uri) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public Iterator getPrefixes(String uri) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        }*/
+        return getURIForPrefix(prefix);
     }
     
     // I'm not sure about this 1.1 term business. Reuse prefix map
@@ -150,6 +156,15 @@ public final class EvalContext implements NamespaceContext {
     public String getVocab() {
         return vocab;
     }
+
+    public String getPrefix(String namespaceURI) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public Iterator getPrefixes(String namespaceURI) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
 }
 
 /*

@@ -62,7 +62,11 @@ public class Parser implements ContentHandler, ErrorHandler {
         // Important, although I guess the caller doesn't get total control
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
     }
-
+    
+    public boolean isEnabled(Setting setting) {
+        return settings.contains(setting);
+    }
+    
     public void enable(Setting setting) {
         settings.add(setting);
     }
@@ -70,9 +74,10 @@ public class Parser implements ContentHandler, ErrorHandler {
     public void disable(Setting setting) {
         settings.remove(setting);
     }
-
+    
     public void setBase(String base) {
         this.context = new EvalContext(base);
+        if (isEnabled(Setting.OnePointOne)) context.setPrefixes(Constants.CORE_DEFAULT_PREFIXES);
         sink.setBase(context.getBase());
     }
 
@@ -84,6 +89,7 @@ public class Parser implements ContentHandler, ErrorHandler {
         List<String> forwardProperties = new LinkedList();
         List<String> backwardProperties = new LinkedList();
         String currentLanguage = context.language;
+        boolean inXHTML = Constants.xhtmlNS.equals(element.getName().getNamespaceURI());
 
         if (settings.contains(Setting.OnePointOne)) {
 
@@ -113,7 +119,7 @@ public class Parser implements ContentHandler, ErrorHandler {
         }
         
         // Respect xml:base outside xhtml
-        if (element.getAttributeByName(Constants.xmlbaseNS) != null && !"http://www.w3.org/1999/xhtml".equals(element.getName().getNamespaceURI())) {
+        if (element.getAttributeByName(Constants.xmlbaseNS) != null && !inXHTML) {
             context.setBase(element.getAttributeByName(Constants.xmlbaseNS).getValue());
             sink.setBase(context.getBase());
         }
@@ -132,12 +138,12 @@ public class Parser implements ContentHandler, ErrorHandler {
                 newSubject = extractor.getURI(element, nSubj, context);
             }
             if (newSubject == null) {
-                newSubject = context.base; // REMOVE
-                if (Constants.body.equals(element.getName()) ||
+                if (context.parent == null && !inXHTML) {
+                    newSubject = context.base;
+                } else if (Constants.body.equals(element.getName()) ||
                             Constants.head.equals(element.getName())) {
                     newSubject = context.base;
-                }
-                else if (element.getAttributeByName(Constants.typeof) != null) {
+                } else if (element.getAttributeByName(Constants.typeof) != null) {
                     newSubject = createBNode();
                 } else {
                     if (context.parentObject != null) {
@@ -154,9 +160,9 @@ public class Parser implements ContentHandler, ErrorHandler {
                 newSubject = extractor.getURI(element, nSubj, context);
             }
             if (newSubject == null) {
-                newSubject = context.base; // REMOVE
-                // if element is head or body assume about=""
-                if (Constants.head.equals(element.getName()) ||
+                if (context.parent == null && !inXHTML) {
+                    newSubject = context.base;
+                } else if (Constants.head.equals(element.getName()) ||
                         Constants.body.equals(element.getName())) {
                     newSubject = context.base;
                 } else if (element.getAttributeByName(Constants.typeof) != null) {

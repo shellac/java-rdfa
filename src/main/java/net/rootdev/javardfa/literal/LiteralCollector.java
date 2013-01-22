@@ -20,6 +20,7 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import net.rootdev.javardfa.Parser;
+import net.rootdev.javardfa.Setting;
 
 /**
  *
@@ -73,7 +74,10 @@ public class LiteralCollector {
     private void handleStartEvent(XMLEvent event) {
         level++;
         queuedEvents.add(event);
-        if (collectors.peek().datatype == null) { // undecided so far
+        // In 1.0 if no explicit dt given dt determined by content
+        // i.e. if it contains tags we have an xml literal
+        if (!parser.isEnabled(Setting.OnePointOne) &&
+            collectors.peek().datatype == null) { // undecided so far
             collectors.peek().datatype = XMLLiteral;
         }
     }

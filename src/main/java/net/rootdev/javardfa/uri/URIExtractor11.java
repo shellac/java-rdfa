@@ -107,6 +107,15 @@ public class URIExtractor11 implements URIExtractor {
         if (value.startsWith("[") && value.endsWith("]")) {
             return expandCURIE(element, value.substring(1, value.length() - 1), context);
         } else {
+            
+            String epd = expandCURIE(element, value, context);
+            
+            if (epd != null && !value.equals(epd)) {
+                return epd;
+            } 
+            
+            //System.err.printf("Expandable? %s [%s,%s]\n", value.equals(epd), epd, value);
+            
             if (value.length() == 0) {
                 return context.getBase();
             }
