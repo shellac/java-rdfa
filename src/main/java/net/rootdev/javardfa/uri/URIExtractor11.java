@@ -57,14 +57,9 @@ public class URIExtractor11 implements URIExtractor {
         boolean permitReserved = Constants.rel.equals(attr.getName()) ||
                 Constants.rev.equals(attr.getName());
         for (String curie : curies) {
-            if (Constants.SpecialRels.contains(curie.toLowerCase())) {
-                if (permitReserved)
-                    uris.add("http://www.w3.org/1999/xhtml/vocab#" + curie.toLowerCase());
-            } else {
-                String uri = expandCURIE(element, curie, context);
-                if (uri != null) {
-                    uris.add(uri);
-                }
+            String uri = expandCURIE(element, curie, context);
+            if (uri != null) {
+                uris.add(uri);
             }
         }
         return uris;
@@ -92,7 +87,7 @@ public class URIExtractor11 implements URIExtractor {
         String prefix = value.substring(0, offset - 1);
 
         // Apparently these are not allowed to expand
-        if ("xml".equals(prefix) || "xmlns".equals(prefix)) return null;
+        //if ("xml".equals(prefix) || "xmlns".equals(prefix)) return null;
 
         String namespaceURI = prefix.length() == 0 ? "http://www.w3.org/1999/xhtml/vocab#" : context.getURIForPrefix(prefix);
         if (namespaceURI == null) {

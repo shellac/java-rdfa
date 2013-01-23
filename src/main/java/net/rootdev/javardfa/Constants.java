@@ -97,7 +97,11 @@ public class Constants {
  "skos"    , "http://www.w3.org/2004/02/skos/core#"        ,
  "og"      , "http://ogp.me/ns#"                           ,
  "sioc"    , "http://rdfs.org/sioc/ns#"                    ,
- "grddl"   , "http://www.w3.org/2003/g/data-view#"         );
+ "grddl"   , "http://www.w3.org/2003/g/data-view#"         ,
+ "describedby:" , "http://www.w3.org/2007/05/powder-s#describedby",
+ "license:", "http://www.w3.org/1999/xhtml/vocab#license",
+ "role:", "http://www.w3.org/1999/xhtml/vocab#role"
+ );
 }
 
 /*
