@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -46,8 +47,15 @@ public abstract class RDFaConformance {
     static {
         RIOT.init();
     }
-
-    public static Collection<String[]> testFiles(String manifestURI, String extractQuery, String... excludes)
+    
+    /** Utility to limit test indices **/
+    public static List<String[]> filterTests(List<String[]> allTests, Integer... testNums) {
+        List<String[]> tests = new ArrayList<String[]>();
+        for (Integer num: testNums) tests.add(allTests.get(num));
+        return tests;
+    }
+    
+    public static List<String[]> testFiles(String manifestURI, String extractQuery, String... excludes)
             throws URISyntaxException, IOException {
 
         Set<String> toExclude = new HashSet(Arrays.asList(excludes));
@@ -58,7 +66,7 @@ public abstract class RDFaConformance {
 
         Query manifestExtract = QueryFactory.read(extractQuery);
 
-        Collection<String[]> tests = new ArrayList<String[]>();
+        List<String[]> tests = new ArrayList<String[]>();
 
         QueryExecution qe = QueryExecutionFactory.create(manifestExtract, manifest);
 

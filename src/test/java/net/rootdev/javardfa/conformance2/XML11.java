@@ -4,6 +4,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.Collections;
 import net.rootdev.javardfa.ParserFactory;
 import net.rootdev.javardfa.ParserFactory.Format;
 import net.rootdev.javardfa.Setting;
