@@ -94,8 +94,10 @@ public class Parser implements ContentHandler, ErrorHandler {
         if (settings.contains(Setting.OnePointOne)) {
 
             if (element.getAttributeByName(Constants.vocab) != null) {
-                context.vocab =
+                String vocab =
                     element.getAttributeByName(Constants.vocab).getValue().trim();
+                // empty vocab removes default vocab
+                context.vocab = (vocab.length() == 0) ? null : vocab ;
             }
 
             if (element.getAttributeByName(Constants.prefix) != null) {
@@ -198,7 +200,33 @@ public class Parser implements ContentHandler, ErrorHandler {
             }
 
         }
-
+        
+        if (element.getAttributeByName(Constants.property) != null) {
+            List<String> props = extractor.getURIs(element,
+                    element.getAttributeByName(Constants.property), context);
+            
+            String dt = getDatatype(element);
+            
+            if (element.getAttributeByName(Constants.content) != null) { // The easy bit
+                String lex = element.getAttributeByName(Constants.content).getValue();
+                if (dt == null || dt.length() == 0) {
+                    emitTriplesPlainLiteral(newSubject, props, lex, currentLanguage);
+                } else {
+                    emitTriplesDatatypeLiteral(newSubject, props, lex, dt);
+                }
+            } else if (settings.contains(Setting.OnePointOne) && 
+                    (findAttribute(element, Constants.src, Constants.href, Constants.resource) != null)) {
+                // 1.1 non-chaining use of property
+                if (currentObject != null)
+                    emitTriples(newSubject, props, currentObject);
+                else if (newSubject != null)
+                    emitTriples(context.parentSubject, props, newSubject);
+                //currentObject = null; // don't chain this
+            } else {
+                literalCollector.collect(newSubject, props, dt, currentLanguage);
+            }
+        }
+        
         if (currentObject != null) {
             if (element.getAttributeByName(Constants.rel) != null) {
                 emitTriples(newSubject,
@@ -223,23 +251,6 @@ public class Parser implements ContentHandler, ErrorHandler {
             if (!forwardProperties.isEmpty() || !backwardProperties.isEmpty()) {
                 // if predicate present
                 currentObject = createBNode();
-            }
-        }
-
-        // Getting literal values. Complicated!
-        if (element.getAttributeByName(Constants.property) != null) {
-            List<String> props = extractor.getURIs(element,
-                    element.getAttributeByName(Constants.property), context);
-            String dt = getDatatype(element);
-            if (element.getAttributeByName(Constants.content) != null) { // The easy bit
-                String lex = element.getAttributeByName(Constants.content).getValue();
-                if (dt == null || dt.length() == 0) {
-                    emitTriplesPlainLiteral(newSubject, props, lex, currentLanguage);
-                } else {
-                    emitTriplesDatatypeLiteral(newSubject, props, lex, dt);
-                }
-            } else {
-                literalCollector.collect(newSubject, props, dt, currentLanguage);
             }
         }
 
