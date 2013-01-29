@@ -7,6 +7,7 @@ package net.rootdev.javardfa.uri;
 
 import java.util.List;
 import java.util.Set;
+import javax.xml.namespace.QName;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import net.rootdev.javardfa.EvalContext;
@@ -23,11 +24,11 @@ public interface URIExtractor {
     String expandCURIE(StartElement element, String value, EvalContext context);
 
     String expandSafeCURIE(StartElement element, String value, EvalContext context);
-
-    String getURI(StartElement element, Attribute attr, EvalContext context);
-
-    List<String> getURIs(StartElement element, Attribute attr, EvalContext context);
-
+    
+    String getURI(StartElement element, QName attrName, EvalContext context);
+        
+    List<String> getURIs(StartElement element, QName attrName, EvalContext context);
+    
     String resolveURI(String uri, EvalContext context);
 }
 

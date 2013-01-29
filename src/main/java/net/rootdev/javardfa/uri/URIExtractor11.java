@@ -32,9 +32,11 @@ public class URIExtractor11 implements URIExtractor {
     public void setSettings(Set<Setting> settings) {
         this.settings = settings;
     }
-
-    public String getURI(StartElement element, Attribute attr, EvalContext context) {
-        QName attrName = attr.getName();
+    
+    public String getURI(StartElement element, QName attrName, EvalContext context) {
+        Attribute attr = element.getAttributeByName(attrName);
+        if (attr == null) return null;
+        
         if (attrName.equals(Constants.href) || attrName.equals(Constants.src)) // A URI
         {
             if (attr.getValue().length() == 0) return context.getBase();
@@ -50,12 +52,13 @@ public class URIExtractor11 implements URIExtractor {
         }
         throw new RuntimeException("Unexpected attribute: " + attr);
     }
-
-    public List<String> getURIs(StartElement element, Attribute attr, EvalContext context) {
+    
+    public List<String> getURIs(StartElement element, QName attrName, EvalContext context) {
+        Attribute attr = element.getAttributeByName(attrName);
+        if (attr == null) return null;
+        
         List<String> uris = new LinkedList<String>();
         String[] curies = attr.getValue().split("\\s+");
-        boolean permitReserved = Constants.rel.equals(attr.getName()) ||
-                Constants.rev.equals(attr.getName());
         for (String curie : curies) {
             String uri = expandCURIE(element, curie, context);
             if (uri != null) {

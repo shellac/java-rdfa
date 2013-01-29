@@ -131,58 +131,55 @@ public class Parser implements ContentHandler, ErrorHandler {
             context.setBase(element.getAttributeByName(Constants.href).getValue());
             sink.setBase(context.getBase());
         }
-
-        if (element.getAttributeByName(Constants.rev) == null &&
-                element.getAttributeByName(Constants.rel) == null) {
-            Attribute nSubj = findAttribute(element, Constants.about, Constants.src,
-                    Constants.resource, Constants.href);
-            if (nSubj != null) {
-                newSubject = extractor.getURI(element, nSubj, context);
-            }
+        
+        String about = extractor.getURI(element, Constants.about, context);
+        String src = extractor.getURI(element, Constants.src, context);
+        String href = extractor.getURI(element, Constants.href, context);
+        String resource = extractor.getURI(element, Constants.resource, context);
+        
+        List<String> typeof = extractor.getURIs(element, Constants.typeof, context);
+        List<String> rel = extractor.getURIs(element, Constants.rel, context);
+        List<String> rev = extractor.getURIs(element, Constants.rev, context);
+        List<String> property = extractor.getURIs(element, Constants.property, context);
+        
+        if (rev == null && rel == null) {
+            newSubject = coalesce(about, src, resource, href);
             if (newSubject == null) {
                 if (context.parent == null && !inXHTML) {
                     newSubject = context.base;
                 } else if (Constants.body.equals(element.getName()) ||
                             Constants.head.equals(element.getName())) {
                     newSubject = context.base;
-                } else if (element.getAttributeByName(Constants.typeof) != null) {
+                } else if (typeof != null) {
                     newSubject = createBNode();
                 } else {
                     if (context.parentObject != null) {
                         newSubject = context.parentObject;
                     }
-                    if (element.getAttributeByName(Constants.property) == null) {
+                    if (property == null) {
                         skipElement = true;
                     }
                 }
             }
         } else {
-            Attribute nSubj = findAttribute(element, Constants.about, Constants.src);
-            if (nSubj != null) {
-                newSubject = extractor.getURI(element, nSubj, context);
-            }
+            newSubject = coalesce(about, src);
             if (newSubject == null) {
                 if (context.parent == null && !inXHTML) {
                     newSubject = context.base;
                 } else if (Constants.head.equals(element.getName()) ||
                         Constants.body.equals(element.getName())) {
                     newSubject = context.base;
-                } else if (element.getAttributeByName(Constants.typeof) != null) {
+                } else if (typeof != null) {
                     newSubject = createBNode();
                 } else if (context.parentObject != null) {
                     newSubject = context.parentObject;
                 }
             }
-            Attribute cObj = findAttribute(element, Constants.resource, Constants.href);
-            if (cObj != null) {
-                currentObject = extractor.getURI(element, cObj, context);
-            }
+            currentObject = coalesce(resource, href);
         }
 
-        if (newSubject != null && element.getAttributeByName(Constants.typeof) != null) {
-            List<String> types = extractor.getURIs(element,
-                    element.getAttributeByName(Constants.typeof), context);
-            for (String type : types) {
+        if (newSubject != null && typeof != null) {
+            for (String type : typeof) {
                 emitTriples(newSubject,
                         Constants.rdfType,
                         type);
@@ -201,52 +198,46 @@ public class Parser implements ContentHandler, ErrorHandler {
 
         }
         
-        if (element.getAttributeByName(Constants.property) != null) {
-            List<String> props = extractor.getURIs(element,
-                    element.getAttributeByName(Constants.property), context);
+        if (property != null) {
             
             String dt = getDatatype(element);
             
             if (element.getAttributeByName(Constants.content) != null) { // The easy bit
                 String lex = element.getAttributeByName(Constants.content).getValue();
                 if (dt == null || dt.length() == 0) {
-                    emitTriplesPlainLiteral(newSubject, props, lex, currentLanguage);
+                    emitTriplesPlainLiteral(newSubject, property, lex, currentLanguage);
                 } else {
-                    emitTriplesDatatypeLiteral(newSubject, props, lex, dt);
+                    emitTriplesDatatypeLiteral(newSubject, property, lex, dt);
                 }
             } else if (settings.contains(Setting.OnePointOne) && 
                     (findAttribute(element, Constants.src, Constants.href, Constants.resource) != null)) {
                 // 1.1 non-chaining use of property
                 if (currentObject != null)
-                    emitTriples(newSubject, props, currentObject);
+                    emitTriples(newSubject, property, currentObject);
                 else if (newSubject != null)
-                    emitTriples(context.parentSubject, props, newSubject);
+                    emitTriples(context.parentSubject, property, newSubject);
                 //currentObject = null; // don't chain this
+                
+                
+                
             } else {
-                literalCollector.collect(newSubject, props, dt, currentLanguage);
+                literalCollector.collect(newSubject, property, dt, currentLanguage);
             }
         }
         
         if (currentObject != null) {
             if (element.getAttributeByName(Constants.rel) != null) {
-                emitTriples(newSubject,
-                        extractor.getURIs(element,
-                            element.getAttributeByName(Constants.rel), context),
-                        currentObject);
+                emitTriples(newSubject, rel, currentObject);
             }
             if (element.getAttributeByName(Constants.rev) != null) {
-                emitTriples(currentObject,
-                        extractor.getURIs(element, element.getAttributeByName(Constants.rev), context),
-                        newSubject);
+                emitTriples(currentObject, rev, newSubject);
             }
         } else {
             if (element.getAttributeByName(Constants.rel) != null) {
-                forwardProperties.addAll(extractor.getURIs(element,
-                        element.getAttributeByName(Constants.rel), context));
+                forwardProperties.addAll(rel);
             }
             if (element.getAttributeByName(Constants.rev) != null) {
-                backwardProperties.addAll(extractor.getURIs(element,
-                        element.getAttributeByName(Constants.rev), context));
+                backwardProperties.addAll(rev);
             }
             if (!forwardProperties.isEmpty() || !backwardProperties.isEmpty()) {
                 // if predicate present
@@ -494,15 +485,35 @@ public class Parser implements ContentHandler, ErrorHandler {
     // SAX error handling
     
     public void warning(SAXParseException exception) throws SAXException {
-        System.err.printf("Warning: %s", exception.getLocalizedMessage());
+        System.err.printf("Warning: %s\n", exception.getLocalizedMessage());
     }
 
     public void error(SAXParseException exception) throws SAXException {
-        System.err.printf("Error: %s", exception.getLocalizedMessage());
+        System.err.printf("Error: %s\n", exception.getLocalizedMessage());
     }
 
     public void fatalError(SAXParseException exception) throws SAXException {
-        System.err.printf("Fatal error: %s", exception.getLocalizedMessage());
+        System.err.printf("Fatal error: %s\n", exception.getLocalizedMessage());
+    }
+    
+    // Coalesce utility functions. Useful in parsing.
+    
+    private static <T> T coalesce(T a, T b) {
+        if (a != null) return a;
+        return b;
+    }
+    
+    private static <T> T coalesce(T a, T b, T c) {
+        if (a != null) return a;
+        if (b != null) return b;
+        return c;
+    }
+    
+    private static <T> T coalesce(T a, T b, T c, T d) {
+        if (a != null) return a;
+        if (b != null) return b;
+        if (c != null) return c;
+        return d;
     }
 }
 
