@@ -200,7 +200,7 @@ public class Parser implements ContentHandler, ErrorHandler {
         
         if (property != null) {
             
-            String dt = getDatatype(element);
+            String dt = extractor.getURI(element, Constants.datatype, context);
             
             if (element.getAttributeByName(Constants.content) != null) { // The easy bit
                 String lex = element.getAttributeByName(Constants.content).getValue();
@@ -313,18 +313,6 @@ public class Parser implements ContentHandler, ErrorHandler {
     private String createBNode() // TODO probably broken? Can you write bnodes in rdfa directly?
     {
         return "_:node" + (bnodeId++);
-    }
-
-    private String getDatatype(StartElement element) {
-        Attribute de = element.getAttributeByName(Constants.datatype);
-        if (de == null) {
-            return null;
-        }
-        String dt = de.getValue();
-        if (dt.length() == 0) {
-            return dt;
-        }
-        return extractor.expandCURIE(element, dt, context);
     }
 
     private void getNamespaces(Attributes attrs) {

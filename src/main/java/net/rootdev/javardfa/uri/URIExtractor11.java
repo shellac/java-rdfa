@@ -48,7 +48,13 @@ public class URIExtractor11 implements URIExtractor {
         }
         if (attrName.equals(Constants.datatype)) // A CURIE
         {
-            return expandCURIE(element, attr.getValue(), context);
+            String val = attr.getValue();
+            if (val.length() == 0) {
+                return "";
+            }
+            else {
+                return expandCURIE(element, attr.getValue(), context);
+            }
         }
         throw new RuntimeException("Unexpected attribute: " + attr);
     }

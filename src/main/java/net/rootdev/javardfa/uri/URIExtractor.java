@@ -21,10 +21,6 @@ public interface URIExtractor {
 
     void setSettings(Set<Setting> settings);
 
-    String expandCURIE(StartElement element, String value, EvalContext context);
-
-    String expandSafeCURIE(StartElement element, String value, EvalContext context);
-    
     String getURI(StartElement element, QName attrName, EvalContext context);
         
     List<String> getURIs(StartElement element, QName attrName, EvalContext context);
