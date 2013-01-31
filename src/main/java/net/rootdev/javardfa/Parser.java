@@ -83,28 +83,9 @@ public class Parser implements ContentHandler, ErrorHandler {
 
     EvalContext parse(EvalContext context, StartElement element)
             throws XMLStreamException {
-        boolean skipElement = false;
-        String newSubject = null;
-        String currentObject = null;
-        List<String> forwardProperties = new LinkedList();
-        List<String> backwardProperties = new LinkedList();
         String currentLanguage = context.language;
         boolean inXHTML = Constants.xhtmlNS.equals(element.getName().getNamespaceURI());
-
-        if (settings.contains(Setting.OnePointOne)) {
-
-            if (element.getAttributeByName(Constants.vocab) != null) {
-                String vocab =
-                    element.getAttributeByName(Constants.vocab).getValue().trim();
-                // empty vocab removes default vocab
-                context.vocab = (vocab.length() == 0) ? null : vocab ;
-            }
-
-            if (element.getAttributeByName(Constants.prefix) != null) {
-                parsePrefixes(element.getAttributeByName(Constants.prefix).getValue(), context);
-            }
-        }
-
+        
         // The xml / html namespace matching is a bit ropey. I wonder if the html 5
         // parser has a setting for this?
         if (settings.contains(Setting.ManualNamespaces)) {
@@ -118,6 +99,20 @@ public class Parser implements ContentHandler, ErrorHandler {
         } else if (element.getAttributeByName(Constants.xmllangNS) != null) {
             currentLanguage = element.getAttributeByName(Constants.xmllangNS).getValue();
             if (currentLanguage.length() == 0) currentLanguage = null;
+        }
+        
+        if (settings.contains(Setting.OnePointOne)) {
+
+            if (element.getAttributeByName(Constants.vocab) != null) {
+                String vocab =
+                    element.getAttributeByName(Constants.vocab).getValue().trim();
+                // empty vocab removes default vocab
+                context.vocab = (vocab.length() == 0) ? null : vocab ;
+            }
+
+            if (element.getAttributeByName(Constants.prefix) != null) {
+                parsePrefixes(element.getAttributeByName(Constants.prefix).getValue(), context);
+            }
         }
         
         // Respect xml:base outside xhtml
@@ -136,11 +131,20 @@ public class Parser implements ContentHandler, ErrorHandler {
         String src = extractor.getURI(element, Constants.src, context);
         String href = extractor.getURI(element, Constants.href, context);
         String resource = extractor.getURI(element, Constants.resource, context);
+        String datatype = extractor.getURI(element, Constants.datatype, context);
+        Attribute contentAttr = element.getAttributeByName(Constants.content);
+        String content = (contentAttr == null) ? null : contentAttr.getValue();
         
         List<String> typeof = extractor.getURIs(element, Constants.typeof, context);
         List<String> rel = extractor.getURIs(element, Constants.rel, context);
         List<String> rev = extractor.getURIs(element, Constants.rev, context);
         List<String> property = extractor.getURIs(element, Constants.property, context);
+        
+        boolean skipElement = false;
+        String newSubject = null;
+        String currentObject = null;
+        List<String> forwardProperties = new LinkedList();
+        List<String> backwardProperties = new LinkedList();
         
         if (rev == null && rel == null) {
             newSubject = coalesce(about, src, resource, href);
@@ -200,17 +204,14 @@ public class Parser implements ContentHandler, ErrorHandler {
         
         if (property != null) {
             
-            String dt = extractor.getURI(element, Constants.datatype, context);
-            
-            if (element.getAttributeByName(Constants.content) != null) { // The easy bit
-                String lex = element.getAttributeByName(Constants.content).getValue();
-                if (dt == null || dt.length() == 0) {
-                    emitTriplesPlainLiteral(newSubject, property, lex, currentLanguage);
+            if (content != null) { // The easy bit
+                if (datatype == null || datatype.length() == 0) {
+                    emitTriplesPlainLiteral(newSubject, property, content, currentLanguage);
                 } else {
-                    emitTriplesDatatypeLiteral(newSubject, property, lex, dt);
+                    emitTriplesDatatypeLiteral(newSubject, property, content, datatype);
                 }
             } else if (settings.contains(Setting.OnePointOne) && 
-                    (findAttribute(element, Constants.src, Constants.href, Constants.resource) != null)) {
+                    (coalesce(src, href, resource) != null)) {
                 // 1.1 non-chaining use of property
                 if (currentObject != null)
                     emitTriples(newSubject, property, currentObject);
@@ -218,10 +219,8 @@ public class Parser implements ContentHandler, ErrorHandler {
                     emitTriples(context.parentSubject, property, newSubject);
                 //currentObject = null; // don't chain this
                 
-                
-                
             } else {
-                literalCollector.collect(newSubject, property, dt, currentLanguage);
+                literalCollector.collect(newSubject, property, datatype, currentLanguage);
             }
         }
         
@@ -278,16 +277,6 @@ public class Parser implements ContentHandler, ErrorHandler {
             ec.backwardProperties = backwardProperties;
         }
         return ec;
-    }
-
-    private Attribute findAttribute(StartElement element, QName... names) {
-        for (QName aName : names) {
-            Attribute a = element.getAttributeByName(aName);
-            if (a != null) {
-                return a;
-            }
-        }
-        return null;
     }
 
     public void emitTriples(String subj, Collection<String> props, String obj) {

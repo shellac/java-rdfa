@@ -95,9 +95,6 @@ public class URIExtractor11 implements URIExtractor {
         }
         String prefix = value.substring(0, offset - 1);
 
-        // Apparently these are not allowed to expand
-        //if ("xml".equals(prefix) || "xmlns".equals(prefix)) return null;
-
         String namespaceURI = prefix.length() == 0 ? "http://www.w3.org/1999/xhtml/vocab#" : context.getURIForPrefix(prefix);
         if (namespaceURI == null) {
             // Assume this is some kind of URI
@@ -116,7 +113,7 @@ public class URIExtractor11 implements URIExtractor {
             
             if (epd != null && !value.equals(epd)) {
                 return epd;
-            } 
+            }
             
             //System.err.printf("Expandable? %s [%s,%s]\n", value.equals(epd), epd, value);
             
