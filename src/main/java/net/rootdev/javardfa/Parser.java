@@ -107,7 +107,12 @@ public class Parser implements ContentHandler, ErrorHandler {
                 String vocab =
                     element.getAttributeByName(Constants.vocab).getValue().trim();
                 // empty vocab removes default vocab
-                context.vocab = (vocab.length() == 0) ? null : vocab ;
+                if (vocab.length() == 0) {
+                    context.vocab = null;
+                } else {
+                    context.vocab = vocab;
+                    emitTriples(context.base, Constants.rdfaUses, vocab);
+                }
             }
 
             if (element.getAttributeByName(Constants.prefix) != null) {
@@ -140,6 +145,16 @@ public class Parser implements ContentHandler, ErrorHandler {
         List<String> rev = extractor.getURIs(element, Constants.rev, context);
         List<String> property = extractor.getURIs(element, Constants.property, context);
         
+        if (settings.contains(Setting.OnePointOne)) {
+            return parse11(rev, rel, about, src, resource, href, context, inXHTML, 
+                    element, typeof, property, content, datatype, currentLanguage);
+        } else {
+            return parse10(rev, rel, about, src, resource, href, context, inXHTML,
+                    element, typeof, property, content, datatype, currentLanguage);
+        }
+    }
+
+    private EvalContext parse10(List<String> rev, List<String> rel, String about, String src, String resource, String href, EvalContext context, boolean inXHTML, StartElement element, List<String> typeof, List<String> property, String content, String datatype, String currentLanguage) {
         boolean skipElement = false;
         String newSubject = null;
         String currentObject = null;
@@ -210,15 +225,6 @@ public class Parser implements ContentHandler, ErrorHandler {
                 } else {
                     emitTriplesDatatypeLiteral(newSubject, property, content, datatype);
                 }
-            } else if (settings.contains(Setting.OnePointOne) && 
-                    (coalesce(src, href, resource) != null)) {
-                // 1.1 non-chaining use of property
-                if (currentObject != null)
-                    emitTriples(newSubject, property, currentObject);
-                else if (newSubject != null)
-                    emitTriples(context.parentSubject, property, newSubject);
-                //currentObject = null; // don't chain this
-                
             } else {
                 literalCollector.collect(newSubject, property, datatype, currentLanguage);
             }
@@ -254,6 +260,137 @@ public class Parser implements ContentHandler, ErrorHandler {
                     context.parentSubject);
         }
 
+        EvalContext ec = new EvalContext(context);
+        if (skipElement) {
+            ec.language = currentLanguage;
+        } else {
+            if (newSubject != null) {
+                ec.parentSubject = newSubject;
+            } else {
+                ec.parentSubject = context.parentSubject;
+            }
+
+            if (currentObject != null) {
+                ec.parentObject = currentObject;
+            } else if (newSubject != null) {
+                ec.parentObject = newSubject;
+            } else {
+                ec.parentObject = context.parentSubject;
+            }
+
+            ec.language = currentLanguage;
+            ec.forwardProperties = forwardProperties;
+            ec.backwardProperties = backwardProperties;
+        }
+        return ec;
+    }
+
+    private EvalContext parse11(List<String> rev, List<String> rel, String about, String src, String resource, String href, EvalContext context, boolean inXHTML, StartElement element, List<String> typeof, List<String> property, String content, String datatype, String currentLanguage) {
+        boolean skipElement = false;
+        String newSubject = null;
+        String currentObject = null;
+        String typedResource = null;
+        List<String> forwardProperties = new LinkedList();
+        List<String> backwardProperties = new LinkedList();
+        
+        if (rev == null && rel == null) {
+            if (property != null && content == null && datatype == null) {
+                if (about != null) newSubject = about;
+                else if (context.parent == null) newSubject = context.base;
+                else if (context.parentObject != null) newSubject = context.parentObject;
+                
+                if (typeof != null) {
+                    if (about != null) typedResource = about;
+                    else if (context.parent == null) typedResource = context.base;
+                    else typedResource = coalesce(resource, href, src);
+                    
+                    if (typedResource == null) typedResource = createBNode();
+                    
+                    currentObject = typedResource;
+                }
+            } else {
+                newSubject = coalesce(about, resource, href, src);
+                
+                if (newSubject == null) {
+                    if (context.parent == null) newSubject = context.base;
+                    else if (typeof != null) newSubject = createBNode();
+                    else if (context.parentObject != null) {
+                        newSubject = context.parentObject;
+                        if (property == null) skipElement = true;
+                    }
+                }
+                
+                if (typeof != null) typedResource = newSubject;
+            }
+        } else { // rev or rel present
+            if (about != null) newSubject = about;
+            if (typeof != null) typedResource = newSubject;
+            
+            if (newSubject == null) {
+                if (context.parent == null) newSubject = context.base;
+                else if (context.parentObject != null) newSubject = context.parentObject;
+            }
+            
+            currentObject = coalesce(resource, href, src);
+            
+            if (currentObject == null && typeof != null && about == null) currentObject = createBNode();
+            
+            if (typeof != null && about == null) typedResource = currentObject;
+        }
+        
+        if (typedResource != null) {
+            for (String type : typeof) {
+                emitTriples(typedResource,
+                        Constants.rdfType,
+                        type);
+            }
+        }
+        
+        // STEP 8 skipped... list etc
+        
+        if (currentObject != null) {
+            if (rel != null) emitTriples(newSubject, rel, currentObject);
+            if (rev != null) emitTriples(currentObject, rev, newSubject);
+        } else {
+            if (rel != null) forwardProperties.addAll(rel);
+            if (rev != null) backwardProperties.addAll(rev);
+        }
+        
+        if (property != null) {
+                        
+            String propertyValue = null;
+            
+            if (content != null) { // The easy bit
+                if (datatype == null || datatype.length() == 0) {
+                    emitTriplesPlainLiteral(newSubject, property, content, currentLanguage);
+                } else {
+                    emitTriplesDatatypeLiteral(newSubject, property, content, datatype);
+                }
+            } else if (datatype != null) {
+                literalCollector.collect(newSubject, property, datatype, currentLanguage);
+            } else if (rev == null && rev == null & content == null) {
+                propertyValue = coalesce(resource, href, src);
+            } else if (typeof != null && about == null) {
+                propertyValue = typedResource;
+            }
+            
+            if (propertyValue == null) {
+                literalCollector.collect(newSubject, property, datatype, currentLanguage);
+            }
+            
+            if (propertyValue != null) emitTriples(newSubject, property, propertyValue);
+        }
+        
+        if (!skipElement && newSubject != null) {
+            emitTriples(context.parentSubject,
+                    context.forwardProperties,
+                    newSubject);
+
+            emitTriples(newSubject,
+                    context.backwardProperties,
+                    context.parentSubject);
+        }
+        
         EvalContext ec = new EvalContext(context);
         if (skipElement) {
             ec.language = currentLanguage;

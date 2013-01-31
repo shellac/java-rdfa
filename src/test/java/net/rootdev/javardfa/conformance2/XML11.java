@@ -4,7 +4,6 @@ import com.hp.hpl.jena.rdf.model.Model;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Collections;
 import net.rootdev.javardfa.ParserFactory;
 import net.rootdev.javardfa.ParserFactory.Format;
 import net.rootdev.javardfa.Setting;
@@ -25,7 +24,7 @@ public class XML11 extends RDFaConformance
         if (false) return RDFaConformance.filterTests(RDFaConformance.
                 testFiles("http://rdfa.info/test-suite/rdfa1.1/xml/manifest",
                 "conformance2/manifest-extract-1.1.rq"
-                ), 97);
+                ), 0);
         return RDFaConformance.
                 testFiles("http://rdfa.info/test-suite/rdfa1.1/xml/manifest",
                 "conformance2/manifest-extract-1.1.rq"
