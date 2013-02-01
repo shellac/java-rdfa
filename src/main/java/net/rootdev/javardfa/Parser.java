@@ -354,6 +354,7 @@ public class Parser implements ContentHandler, ErrorHandler {
         } else {
             if (rel != null) forwardProperties.addAll(rel);
             if (rev != null) backwardProperties.addAll(rev);
+            if (rev != null || rel != null) currentObject = createBNode();
         }
         
         if (property != null) {
