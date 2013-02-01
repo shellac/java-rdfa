@@ -24,7 +24,7 @@ public class XML11 extends RDFaConformance
         if (false) return RDFaConformance.filterTests(RDFaConformance.
                 testFiles("http://rdfa.info/test-suite/rdfa1.1/xml/manifest",
                 "conformance2/manifest-extract-1.1.rq"
-                ), 0);
+                ), 110);
         return RDFaConformance.
                 testFiles("http://rdfa.info/test-suite/rdfa1.1/xml/manifest",
                 "conformance2/manifest-extract-1.1.rq"

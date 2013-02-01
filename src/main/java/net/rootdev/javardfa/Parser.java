@@ -374,7 +374,7 @@ public class Parser implements ContentHandler, ErrorHandler {
                 propertyValue = typedResource;
             }
             
-            if (propertyValue == null) {
+            if (propertyValue == null && content == null && datatype == null) {
                 literalCollector.collect(newSubject, property, datatype, currentLanguage);
             }
             
