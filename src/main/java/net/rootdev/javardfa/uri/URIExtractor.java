@@ -5,6 +5,8 @@
  */
 package net.rootdev.javardfa.uri;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.xml.namespace.QName;
@@ -18,7 +20,11 @@ import net.rootdev.javardfa.Setting;
  * @author pldms
  */
 public interface URIExtractor {
-
+    
+    // Represents a missing URI.
+    // We can distinguish between a missing attribute and missing URI
+    final static String NONE = "__NONE__";
+        
     void setSettings(Set<Setting> settings);
 
     String getURI(StartElement element, QName attrName, EvalContext context);

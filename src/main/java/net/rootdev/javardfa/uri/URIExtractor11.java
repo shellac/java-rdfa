@@ -67,7 +67,7 @@ public class URIExtractor11 implements URIExtractor {
         String[] curies = attr.getValue().split("\\s+");
         for (String curie : curies) {
             String uri = expandCURIE(element, curie, context);
-            if (uri != null) {
+            if (uri != null && uri != URIExtractor.NONE) {
                 uris.add(uri);
             }
         }
@@ -90,7 +90,7 @@ public class URIExtractor11 implements URIExtractor {
             if (vocab != null) {
                 return vocab + value;
             } else {
-                return null;
+                return URIExtractor.NONE;
             }
         }
         String prefix = value.substring(0, offset - 1);
@@ -111,7 +111,7 @@ public class URIExtractor11 implements URIExtractor {
             
             String epd = expandCURIE(element, value, context);
             
-            if (epd != null && !value.equals(epd)) {
+            if (epd != null && epd != URIExtractor.NONE && !value.equals(epd)) {
                 return epd;
             }
             

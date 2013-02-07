@@ -86,6 +86,18 @@ public class Parser implements ContentHandler, ErrorHandler {
         String currentLanguage = context.language;
         boolean inXHTML = Constants.xhtmlNS.equals(element.getName().getNamespaceURI());
         
+        // Respect xml:base outside xhtml
+        if (element.getAttributeByName(Constants.xmlbaseNS) != null && !inXHTML) {
+            context.setBase(element.getAttributeByName(Constants.xmlbaseNS).getValue());
+            sink.setBase(context.getBase());
+        }
+        
+        if (Constants.base.equals(element.getName()) &&
+                element.getAttributeByName(Constants.href) != null) {
+            context.setBase(element.getAttributeByName(Constants.href).getValue());
+            sink.setBase(context.getBase());
+        }
+        
         // The xml / html namespace matching is a bit ropey. I wonder if the html 5
         // parser has a setting for this?
         if (settings.contains(Setting.ManualNamespaces)) {
@@ -118,18 +130,6 @@ public class Parser implements ContentHandler, ErrorHandler {
             if (element.getAttributeByName(Constants.prefix) != null) {
                 parsePrefixes(element.getAttributeByName(Constants.prefix).getValue(), context);
             }
-        }
-        
-        // Respect xml:base outside xhtml
-        if (element.getAttributeByName(Constants.xmlbaseNS) != null && !inXHTML) {
-            context.setBase(element.getAttributeByName(Constants.xmlbaseNS).getValue());
-            sink.setBase(context.getBase());
-        }
-        
-        if (Constants.base.equals(element.getName()) &&
-                element.getAttributeByName(Constants.href) != null) {
-            context.setBase(element.getAttributeByName(Constants.href).getValue());
-            sink.setBase(context.getBase());
         }
         
         String about = extractor.getURI(element, Constants.about, context);
@@ -295,22 +295,22 @@ public class Parser implements ContentHandler, ErrorHandler {
         
         if (rev == null && rel == null) {
             if (property != null && content == null && datatype == null) {
-                if (about != null) newSubject = about;
+                if (about != null && about != URIExtractor.NONE) newSubject = about;
                 else if (context.parent == null) newSubject = context.base;
                 else if (context.parentObject != null) newSubject = context.parentObject;
                 
                 if (typeof != null) {
-                    if (about != null) typedResource = about;
+                    if (about != null && about != URIExtractor.NONE) typedResource = about;
                     else if (context.parent == null) typedResource = context.base;
                     else typedResource = coalesce(resource, href, src);
                     
                     if (typedResource == null) typedResource = createBNode();
-                    
+                                        
                     currentObject = typedResource;
                 }
             } else {
                 newSubject = coalesce(about, resource, href, src);
-                
+                                
                 if (newSubject == null) {
                     if (context.parent == null) newSubject = context.base;
                     else if (typeof != null) newSubject = createBNode();
@@ -323,7 +323,7 @@ public class Parser implements ContentHandler, ErrorHandler {
                 if (typeof != null) typedResource = newSubject;
             }
         } else { // rev or rel present
-            if (about != null) newSubject = about;
+            if (about != null && about != URIExtractor.NONE) newSubject = about;
             if (typeof != null) typedResource = newSubject;
             
             if (newSubject == null) {
@@ -352,6 +352,7 @@ public class Parser implements ContentHandler, ErrorHandler {
             if (rel != null) emitTriples(newSubject, rel, currentObject);
             if (rev != null) emitTriples(currentObject, rev, newSubject);
         } else {
+            // Do I really want to add all here, or simply assign???
             if (rel != null) forwardProperties.addAll(rel);
             if (rev != null) backwardProperties.addAll(rev);
             if (rev != null || rel != null) currentObject = createBNode();
@@ -367,11 +368,15 @@ public class Parser implements ContentHandler, ErrorHandler {
                 } else {
                     emitTriplesDatatypeLiteral(newSubject, property, content, datatype);
                 }
+                propertyValue = URIExtractor.NONE;
             } else if (datatype != null) {
                 literalCollector.collect(newSubject, property, datatype, currentLanguage);
-            } else if (rev == null && rev == null & content == null) {
+                propertyValue = URIExtractor.NONE;
+            } else if (rev == null && rev == null && content == null) {
                 propertyValue = coalesce(resource, href, src);
-            } else if (typeof != null && about == null) {
+            }
+                        
+            if (propertyValue == null && typeof != null && about == null) {
                 propertyValue = typedResource;
             }
             
@@ -379,7 +384,7 @@ public class Parser implements ContentHandler, ErrorHandler {
                 literalCollector.collect(newSubject, property, datatype, currentLanguage);
             }
             
-            if (propertyValue != null) emitTriples(newSubject, property, propertyValue);
+            if (propertyValue != null && propertyValue != URIExtractor.NONE) emitTriples(newSubject, property, propertyValue);
         }
         
         if (!skipElement && newSubject != null) {
@@ -614,20 +619,20 @@ public class Parser implements ContentHandler, ErrorHandler {
     // Coalesce utility functions. Useful in parsing.
     
     private static <T> T coalesce(T a, T b) {
-        if (a != null) return a;
+        if (a != null && a != URIExtractor.NONE) return a;
         return b;
     }
     
     private static <T> T coalesce(T a, T b, T c) {
-        if (a != null) return a;
-        if (b != null) return b;
+        if (a != null && a != URIExtractor.NONE) return a;
+        if (b != null && b != URIExtractor.NONE) return b;
         return c;
     }
     
     private static <T> T coalesce(T a, T b, T c, T d) {
-        if (a != null) return a;
-        if (b != null) return b;
-        if (c != null) return c;
+        if (a != null && a != URIExtractor.NONE) return a;
+        if (b != null && b != URIExtractor.NONE) return b;
+        if (c != null && c != URIExtractor.NONE) return c;
         return d;
     }
 }
