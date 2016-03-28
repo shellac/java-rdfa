@@ -6,9 +6,9 @@
 package net.rootdev.javardfa;
 
 import net.rootdev.javardfa.jena.JenaStatementSink;
-import com.hp.hpl.jena.rdf.model.Model;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
-import com.hp.hpl.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
 import net.rootdev.javardfa.ParserFactory.Format;
 import org.junit.Test;
 import static org.junit.Assert.*;
