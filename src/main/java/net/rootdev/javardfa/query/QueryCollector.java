@@ -5,18 +5,20 @@
  */
 package net.rootdev.javardfa.query;
 
-import com.hp.hpl.jena.datatypes.TypeMapper;
-import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.graph.Triple;
-import com.hp.hpl.jena.query.Query;
-import com.hp.hpl.jena.rdf.model.AnonId;
-import com.hp.hpl.jena.sparql.core.BasicPattern;
-import com.hp.hpl.jena.sparql.core.Var;
-import com.hp.hpl.jena.sparql.syntax.Element;
-import com.hp.hpl.jena.sparql.syntax.ElementGroup;
-import com.hp.hpl.jena.sparql.syntax.ElementNamedGraph;
-import com.hp.hpl.jena.sparql.syntax.Template;
-import com.hp.hpl.jena.vocabulary.RDF;
+import org.apache.jena.datatypes.TypeMapper;
+import org.apache.jena.graph.BlankNodeId;
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.query.Query;
+import org.apache.jena.rdf.model.AnonId;
+import org.apache.jena.sparql.core.BasicPattern;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.syntax.Element;
+import org.apache.jena.sparql.syntax.ElementGroup;
+import org.apache.jena.sparql.syntax.ElementNamedGraph;
+import org.apache.jena.sparql.syntax.Template;
+import org.apache.jena.vocabulary.RDF;
 import java.util.*;
 import java.util.Map.Entry;
 import net.rootdev.javardfa.StatementSink;
@@ -26,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class QueryCollector implements StatementSink {
 
     final static Logger log = LoggerFactory.getLogger(QueryCollector.class);
-    private static final Node FormType = Node.createURI("http://www.w3.org/1999/xhtml/vocab/#form");
+    private static final Node FormType = NodeFactory.createURI("http://www.w3.org/1999/xhtml/vocab/#form");
     private static final TypeMapper TMapper = TypeMapper.getInstance();
     private final Map<String, Query> queries;
     private List<Triple> currentQuery;
@@ -78,24 +80,24 @@ public class QueryCollector implements StatementSink {
 
     private Node getLiteralNode(String arg2, String arg3, String arg4) {
         if (arg3 == null && arg4 == null) {
-            return Node.createLiteral(arg2);
+            return NodeFactory.createLiteral(arg2);
         } else if (arg4 == null) { // has lang
-            return Node.createLiteral(arg2, arg3, false);
+            return NodeFactory.createLiteral(arg2, arg3, false);
         } else { // has datatype
-            return Node.createLiteral(arg2, null, TMapper.getSafeTypeByName(arg4));
+            return NodeFactory.createLiteral(arg2, null, TMapper.getSafeTypeByName(arg4));
         }
     }
 
     private Node getNode(String arg0) {
         if (arg0.startsWith("_:")) // BNode
         {
-            return Node.createAnon(AnonId.create(arg0.substring(2)));
+            return NodeFactory.createBlankNode(BlankNodeId.create(arg0.substring(2)));
         }
         if (arg0.startsWith("?")) // Var
         {
             return Var.alloc(arg0.substring(1));
         } else {
-            return Node.createURI(arg0);
+            return NodeFactory.createURI(arg0);
         }
     }
 
