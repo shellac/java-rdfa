@@ -5,7 +5,7 @@ The _cruftiest_ RDFa parser in the world, I'll bet. Apologies that there isn't m
 
 Currently passing all [conformance](http://github.com/msporny/rdfa-test-suite) tests for XHTML, and the HTML 4 and 5 tests with [one exception](http://github.com/shellac/java-rdfa/issues#issue/15).
 
-This was written by [Damian Steer](mailto:pldms@mac.com). It is an offshoot of the [Stars Project](http://stars.ilrt.bris.ac.uk/blog/) which was funded by [JISC](http://www.jisc.ac.uk/)
+This was written by [Damian Steer](mailto:plums@mac.com). It is an offshoot of the [Stars Project](http://stars.ilrt.bris.ac.uk/blog/) which was funded by [JISC](http://www.jisc.ac.uk/)
 
 Useful Links
 ------------
