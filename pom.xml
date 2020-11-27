@@ -134,6 +134,7 @@
 						<link>http://jena.apache.org/documentation/javadoc/arq/</link>
 						<link>http://www.openrdf.org/doc/sesame2/api/</link>
 					</links>
+                    <source>1.6</source>
 				</configuration>
 				<executions>
 					<execution>
