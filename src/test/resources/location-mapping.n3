@@ -4,17 +4,17 @@
    [ lm:prefix
        "http://rdfa.digitalbazaar.com/test-suite/test-cases/xhtml1/" ;
      lm:altPrefix
-       "file:conformance/xhtml/"
+       "file:src/test/resources/conformance/xhtml/"
    ] ,
    [ lm:prefix
        "http://rdfa.digitalbazaar.com/test-suite/test-cases/html5/" ;
      lm:altPrefix
-       "file:conformance/html5/"
+       "file:src/test/resources/conformance/html5/"
    ] ,
    [ lm:prefix
        "http://rdfa.digitalbazaar.com/test-suite/test-cases/html4/" ;
      lm:altPrefix
-       "file:conformance/html4/"
+       "file:src/test/resources/conformance/html4/"
    ] ,
    [ 
      lm:name "http://philip.html5.org/demos/rdfa/tests.json" ; 
@@ -24,6 +24,6 @@
      lm:prefix 
        "http://rdfa.info/test-suite/" ;
      lm:altPrefix
-       "file:conformance2/"
+       "file:src/test/resources/conformance2/"
    ]
 .
