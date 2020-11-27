@@ -24,9 +24,9 @@ public class XML10 extends RDFaConformance
                 testFiles("http://rdfa.info/test-suite/rdfa1.0/xml/manifest",
                     "conformance2/manifest-extract.rq",
                     // Exclude: test uses html base outside html. Badly migrated, I guess.
-                    "http://rdfa.info/test-suite/rdfa1.0/xml/0210",
+                    "http://rdfa.info/test-suite/test-cases/rdfa1.0/xml/0210.xml",
                     // Exclude: test namespaces are wrong. xhtml isn't mentioned, dc inclusion is dubious.
-                    "http://rdfa.info/test-suite/rdfa1.0/xml/0212"
+                    "http://rdfa.info/test-suite/test-cases/rdfa1.0/xml/0212.xml"
                     
                 );
     }

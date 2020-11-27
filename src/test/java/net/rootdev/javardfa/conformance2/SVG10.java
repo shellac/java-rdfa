@@ -24,7 +24,7 @@ public class SVG10 extends RDFaConformance
                 testFiles("http://rdfa.info/test-suite/rdfa1.0/svg/manifest",
                 "conformance2/manifest-extract.rq",
                 // Not an RDFa test!
-                "http://rdfa.info/test-suite/rdfa1.0/svg/0304"
+                "http://rdfa.info/test-suite/test-cases/rdfa1.0/svg/0304.svg"
                 );
     }
 

@@ -3,4 +3,5 @@
 
 z:a ex:one "abcd" ; 
      ex:two "bcd" ;
-     ex:three "c<div xmlns=\"http://www.w3.org/1999/xhtml\" datatype=\"\" property=\"ex:four\">d</div>"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
+     ex:three "cd" ;
+     ex:four "d" ;
