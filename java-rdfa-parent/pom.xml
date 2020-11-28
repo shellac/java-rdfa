@@ -135,17 +135,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>net.rootdev.javardfa</Export-Package>
-                        <Import-Package>com.hp.hpl.jena.iri,!com.hp.hpl.jena.*,!org.mozilla.*,*</Import-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
     <dependencies>
