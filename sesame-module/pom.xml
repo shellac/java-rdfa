@@ -160,34 +160,34 @@
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-rio-api</artifactId>
-            <version>2.2.4</version>
+            <version>2.8.11</version>
         </dependency>
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-rio-turtle</artifactId>
-            <version>2.2.4</version>
+            <version>2.8.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-query</artifactId>
-            <version>2.2.4</version>
+            <version>2.8.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-repository-sail</artifactId>
-            <version>2.2.4</version>
+            <version>2.8.11</version>
         </dependency>
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-sail-memory</artifactId>
-            <version>2.2.4</version>
+            <version>2.8.11</version>
         </dependency>
         <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-queryparser-sparql</artifactId>
-            <version>2.2.4</version>
+            <version>2.8.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>

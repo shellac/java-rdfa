@@ -35,6 +35,8 @@ package net.rootdev.javardfa;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Collection;
+
 import nu.validator.htmlparser.common.XmlViolationPolicy;
 import nu.validator.htmlparser.sax.HtmlParser;
 import org.slf4j.Logger;
@@ -42,11 +44,13 @@ import org.slf4j.LoggerFactory;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParseLocationListener;
+import org.openrdf.rio.ParserConfig;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.RioSetting;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -65,6 +69,8 @@ public abstract class SesameRDFaParser implements RDFParser {
    private XMLReader xmlReader;
    boolean stopAtFirstError = true;
    private boolean preserveBNodeIds = false;
+   private ParseErrorListener parseErrorListener;
+   private ParserConfig parserConfig;
 
    public static class HTMLRDFaParser extends SesameRDFaParser {
 
@@ -111,7 +117,7 @@ public abstract class SesameRDFaParser implements RDFParser {
    }
 
    public void setParseErrorListener(ParseErrorListener el) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      this.parseErrorListener = el;
    }
 
    public void setParseLocationListener(ParseLocationListener ll) {
@@ -152,6 +158,21 @@ public abstract class SesameRDFaParser implements RDFParser {
 
    public void parse(Reader reader, String baseURI) throws IOException, RDFParseException, RDFHandlerException {
       parse(new InputSource(reader), baseURI);
+   }
+
+   @Override
+   public void setParserConfig(ParserConfig config) {
+	   this.parserConfig = config; 
+   }
+   
+   @Override
+   public ParserConfig getParserConfig() {
+	   return this.parserConfig;
+   }
+   
+   @Override
+   public Collection<RioSetting<?>> getSupportedSettings() {
+	   return null;
    }
 
    private void parse(InputSource in, String baseURI) throws IOException {
