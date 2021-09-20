@@ -7,7 +7,7 @@
 	<packaging>jar</packaging>
 	<version>0.4.3-SNAPSHOT</version>
 	<properties>
-		<org.apache.jena.version>3.0.1</org.apache.jena.version>
+		<org.apache.jena.version>4.2.0</org.apache.jena.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<name>java-rdfa</name>
